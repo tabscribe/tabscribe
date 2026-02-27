@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TabScribe — 포트폴리오</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+/* ══════════════════════════════════════════
+   전역 리셋 & 변수
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --orange:   #e85d04;
+  --orange2:  #f48c06;
+  --violet:   #6d28d9;
+  --teal:     #0f766e;
+  --dark:     #111827;
+  --dark2:    #1e2433;
+  --mid:      #374151;
+  --muted:    #6b7280;
+  --line:     #e5e7eb;
+  --bg:       #f9fafb;
+  --white:    #ffffff;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background: #fff;
+  color: var(--dark);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════
+   인쇄/PDF 페이지 단위
+══════════════════════════════════════════ */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 화면에서만 페이지 사이 구분 */
+@media screen {
+  .page {
+    box-shadow: 0 4px 40px rgba(0,0,0,0.13);
+    margin-bottom: 32px;
+  }
+  body { background: #dde1ee; padding: 40px 20px; }
+  .print-btn {
+    position: fixed; top: 24px; right: 24px;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 12px;
+    padding: 12px 22px; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; box-shadow: 0 4px 16px rgba(232,93,4,.35);
+    z-index: 9999; font-family: 'Inter','Noto Sans KR',sans-serif;
+    transition: all .2s;
+  }
+  .print-btn:hover { background: #c24e03; transform: translateY(-2px); }
+  .print-btn:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
+}
+
+/* 인쇄 미디어는 숨김 — PDF는 JS로 처리 */
+@media print {
+  body { display: none !important; }
+}
+
+/* ══════════════════════════════════════════
+   공통 유틸
+══════════════════════════════════════════ */
+.accent { color: var(--orange); }
+.violet { color: var(--violet); }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 11px; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: .03em;
+}
+.chip-orange { background: #fff4ed; color: var(--orange); border: 1.5px solid #fcd9c0; }
+.chip-violet { background: #f5f3ff; color: var(--violet); border: 1.5px solid #ddd6fe; }
+.chip-teal   { background: #f0fdfa; color: var(--teal);   border: 1.5px solid #99f6e4; }
+.chip-dark   { background: #f3f4f6; color: #374151;        border: 1.5px solid #d1d5db; }
+
+.section-label {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: .15em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 6px;
+}
+.divider {
+  width: 40px; height: 3px;
+  background: linear-gradient(90deg, var(--orange), var(--orange2));
+  border-radius: 3px; margin: 10px 0 16px;
+}
+.divider-violet {
+  background: linear-gradient(90deg, var(--violet), #a855f7);
+}
+
+/* ══════════════════════════════════════════
+   PAGE 1 — 커버
+══════════════════════════════════════════ */
+#page1 {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: linear-gradient(160deg, #0f172a 0%, #1e2433 55%, #1a1a2e 100%);
+  color: #fff;
+}
+
+.cover-top {
+  padding: 36px 44px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cover-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.cover-logo-icon {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+.cover-logo-text {
+  font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: -.02em;
+}
+.cover-logo-text .acc { color: var(--orange); }
+.cover-badge {
+  font-size: 0.72rem; font-weight: 700;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.85); padding: 5px 14px; border-radius: 20px;
+}
+
+.cover-body {
+  padding: 0 44px;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 0;
+}
+.cover-eyebrow {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--orange); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.cover-eyebrow::before {
+  content: ''; display: block; width: 28px; height: 2px;
+  background: var(--orange);
+}
+.cover-title {
+  font-size: 3.2rem; font-weight: 900; line-height: 1.1;
+  letter-spacing: -.03em; margin-bottom: 10px;
+}
+.cover-title .line2 { color: var(--orange); }
+.cover-subtitle {
+  font-size: 1rem; color: rgba(255,255,255,.6);
+  font-weight: 400; max-width: 400px; line-height: 1.7;
+  margin-bottom: 32px;
+}
+.cover-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 44px; }
+.cover-chip {
+  font-size: 0.72rem; font-weight: 700; padding: 6px 14px;
+  border-radius: 20px; border: 1.5px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.8); background: rgba(255,255,255,.06);
+  display: flex; align-items: center; gap: 5px;
+}
+
+.cover-mockup-strip {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  margin-bottom: 36px;
+}
+.mockup-card {
+  border-radius: 12px; overflow: hidden;
+  border: 1.5px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+}
+.mockup-card-bar {
+  background: rgba(255,255,255,.08);
+  padding: 7px 12px;
+  display: flex; align-items: center; gap: 5px;
+}
+.mockup-dot { width: 6px; height: 6px; border-radius: 50%; }
+.mockup-dot-r { background: #ff5f57; }
+.mockup-dot-y { background: #febc2e; }
+.mockup-dot-g { background: #28c840; }
+.mockup-card-url {
+  flex: 1; background: rgba(255,255,255,.1);
+  border-radius: 4px; padding: 2px 8px;
+  font-size: 0.55rem; color: rgba(255,255,255,.5);
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+}
+.mockup-card-img {
+  width: 100%; height: 80px; object-fit: cover; object-position: top;
+  display: block; filter: brightness(.85) saturate(1.1);
+}
+.mockup-card-label {
+  padding: 6px 10px;
+  font-size: 0.6rem; font-weight: 700; color: rgba(255,255,255,.6);
+}
+
+.cover-bottom {
+  padding: 20px 44px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cover-meta { font-size: 0.7rem; color: rgba(255,255,255,.4); }
+.cover-meta strong { color: rgba(255,255,255,.7); font-weight: 600; }
+.cover-page-num {
+  font-size: 0.68rem; font-weight: 700;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .1em;
+}
+
+/* ══════════════════════════════════════════
+   PAGE 2 — 기획 개요 & 제작 동기
+══════════════════════════════════════════ */
+#page2 { padding: 44px; }
+
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 18px;
+  border-bottom: 1.5px solid var(--line);
+}
+.page-header-left {}
+.page-header-title {
+  font-size: 1.65rem; font-weight: 900; color: var(--dark); letter-spacing: -.02em;
+}
+.page-header-sub {
+  font-size: 0.82rem; color: var(--muted); margin-top: 3px;
+}
+.page-num-badge {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: .1em;
+  color: var(--orange); background: #fff4ed; border: 1.5px solid #fcd9c0;
+  padding: 4px 12px; border-radius: 20px;
+}
+
+/* 개요 그리드 */
+.overview-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin-bottom: 28px;
+}
+.overview-card {
+  background: var(--bg); border: 1.5px solid var(--line);
+  border-radius: 14px; padding: 20px;
+}
+.overview-card-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.9rem; margin-bottom: 12px;
+}
+.overview-card-icon.violet { background: linear-gradient(135deg, var(--violet), #a855f7); }
+.overview-card-icon.teal   { background: linear-gradient(135deg, var(--teal), #0d9488); }
+.overview-card-icon.dark   { background: linear-gradient(135deg, #374151, #1e2433); }
+.overview-card-title {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted); margin-bottom: 6px;
+}
+.overview-card-body {
+  font-size: 0.85rem; color: var(--mid); line-height: 1.6; font-weight: 500;
+}
+
+/* 뮬 레퍼런스 */
+.ref-banner {
+  background: linear-gradient(135deg, #1e2433, #1a1a2e);
+  border-radius: 14px; padding: 22px 24px;
+  display: flex; gap: 20px; align-items: flex-start;
+  margin-bottom: 28px; color: #fff;
+}
+.ref-banner-icon {
+  font-size: 2rem; flex-shrink: 0; opacity: .8;
+}
+.ref-banner-title {
+  font-size: 0.75rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 6px;
+}
+.ref-banner-body {
+  font-size: 0.82rem; color: rgba(255,255,255,.7); line-height: 1.7;
+}
+.ref-vs {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px;
+  align-items: center;
+}
+.ref-col {
+  background: var(--bg); border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 16px;
+}
+.ref-col-title {
+  font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted); margin-bottom: 8px;
+}
+.ref-col-list {
+  list-style: none; display: flex; flex-direction: column; gap: 5px;
+}
+.ref-col-list li {
+  font-size: 0.78rem; color: var(--mid);
+  display: flex; align-items: flex-start; gap: 6px; line-height: 1.45;
+}
+.ref-col-list li::before { content: '•'; color: var(--orange); font-weight: 900; flex-shrink:0; }
+.ref-col-list li.plus::before { content: '+'; color: #16a34a; }
+.ref-vs-arrow {
+  font-size: 1.2rem; color: var(--orange);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ══════════════════════════════════════════
+   PAGE 3 — 핵심 기능 & 서비스 구조
+══════════════════════════════════════════ */
+#page3 { padding: 44px; }
+
+/* 핵심 기능 카드 */
+.feature-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  margin-bottom: 28px;
+}
+.feature-card {
+  border: 1.5px solid var(--line); border-radius: 14px;
+  padding: 18px; background: #fff;
+  transition: box-shadow .2s;
+}
+.feature-card-top {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.feature-num {
+  font-size: 0.6rem; font-weight: 900; letter-spacing: .1em;
+  color: var(--orange); background: #fff4ed;
+  border: 1.5px solid #fcd9c0;
+  padding: 2px 7px; border-radius: 6px; flex-shrink: 0;
+}
+.feature-title {
+  font-size: 0.88rem; font-weight: 800; color: var(--dark);
+}
+.feature-desc {
+  font-size: 0.77rem; color: var(--muted); line-height: 1.6;
+}
+.feature-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+
+/* 서비스 플로우 */
+.flow-section { margin-bottom: 28px; }
+.flow-title {
+  font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--muted); margin-bottom: 14px;
+}
+.flow-steps {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 0; position: relative;
+}
+.flow-steps::before {
+  content: '';
+  position: absolute; top: 26px; left: 10%; right: 10%;
+  height: 2px; background: linear-gradient(90deg, var(--orange), var(--violet));
+  z-index: 0;
+}
+.flow-step {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; position: relative; z-index: 1;
+}
+.flow-step-icon {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; border: 3px solid #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,.12);
+}
+.flow-step-label {
+  font-size: 0.68rem; font-weight: 700; color: var(--mid);
+  text-align: center; line-height: 1.4;
+}
+.flow-step-sub {
+  font-size: 0.6rem; color: var(--muted); text-align: center; line-height: 1.35;
+}
+
+/* 수익 모델 */
+.revenue-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.revenue-card {
+  border-radius: 12px; padding: 16px; text-align: center;
+}
+.revenue-card-num {
+  font-size: 1.5rem; font-weight: 900; margin-bottom: 4px;
+}
+.revenue-card-label {
+  font-size: 0.68rem; font-weight: 700; color: var(--mid);
+  margin-bottom: 4px;
+}
+.revenue-card-desc {
+  font-size: 0.63rem; color: var(--muted); line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════
+   PAGE 4 — 페이지별 기능 소개 (스크린샷 스타일)
+══════════════════════════════════════════ */
+#page4 { padding: 44px; }
+
+.page-showcase {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+  margin-bottom: 0;
+}
+.showcase-item {
+  border-radius: 14px; overflow: hidden;
+  border: 1.5px solid var(--line);
+  background: #fff;
+}
+.showcase-browser {
+  background: #f3f4f6;
+  padding: 8px 12px;
+  display: flex; align-items: center; gap: 6px;
+  border-bottom: 1px solid var(--line);
+}
+.browser-dots { display: flex; gap: 4px; }
+.browser-dot { width: 8px; height: 8px; border-radius: 50%; }
+.browser-url {
+  flex: 1; background: #fff; border-radius: 5px;
+  padding: 3px 10px; font-size: 0.6rem; color: var(--muted);
+  font-family: 'Inter', monospace; text-align: center;
+}
+.showcase-img {
+  width: 100%; height: 130px; object-fit: cover; object-position: top center;
+  display: block;
+}
+.showcase-body {
+  padding: 12px 14px;
+}
+.showcase-tag {
+  font-size: 0.6rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.showcase-title {
+  font-size: 0.88rem; font-weight: 800; color: var(--dark); margin-bottom: 4px;
+}
+.showcase-desc {
+  font-size: 0.73rem; color: var(--muted); line-height: 1.55;
+}
+.showcase-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+
+/* ══════════════════════════════════════════
+   PAGE 5 — 기술 스택 & 광고 수익 시스템
+══════════════════════════════════════════ */
+#page5 { padding: 44px; }
+
+.tech-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  margin-bottom: 28px;
+}
+.tech-card {
+  background: var(--bg); border: 1.5px solid var(--line);
+  border-radius: 14px; padding: 18px;
+}
+.tech-card-head {
+  font-size: 0.68rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 7px;
+}
+.tech-card-head i { color: var(--orange); }
+.tech-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.tech-list li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 0.78rem; color: var(--mid); line-height: 1.45;
+}
+.tech-list li i {
+  font-size: 0.65rem; color: var(--orange); margin-top: 3px; flex-shrink: 0;
+}
+
+/* 광고 시스템 */
+.ad-system {
+  background: linear-gradient(135deg, #1e2433 0%, #1a1a2e 100%);
+  border-radius: 16px; padding: 24px;
+  color: #fff; margin-bottom: 28px;
+}
+.ad-system-title {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .12em; color: var(--orange); margin-bottom: 4px;
+}
+.ad-system-sub {
+  font-size: 0.82rem; color: rgba(255,255,255,.6); margin-bottom: 18px;
+}
+.ad-system-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+.ad-slot-card {
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px; padding: 12px; text-align: center;
+}
+.ad-slot-icon { font-size: 1.4rem; margin-bottom: 6px; display: block; }
+.ad-slot-name {
+  font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,.85); margin-bottom: 3px;
+}
+.ad-slot-desc {
+  font-size: 0.6rem; color: rgba(255,255,255,.45); line-height: 1.4;
+}
+.ad-slot-badge {
+  display: inline-block; margin-top: 5px;
+  font-size: 0.58rem; font-weight: 700;
+  background: rgba(232,93,4,.25); color: var(--orange);
+  padding: 2px 7px; border-radius: 4px;
+}
+
+/* 데이터 지표 */
+.kpi-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.kpi-card {
+  background: var(--bg); border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 16px; text-align: center;
+}
+.kpi-num {
+  font-size: 1.6rem; font-weight: 900; color: var(--orange); line-height: 1;
+  margin-bottom: 4px;
+}
+.kpi-label {
+  font-size: 0.68rem; font-weight: 700; color: var(--muted);
+}
+
+/* ══════════════════════════════════════════
+   PAGE 6 — 마무리 / 성과 & 연락처
+══════════════════════════════════════════ */
+#page6 {
+  display: flex; flex-direction: column;
+  background: linear-gradient(160deg, #0f172a 0%, #1e2433 60%, #111827 100%);
+  color: #fff; padding: 44px;
+}
+
+.closing-eyebrow {
+  font-size: 0.7rem; font-weight: 800; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.closing-eyebrow::before {
+  content: ''; display: block; width: 24px; height: 2px; background: var(--orange);
+}
+.closing-title {
+  font-size: 2.3rem; font-weight: 900; line-height: 1.15;
+  letter-spacing: -.02em; margin-bottom: 12px;
+}
+.closing-title .hl { color: var(--orange); }
+.closing-sub {
+  font-size: 0.88rem; color: rgba(255,255,255,.55);
+  max-width: 480px; line-height: 1.75; margin-bottom: 36px;
+}
+
+/* 성과 카드 */
+.achievement-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  margin-bottom: 36px;
+}
+.achievement-card {
+  background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1);
+  border-radius: 14px; padding: 20px;
+}
+.achievement-icon { font-size: 1.6rem; margin-bottom: 10px; display: block; }
+.achievement-title {
+  font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .08em; color: rgba(255,255,255,.5); margin-bottom: 6px;
+}
+.achievement-body {
+  font-size: 0.82rem; color: rgba(255,255,255,.8); line-height: 1.6; font-weight: 500;
+}
+
+/* 학습 포인트 */
+.learnings {
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px; padding: 22px; margin-bottom: 32px;
+}
+.learnings-title {
+  font-size: 0.7rem; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 14px;
+}
+.learnings-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.learning-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 0.79rem; color: rgba(255,255,255,.7); line-height: 1.55;
+}
+.learning-item i { color: var(--orange); font-size: 0.7rem; margin-top: 3px; flex-shrink: 0; }
+
+/* 연락처 */
+.contact-row {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: 24px; flex-wrap: wrap; gap: 16px;
+}
+.contact-left {}
+.contact-name {
+  font-size: 1.3rem; font-weight: 900; margin-bottom: 4px;
+}
+.contact-role {
+  font-size: 0.8rem; color: rgba(255,255,255,.5);
+}
+.contact-links {
+  display: flex; gap: 14px; flex-wrap: wrap;
+}
+.contact-link {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; color: rgba(255,255,255,.6);
+  text-decoration: none;
+}
+.contact-link i { color: var(--orange); }
+.contact-logo {
+  display: flex; align-items: center; gap: 9px;
+}
+.contact-logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--orange), var(--orange2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.contact-logo-text {
+  font-size: 1.1rem; font-weight: 900; color: #fff;
+}
+.contact-logo-text .acc { color: var(--orange); }
+</style>
+</head>
+<body>
+
+<!-- PDF 저장 버튼 (화면에서만 표시) -->
+<button class="print-btn" id="pdfBtn" onclick="exportPDF()">
+  <i class="fas fa-file-pdf"></i> PDF로 저장
+</button>
+
+<!-- PDF 진행 오버레이 -->
+<div id="pdfOverlay" style="
+  display:none; position:fixed; inset:0; z-index:99999;
+  background:rgba(15,23,42,0.82); backdrop-filter:blur(4px);
+  flex-direction:column; align-items:center; justify-content:center; gap:18px;
+  font-family:'Inter','Noto Sans KR',sans-serif; color:#fff;
+">
+  <div style="font-size:2rem;">📄</div>
+  <div id="pdfStatus" style="font-size:1rem; font-weight:700;">PDF 생성 중...</div>
+  <div style="width:260px; height:6px; background:rgba(255,255,255,.15); border-radius:99px; overflow:hidden;">
+    <div id="pdfBar" style="height:100%; width:0%; background:linear-gradient(90deg,#e85d04,#f48c06); border-radius:99px; transition:width .3s;"></div>
+  </div>
+  <div id="pdfSub" style="font-size:0.8rem; color:rgba(255,255,255,.5);">잠시만 기다려 주세요</div>
+</div>
+
+<script>
+// 폰트 로딩 완료 대기
+async function waitForFonts() {
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+  await new Promise(r => setTimeout(r, 500));
+}
+
+// 모든 이미지 로딩 완료 대기
+async function waitForImages() {
+  const imgs = document.querySelectorAll('img');
+  const promises = Array.from(imgs).map(img => {
+    if (img.complete) return Promise.resolve();
+    return new Promise(res => {
+      img.onload = res;
+      img.onerror = res;
+    });
+  });
+  await Promise.all(promises);
+}
+
+async function exportPDF() {
+  const btn = document.getElementById('pdfBtn');
+  const overlay = document.getElementById('pdfOverlay');
+  const statusEl = document.getElementById('pdfStatus');
+  const barEl = document.getElementById('pdfBar');
+  const subEl = document.getElementById('pdfSub');
+
+  const pages = document.querySelectorAll('.page');
+  if (!pages.length) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 생성 중...';
+  overlay.style.display = 'flex';
+  barEl.style.width = '0%';
+  statusEl.textContent = '폰트 & 이미지 로딩 중...';
+
+  // 폰트·이미지 완전 로드 대기
+  await waitForFonts();
+  await waitForImages();
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const A4_W = 210, A4_H = 297;
+
+  // 버튼 임시 숨김
+  btn.style.display = 'none';
+
+  for (let i = 0; i < pages.length; i++) {
+    const page = pages[i];
+    const progress = Math.round(((i) / pages.length) * 88);
+    barEl.style.width = progress + '%';
+    statusEl.textContent = `페이지 ${i + 1} / ${pages.length} 캡처 중...`;
+
+    // 페이지 실제 크기 측정
+    const pageW = page.offsetWidth;
+    const scale = Math.max(2.5, Math.min(3.5, 1800 / pageW));
+
+    const canvas = await html2canvas(page, {
+      scale: scale,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      imageTimeout: 20000,
+      removeContainer: true,
+      foreignObjectRendering: false,
+      onclone: (clonedDoc) => {
+        // 클론에서 오버레이·버튼 제거
+        const ov = clonedDoc.getElementById('pdfOverlay');
+        if (ov) ov.remove();
+        const bt = clonedDoc.getElementById('pdfBtn');
+        if (bt) bt.remove();
+        // 클론 페이지 그림자 제거 (깔끔한 캡처)
+        clonedDoc.querySelectorAll('.page').forEach(p => {
+          p.style.boxShadow = 'none';
+          p.style.marginBottom = '0';
+        });
+        // body 배경 제거
+        clonedDoc.body.style.background = 'transparent';
+        clonedDoc.body.style.padding = '0';
+      }
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const canvasRatio = canvas.height / canvas.width;
+    const imgH = A4_W * canvasRatio;
+
+    if (i > 0) pdf.addPage();
+
+    if (imgH <= A4_H + 1) {
+      // 페이지가 A4 안에 들어오는 경우
+      pdf.addImage(imgData, 'PNG', 0, 0, A4_W, imgH, undefined, 'FAST');
+    } else {
+      // 넘치는 경우 A4에 맞게 스케일
+      pdf.addImage(imgData, 'PNG', 0, 0, A4_W, A4_H, undefined, 'FAST');
+    }
+
+    // 다음 페이지 캡처 전 짧은 대기
+    await new Promise(r => setTimeout(r, 150));
+  }
+
+  barEl.style.width = '100%';
+  statusEl.textContent = 'PDF 파일 저장 중...';
+  subEl.textContent = '다운로드가 곧 시작됩니다';
+
+  await new Promise(r => setTimeout(r, 500));
+
+  pdf.save('TabScribe_Portfolio_JiHwan.pdf');
+
+  // 버튼·UI 복원
+  btn.style.display = 'flex';
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF로 저장';
+  overlay.style.display = 'none';
+  barEl.style.width = '0%';
+}
+</script>
+
+<!-- ══════════════════════════════════
+     PAGE 1 — COVER
+══════════════════════════════════ -->
+<div class="page" id="page1">
+
+  <div class="cover-top">
+    <div class="cover-logo">
+      <div class="cover-logo-icon">🎸</div>
+      <span class="cover-logo-text">Tab<span class="acc">Scribe</span></span>
+    </div>
+    <span class="cover-badge">Web Portfolio · 2026</span>
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-eyebrow">Web Service Portfolio</div>
+    <div class="cover-title">
+      음악과 기술이<br>
+      <span class="line2">만나는 플랫폼</span>
+    </div>
+    <p class="cover-subtitle">
+      기타리스트의 음악적 니즈를 충족시키는<br>
+      AI 악보 생성 + 뮤지션 커뮤니티 플랫폼
+    </p>
+    <div class="cover-chips">
+      <span class="cover-chip"><i class="fas fa-music"></i> AI 악보 자동생성</span>
+      <span class="cover-chip"><i class="fas fa-users"></i> 뮤지션 커뮤니티</span>
+      <span class="cover-chip"><i class="fas fa-map-marker-alt"></i> 합주실·리페어샵 찾기</span>
+      <span class="cover-chip"><i class="fas fa-guitar"></i> 악기샵 정보</span>
+      <span class="cover-chip"><i class="fas fa-file-pdf"></i> 악보 공유</span>
+      <span class="cover-chip"><i class="fas fa-ad"></i> 음향업체 배너 광고 수익</span>
+    </div>
+
+    <!-- 페이지 목업 스트립 -->
+    <div class="cover-mockup-strip">
+      <div class="mockup-card">
+        <div class="mockup-card-bar">
+          <div class="mockup-dot mockup-dot-r"></div>
+          <div class="mockup-dot mockup-dot-y"></div>
+          <div class="mockup-dot mockup-dot-g"></div>
+          <div class="mockup-card-url">tabscribe.io/</div>
+        </div>
+        <img class="mockup-card-img" src="images/banner-acoustic.jpg" alt="메인 홈">
+        <div class="mockup-card-label">🏠 메인 홈 — AI 악보 생성</div>
+      </div>
+      <div class="mockup-card">
+        <div class="mockup-card-bar">
+          <div class="mockup-dot mockup-dot-r"></div>
+          <div class="mockup-dot mockup-dot-y"></div>
+          <div class="mockup-dot mockup-dot-g"></div>
+          <div class="mockup-card-url">tabscribe.io/community</div>
+        </div>
+        <img class="mockup-card-img" src="images/banner-electric.jpg" alt="커뮤니티">
+        <div class="mockup-card-label">👥 뮤지션 커뮤니티</div>
+      </div>
+      <div class="mockup-card">
+        <div class="mockup-card-bar">
+          <div class="mockup-dot mockup-dot-r"></div>
+          <div class="mockup-dot mockup-dot-y"></div>
+          <div class="mockup-dot mockup-dot-g"></div>
+          <div class="mockup-card-url">tabscribe.io/rehearsal</div>
+        </div>
+        <img class="mockup-card-img" src="images/banner-bass.jpg" alt="합주실">
+        <div class="mockup-card-label">🎵 합주실·악기샵 찾기</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-meta">
+      <strong>TabScribe</strong> by Ji Hwan &nbsp;·&nbsp; 2026년 제작
+    </div>
+    <div class="cover-page-num">01 / 06</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     PAGE 2 — 기획 개요 & 제작 동기
+══════════════════════════════════ -->
+<div class="page" id="page2">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-title">기획 배경 & 제작 동기</div>
+      <div class="page-header-sub">Project Overview · Motivation</div>
+    </div>
+    <span class="page-num-badge">02 / 06</span>
+  </div>
+
+  <!-- 개요 4개 카드 -->
+  <div class="overview-grid">
+    <div class="overview-card">
+      <div class="overview-card-icon"><i class="fas fa-lightbulb"></i></div>
+      <div class="overview-card-title">제작 동기</div>
+      <div class="overview-card-body">
+        기타 연주자로서 느낀 <strong>악보 접근성의 불편함</strong>과 뮤지션을 타깃으로 하는 음향 관련 업체의 온라인 광고 수요를 결합해 <strong>새로운 수입 창출 플랫폼</strong>을 직접 기획·개발했습니다.
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-card-icon violet"><i class="fas fa-bullseye"></i></div>
+      <div class="overview-card-title">핵심 목표</div>
+      <div class="overview-card-body">
+        음원 파일 분석을 통한 <strong>AI 코드 악보 자동 생성</strong>이라는 차별화된 서비스를 중심으로, 뮤지션들이 필요로 하는 정보와 커뮤니티를 하나의 플랫폼에서 제공합니다.
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-card-icon teal"><i class="fas fa-users"></i></div>
+      <div class="overview-card-title">타깃 사용자</div>
+      <div class="overview-card-body">
+        <strong>기타·베이스 연주자</strong> (입문~중급), 밴드 활동을 원하는 아마추어 뮤지션, 악기 구매·수리 정보를 찾는 사용자, 악보를 공유하고 싶은 연주자
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-card-icon dark"><i class="fas fa-won-sign"></i></div>
+      <div class="overview-card-title">수익 모델</div>
+      <div class="overview-card-body">
+        음향 관련 업체와의 <strong>월 단위 배너 광고 계약</strong>을 통한 안정적 수익 창출. 클릭 기반이 아닌 노출 기반으로, 뮤지션 방문자에게 관련 업체 광고를 노출하는 구조.
+      </div>
+    </div>
+  </div>
+
+  <!-- 레퍼런스 배너 -->
+  <div class="ref-banner">
+    <div class="ref-banner-icon">💡</div>
+    <div>
+      <div class="ref-banner-title">레퍼런스: 음악 관련 대형 커뮤니티에서 착안</div>
+      <div class="ref-banner-body">
+        한때 국내 기타리스트들의 중심이 되었던 <strong>음악 관련 대형 커뮤니티</strong>의 핵심 기능(밴드 구인, 악기 정보, 악보 공유)을 레퍼런스로 삼았습니다. 오랜 역사를 가진 커뮤니티가 시대의 변화를 따라가지 못하면서 생긴 <strong>서비스 기대감과 기능적 공백</strong>을 현재의 기술과 새로운 서비스로 채우는 것이 이 프로젝트의 출발점입니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 레퍼런스 커뮤니티 vs TabScribe 비교 -->
+  <div class="ref-vs">
+    <div class="ref-col">
+      <div class="ref-col-title" style="color:#6b7280;">🏛️ 기존 커뮤니티의 장점</div>
+      <ul class="ref-col-list">
+        <li>밴드 구인구직 게시판</li>
+        <li>악기·앰프 정보 공유</li>
+        <li>악보·타브 파일 공유</li>
+        <li>중고악기 거래 커뮤니티</li>
+        <li>레슨 정보 게시판</li>
+      </ul>
+    </div>
+    <div class="ref-vs-arrow">➜</div>
+    <div class="ref-col" style="border-color:var(--orange);background:#fff4ed08;">
+      <div class="ref-col-title" style="color:var(--orange);">🚀 TabScribe의 차별화</div>
+      <ul class="ref-col-list">
+        <li class="plus">AI 음원 분석 코드 악보 자동생성</li>
+        <li class="plus">서울 합주실 · 리페어샵 지도 연동</li>
+        <li class="plus">PDF 악보 업로드·공유 게시판</li>
+        <li class="plus">음향 업체 월 단위 배너 광고 수익</li>
+        <li class="plus">악기샵 스마트스토어 직접 연결</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════
+     PAGE 3 — 핵심 기능 & 서비스 구조
+══════════════════════════════════ -->
+<div class="page" id="page3">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-title">핵심 기능 & 서비스 구조</div>
+      <div class="page-header-sub">Core Features · Service Architecture</div>
+    </div>
+    <span class="page-num-badge">03 / 06</span>
+  </div>
+
+  <!-- 핵심 기능 6개 -->
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-top">
+        <span class="feature-num">01</span>
+        <span class="feature-title">AI 코드 악보 자동생성</span>
+      </div>
+      <p class="feature-desc">음원 파일을 업로드하면 사이트가 자동으로 분석하여 기타 타입(통기타·일렉·베이스)을 선택한 뒤 코드 악보를 즉시 화면에 표시해 줍니다. <strong>파일은 서버로 전송되지 않고 사용자의 PC 내에서만 분석</strong>되므로 서버 과부하 없이 저작권 문제에서도 자유롭습니다.</p>
+      <div class="feature-tags">
+        <span class="chip chip-orange">로컬 분석</span>
+        <span class="chip chip-dark">자동 악보 생성</span>
+        <span class="chip chip-teal">저작권 안전</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-top">
+        <span class="feature-num">02</span>
+        <span class="feature-title">악보 미리보기 & 편집</span>
+      </div>
+      <p class="feature-desc">생성된 코드 악보를 화면에서 바로 확인하고, 마디별로 코드를 직접 수정하거나 반음을 올리고 내릴 수 있어 원하는 조성으로 조절할 수 있습니다.</p>
+      <div class="feature-tags">
+        <span class="chip chip-violet">악보 미리보기</span>
+        <span class="chip chip-dark">코드 편집</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-top">
+        <span class="feature-num">03</span>
+        <span class="feature-title">뮤지션 커뮤니티</span>
+      </div>
+      <p class="feature-desc">밴드 구인구직, 개인 레슨 매칭, 중고악기 거래, 자유게시판, 장비 리뷰 5개 게시판에 글을 올리고 소통할 수 있는 뮤지션 전용 커뮤니티입니다.</p>
+      <div class="feature-tags">
+        <span class="chip chip-teal">5개 게시판</span>
+        <span class="chip chip-dark">글쓰기·댓글</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-top">
+        <span class="feature-num">04</span>
+        <span class="feature-title">합주실 · 리페어샵 찾기</span>
+      </div>
+      <p class="feature-desc">서울 25개 구의 합주실·리페어샵을 지역과 특징으로 검색하고, 네이버 지도·예약 버튼을 눌러 바로 찾아가거나 예약할 수 있습니다.</p>
+      <div class="feature-tags">
+        <span class="chip chip-orange">지역 검색</span>
+        <span class="chip chip-dark">지도 연동</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-top">
+        <span class="feature-num">05</span>
+        <span class="feature-title">PDF 악보 공유 게시판</span>
+      </div>
+      <p class="feature-desc">내가 가진 기타·베이스 코드 악보를 PDF로 올리면 다른 연주자들이 무료로 내려받을 수 있습니다. 악기·난이도·장르별로 찾아보고 미리보기도 가능합니다.</p>
+      <div class="feature-tags">
+        <span class="chip chip-violet">PDF 업로드</span>
+        <span class="chip chip-dark">무료 다운로드</span>
+      </div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-top">
+        <span class="feature-num">06</span>
+        <span class="feature-title">악기샵 정보 & 광고 배너</span>
+      </div>
+      <p class="feature-desc">네이버 스마트스토어를 운영하는 악기샵 정보를 확인하고 바로 쇼핑몰로 이동할 수 있습니다. 페이지 양쪽에는 음향 관련 업체의 배너 광고가 노출됩니다.</p>
+      <div class="feature-tags">
+        <span class="chip chip-orange">악기샵 안내</span>
+        <span class="chip chip-dark">배너 광고</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 서비스 플로우 -->
+  <div class="flow-section">
+    <div class="flow-title">🔄 AI 악보 생성 — 사용 방법</div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-icon" style="background:linear-gradient(135deg,#e85d04,#f48c06);">🎵</div>
+        <div class="flow-step-label">음원 업로드</div>
+        <div class="flow-step-sub">MP3·WAV 등<br>음악 파일 선택</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-icon" style="background:linear-gradient(135deg,#d97706,#f59e0b);">⚙️</div>
+        <div class="flow-step-label">자동 분석</div>
+        <div class="flow-step-sub">사이트가 음원을<br>자동으로 분석</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-icon" style="background:linear-gradient(135deg,#16a34a,#22c55e);">🎸</div>
+        <div class="flow-step-label">악기 타입 선택</div>
+        <div class="flow-step-sub">통기타·일렉·<br>베이스 중 선택</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-icon" style="background:linear-gradient(135deg,#2563eb,#3b82f6);">📄</div>
+        <div class="flow-step-label">악보 확인</div>
+        <div class="flow-step-sub">코드 악보가<br>화면에 표시</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-icon" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">✏️</div>
+        <div class="flow-step-label">직접 수정</div>
+        <div class="flow-step-sub">코드 교체·<br>반음 조절 가능</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 수익 모델 -->
+  <div style="margin-top:24px;">
+    <div class="flow-title">💰 수익 구조</div>
+    <div class="revenue-grid">
+      <div class="revenue-card" style="background:#fff4ed;border:1.5px solid #fcd9c0;">
+        <div class="revenue-card-num" style="color:var(--orange);">📢</div>
+        <div class="revenue-card-label">배너 광고 수익</div>
+        <div class="revenue-card-desc">음향 관련 업체와<br>월 단위 광고 계약</div>
+      </div>
+      <div class="revenue-card" style="background:#f5f3ff;border:1.5px solid #ddd6fe;">
+        <div class="revenue-card-num" style="color:var(--violet);">📅</div>
+        <div class="revenue-card-label">월정액 계약</div>
+        <div class="revenue-card-desc">클릭 수익 아닌<br>노출 기반 월 계약</div>
+      </div>
+      <div class="revenue-card" style="background:#f0fdfa;border:1.5px solid #99f6e4;">
+        <div class="revenue-card-num" style="color:var(--teal);">🎯</div>
+        <div class="revenue-card-label">타깃 노출</div>
+        <div class="revenue-card-desc">뮤지션 방문자에게<br>음향 업체 광고 노출</div>
+      </div>
+      <div class="revenue-card" style="background:#f0f9ff;border:1.5px solid #bfdbfe;">
+        <div class="revenue-card-num" style="color:#2563eb;">📈</div>
+        <div class="revenue-card-label">확장 가능 구조</div>
+        <div class="revenue-card-desc">페이지별 슬롯 확장<br>다수 업체 입점 가능</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════
+     PAGE 4 — 페이지별 기능 스크린샷
+══════════════════════════════════ -->
+<div class="page" id="page4">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-title">페이지별 화면 구성</div>
+      <div class="page-header-sub">Page-by-Page Showcase</div>
+    </div>
+    <span class="page-num-badge">04 / 06</span>
+  </div>
+
+  <div class="page-showcase">
+
+    <!-- 메인 홈 -->
+    <div class="showcase-item">
+      <div class="showcase-browser">
+        <div class="browser-dots">
+          <div class="browser-dot" style="background:#ff5f57;"></div>
+          <div class="browser-dot" style="background:#febc2e;"></div>
+          <div class="browser-dot" style="background:#28c840;"></div>
+        </div>
+        <div class="browser-url">index.html — 메인 홈</div>
+      </div>
+      <img class="showcase-img" src="images/banner-acoustic.jpg" alt="메인 홈">
+      <div class="showcase-body">
+        <div class="showcase-tag" style="color:var(--orange);">🏠 MAIN</div>
+        <div class="showcase-title">AI 코드 악보 자동생성</div>
+        <div class="showcase-desc">음원 파일을 업로드하면 자동으로 분석해 코드 악보를 즉시 생성. 악기 타입 선택(통기타·일렉·베이스), 마디별 코드 수동 수정, 반음 올리기·내리기 지원.</div>
+        <div class="showcase-chips">
+          <span class="chip chip-orange">음원 업로드</span>
+          <span class="chip chip-dark">악보 자동 생성</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 합주실 찾기 -->
+    <div class="showcase-item">
+      <div class="showcase-browser">
+        <div class="browser-dots">
+          <div class="browser-dot" style="background:#ff5f57;"></div>
+          <div class="browser-dot" style="background:#febc2e;"></div>
+          <div class="browser-dot" style="background:#28c840;"></div>
+        </div>
+        <div class="browser-url">rehearsal.html — 합주실 찾기</div>
+      </div>
+      <img class="showcase-img" src="images/banner-bass.jpg" alt="합주실">
+      <div class="showcase-body">
+        <div class="showcase-tag" style="color:#0369a1;">🎵 REHEARSAL</div>
+        <div class="showcase-title">서울 합주실 찾기</div>
+        <div class="showcase-desc">서울 25개 구 179개 합주실 데이터. 구·동·특징별 필터, 네이버 지도·예약 버튼 연동. 방음부스·드럼킷·녹음실 특징 태그.</div>
+        <div class="showcase-chips">
+          <span class="chip chip-teal">179개 업체</span>
+          <span class="chip chip-dark">25개 구</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 커뮤니티 -->
+    <div class="showcase-item">
+      <div class="showcase-browser">
+        <div class="browser-dots">
+          <div class="browser-dot" style="background:#ff5f57;"></div>
+          <div class="browser-dot" style="background:#febc2e;"></div>
+          <div class="browser-dot" style="background:#28c840;"></div>
+        </div>
+        <div class="browser-url">community.html — 뮤지션 커뮤니티</div>
+      </div>
+      <img class="showcase-img" src="images/banner-shop.jpg" alt="커뮤니티">
+      <div class="showcase-body">
+        <div class="showcase-tag" style="color:#ea580c;">👥 COMMUNITY</div>
+        <div class="showcase-title">뮤지션 커뮤니티</div>
+        <div class="showcase-desc">밴드 구인구직·개인 레슨·중고장터·자유게시판·장비 리뷰 5개 게시판에 글 등록 및 검색. 좋아요·조회수로 인기 게시글 확인 가능.</div>
+        <div class="showcase-chips">
+          <span class="chip chip-orange">5개 게시판</span>
+          <span class="chip chip-teal">글쓰기·검색</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 리페어샵 -->
+    <div class="showcase-item">
+      <div class="showcase-browser">
+        <div class="browser-dots">
+          <div class="browser-dot" style="background:#ff5f57;"></div>
+          <div class="browser-dot" style="background:#febc2e;"></div>
+          <div class="browser-dot" style="background:#28c840;"></div>
+        </div>
+        <div class="browser-url">repair.html — 기타 리페어샵</div>
+      </div>
+      <img class="showcase-img" src="images/banner-repair.jpg" alt="리페어샵">
+      <div class="showcase-body">
+        <div class="showcase-tag" style="color:#7c3aed;">🔧 REPAIR</div>
+        <div class="showcase-title">기타·베이스 리페어샵</div>
+        <div class="showcase-desc">서울 전 지역 리페어샵 29개 정보. 넥교정·프렛작업·픽업교체 등 시술 종류별로 검색하고 네이버 지도로 위치 바로 확인.</div>
+        <div class="showcase-chips">
+          <span class="chip chip-violet">29개 업체</span>
+          <span class="chip chip-dark">시술 종류 검색</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 악보 공유 -->
+    <div class="showcase-item">
+      <div class="showcase-browser">
+        <div class="browser-dots">
+          <div class="browser-dot" style="background:#ff5f57;"></div>
+          <div class="browser-dot" style="background:#febc2e;"></div>
+          <div class="browser-dot" style="background:#28c840;"></div>
+        </div>
+        <div class="browser-url">score.html — 악보 공유</div>
+      </div>
+      <img class="showcase-img" src="images/banner-guitar-wall.jpg" alt="악보 공유">
+      <div class="showcase-body">
+        <div class="showcase-tag" style="color:#6d28d9;">📄 SCORE SHARE</div>
+        <div class="showcase-title">PDF 악보 공유 게시판</div>
+        <div class="showcase-desc">내 악보를 PDF로 올리고 다른 연주자 악보를 무료로 내려받는 공유 게시판. 악기·난이도·장르별 필터와 클릭 한 번으로 미리보기 가능.</div>
+        <div class="showcase-chips">
+          <span class="chip chip-violet">PDF 업로드</span>
+          <span class="chip chip-dark">무료 다운로드</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     PAGE 5 — 서비스 사용 방식 & 광고 수익
+══════════════════════════════════ -->
+<div class="page" id="page5">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-title">서비스 사용 방식 & 광고 수익 구조</div>
+      <div class="page-header-sub">How It Works · Ad Revenue System</div>
+    </div>
+    <span class="page-num-badge">05 / 06</span>
+  </div>
+
+  <!-- 서비스 사용 방식 -->
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-card-head"><i class="fas fa-music"></i> 악보 생성 서비스</div>
+      <ul class="tech-list">
+        <li><i class="fas fa-check"></i> 음원 파일(MP3·WAV 등)을 홈 화면에 업로드</li>
+        <li><i class="fas fa-check"></i> 통기타·일렉기타·베이스 중 악기 타입 선택</li>
+        <li><i class="fas fa-check"></i> 자동 생성된 코드 악보를 화면에서 바로 확인</li>
+        <li><i class="fas fa-check"></i> 마디별 코드를 직접 클릭해 수정 가능</li>
+        <li><i class="fas fa-check"></i> 반음 올리기·내리기로 원하는 조성으로 조절</li>
+        <li><i class="fas fa-check"></i> 완성된 악보를 PDF로 인쇄·저장</li>
+        <li style="color:var(--teal);font-weight:600;"><i class="fas fa-shield-alt" style="color:var(--teal);"></i> 파일은 서버 전송 없이 사용자 PC에서만 처리 — 서버 과부하·저작권 문제 없음</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-head"><i class="fas fa-users"></i> 커뮤니티 & 악보 공유</div>
+      <ul class="tech-list">
+        <li><i class="fas fa-check"></i> 밴드 구인·레슨·중고장터 게시판에 글 등록</li>
+        <li><i class="fas fa-check"></i> 카테고리·키워드로 원하는 게시글 검색</li>
+        <li><i class="fas fa-check"></i> 좋아요·조회수로 인기 게시글 확인</li>
+        <li><i class="fas fa-check"></i> PDF 악보 파일을 드래그앤드롭으로 업로드</li>
+        <li><i class="fas fa-check"></i> 악기·난이도·장르별로 악보 필터링 검색</li>
+        <li><i class="fas fa-check"></i> 원하는 악보를 클릭 한 번으로 무료 다운로드</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <div class="tech-card-head"><i class="fas fa-map-marker-alt"></i> 로컬 정보 서비스</div>
+      <ul class="tech-list">
+        <li><i class="fas fa-check"></i> 합주실·리페어샵·악기샵을 구 단위로 검색</li>
+        <li><i class="fas fa-check"></i> 방음부스·드럼킷·녹음실 등 특징 태그로 필터</li>
+        <li><i class="fas fa-check"></i> 넥교정·프렛작업·픽업교체 등 시술별 리페어샵 탐색</li>
+        <li><i class="fas fa-check"></i> 네이버 지도 버튼으로 위치 바로 확인</li>
+        <li><i class="fas fa-check"></i> 네이버 예약 버튼으로 합주실 즉시 예약</li>
+        <li><i class="fas fa-check"></i> 악기샵 스마트스토어 링크로 온라인 구매 연결</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 광고 수익 시스템 -->
+  <div class="ad-system">
+    <div class="ad-system-title">📢 음향 관련 업체 배너 광고 수익 구조</div>
+    <div class="ad-system-sub">월 단위 계약 · 클릭 수익 아닌 노출 기반 · 뮤지션 방문자 타깃 광고</div>
+    <div class="ad-system-grid">
+      <div class="ad-slot-card">
+        <span class="ad-slot-icon">🎸</span>
+        <div class="ad-slot-name">악기 제조사</div>
+        <div class="ad-slot-desc">기타·베이스 브랜드<br>신제품 홍보</div>
+        <div class="ad-slot-badge">월 계약</div>
+      </div>
+      <div class="ad-slot-card">
+        <span class="ad-slot-icon">🔊</span>
+        <div class="ad-slot-name">앰프 · PA 업체</div>
+        <div class="ad-slot-desc">앰프·스피커<br>음향 장비 광고</div>
+        <div class="ad-slot-badge">월 계약</div>
+      </div>
+      <div class="ad-slot-card">
+        <span class="ad-slot-icon">🎚️</span>
+        <div class="ad-slot-name">이펙터 · 악세사리</div>
+        <div class="ad-slot-desc">이펙터·픽업·현<br>소모품 업체</div>
+        <div class="ad-slot-badge">월 계약</div>
+      </div>
+      <div class="ad-slot-card">
+        <span class="ad-slot-icon">🏪</span>
+        <div class="ad-slot-name">합주실 · 악기샵</div>
+        <div class="ad-slot-desc">로컬 업체 프리미엄<br>상단 노출 광고</div>
+        <div class="ad-slot-badge">월 계약</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI 지표 -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-num">7<span style="font-size:1rem;">개</span></div>
+      <div class="kpi-label">총 페이지 수</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-num">208<span style="font-size:1rem;">개</span></div>
+      <div class="kpi-label">합주실 + 리페어샵 데이터</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-num">40<span style="font-size:1rem;">+</span></div>
+      <div class="kpi-label">광고 슬롯 (전 페이지)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-num">100<span style="font-size:0.9rem;">%</span></div>
+      <div class="kpi-label">프론트엔드 구현</div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════
+     PAGE 6 — 마무리 & 연락처
+══════════════════════════════════ -->
+<div class="page" id="page6">
+
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+
+    <div>
+      <div class="closing-eyebrow">Project Reflection</div>
+      <div class="closing-title">
+        기획부터 개발까지<br>
+        <span class="hl">혼자 완성한</span> 플랫폼
+      </div>
+      <p class="closing-sub">
+        사용자 니즈 분석 → 기획 → 디자인 → 프론트엔드 개발 → 데이터 수집까지 전 과정을 직접 수행했습니다. 뮤지션 커뮤니티의 공백을 AI 기술과 연결해 새로운 가치를 만든 프로젝트입니다.
+      </p>
+    </div>
+
+    <!-- 성과 카드 -->
+    <div class="achievement-grid">
+      <div class="achievement-card">
+        <span class="achievement-icon">🧠</span>
+        <div class="achievement-title">기술적 성과</div>
+        <div class="achievement-body">음원 파일을 브라우저에서 직접 분석해 타브 악보를 자동 생성하는 핵심 기능을 서버 없이 구현하여 누구나 무료로 사용할 수 있는 서비스를 완성했습니다.</div>
+      </div>
+      <div class="achievement-card">
+        <span class="achievement-icon">📊</span>
+        <div class="achievement-title">데이터 기획</div>
+        <div class="achievement-body">서울 합주실 179개, 리페어샵 29개, 악기샵 4개 업체 데이터를 직접 수집·정제하여 구조화된 JSON 데이터셋을 구축했습니다.</div>
+      </div>
+      <div class="achievement-card">
+        <span class="achievement-icon">💼</span>
+        <div class="achievement-title">비즈니스 설계</div>
+        <div class="achievement-body">음향 관련 업체와의 월 단위 배너 광고 계약을 통한 안정적 수익 구조를 설계하고, 뮤지션 방문자에게 관련성 높은 광고가 노출되도록 구성했습니다.</div>
+      </div>
+    </div>
+
+    <!-- 학습 포인트 -->
+    <div class="learnings">
+      <div class="learnings-title">📚 프로젝트를 통해 배운 것</div>
+      <div class="learnings-grid">
+        <div class="learning-item"><i class="fas fa-check-circle"></i> 사용자가 원하는 서비스를 직접 기획하고 구현하는 전 과정 경험</div>
+        <div class="learning-item"><i class="fas fa-check-circle"></i> 뮤지션의 실제 니즈를 반영한 정보 구조와 UX 설계 방법론</div>
+        <div class="learning-item"><i class="fas fa-check-circle"></i> 게시판·필터·검색·페이지네이션 등 커뮤니티 서비스 구현 경험</div>
+        <div class="learning-item"><i class="fas fa-check-circle"></i> 수익 모델과 서비스 설계를 동시에 고려한 플랫폼 기획 역량</div>
+        <div class="learning-item"><i class="fas fa-check-circle"></i> 다양한 디바이스에서 일관된 UI를 제공하는 반응형 레이아웃 설계</div>
+        <div class="learning-item"><i class="fas fa-check-circle"></i> 서울 지역 음악 인프라 데이터를 직접 수집·정제하는 리서치 역량</div>
+        <div class="learning-item"><i class="fas fa-check-circle"></i> 음원 분석을 서버 없이 클라이언트 단에서 처리해 저작권·보안 리스크를 설계 단계에서 해소하는 구조적 사고</div>
+      </div>
+    </div>
+
+    <!-- 연락처 -->
+    <div class="contact-row">
+      <div class="contact-left">
+        <div class="contact-name">Ji Hwan</div>
+        <div class="contact-role">Front-end Developer · Web Designer · Guitarist</div>
+        <div class="contact-links" style="margin-top:8px;">
+          <span class="contact-link"><i class="fas fa-globe"></i> TabScribe Web Platform</span>
+          <span class="contact-link"><i class="fas fa-music"></i> Guitar · Bass · Music Tech</span>
+        </div>
+      </div>
+      <div class="contact-logo">
+        <div class="contact-logo-icon">🎸</div>
+        <div>
+          <div class="contact-logo-text">Tab<span class="acc">Scribe</span></div>
+          <div style="font-size:0.62rem;color:rgba(255,255,255,.35);margin-top:2px;">by Ji Hwan · 2026</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

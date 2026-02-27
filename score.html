@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>악보 공유 — TabScribe</title>
+<meta name="description" content="기타·베이스 코드 악보를 PDF로 업로드하고 공유하세요. TabScribe 악보 공유 커뮤니티.">
+<link rel="stylesheet" href="css/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<script src="js/ads.js"></script>
+<style>
+/* ── 악보공유 전용 색상 변수 ── */
+:root {
+  --score-primary:   #6d28d9;
+  --score-light:     #f5f3ff;
+  --score-border:    #ddd6fe;
+  --score-hover:     #ede9fe;
+  --score-dark:      #5b21b6;
+}
+
+/* ── 히어로 ── */
+.score-hero {
+  background: linear-gradient(135deg, #f5f3ff 0%, #fafffe 50%, #eff6ff 100%);
+  border-bottom: 1px solid var(--border-light);
+  padding: 36px 0 28px;
+}
+.score-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.score-hero-icon {
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: 0 4px 16px rgba(109,40,217,0.25);
+  flex-shrink: 0;
+}
+.score-hero h1 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.score-hero p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+.score-stats {
+  margin-left: auto;
+  display: flex;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.score-stat-item { text-align: center; }
+.score-stat-item .num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--score-primary);
+}
+.score-stat-item .lbl {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ── 메인 3단 레이아웃 ── */
+.score-main-layout {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 28px 20px 80px;
+  display: grid;
+  grid-template-columns: 200px minmax(0,1fr) 200px;
+  gap: 22px;
+  align-items: start;
+}
+.score-center-wrapper {
+  display: grid;
+  grid-template-columns: 220px minmax(0,1fr);
+  gap: 22px;
+}
+@media(max-width:1300px) {
+  .score-main-layout { grid-template-columns: 170px minmax(0,1fr) 170px; gap:14px; }
+}
+@media(max-width:1000px) {
+  .score-main-layout { grid-template-columns: 1fr; }
+  .score-ad-side { display: none; }
+  .score-center-wrapper { grid-template-columns: 1fr; }
+  .score-sidebar { display: none; }
+}
+
+/* ── 광고 사이드 ── */
+.score-ad-side {
+  position: sticky;
+  top: 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── 사이드바 ── */
+.score-sidebar {
+  position: sticky;
+  top: 20px;
+  align-self: start;
+}
+.sidebar-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+.sidebar-section h3 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.sidebar-menu { list-style: none; }
+.sidebar-menu li button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.sidebar-menu li button:hover {
+  background: var(--score-light);
+  color: var(--score-primary);
+}
+.sidebar-menu li button.active {
+  background: var(--score-light);
+  color: var(--score-primary);
+  font-weight: 700;
+}
+.sidebar-menu li button .cnt {
+  margin-left: auto;
+  background: var(--score-light);
+  color: var(--score-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 99px;
+}
+
+/* ── 콘텐츠 영역 ── */
+.score-content {}
+
+/* 탑 필터 바 */
+.score-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.score-category-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.score-category-title .icon-badge {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.top-filter-group {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.score-sort-select {
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  cursor: pointer;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+}
+.score-sort-select:focus { border-color: var(--score-primary); }
+.score-write-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: var(--score-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+.score-write-btn:hover { background: var(--score-dark); transform: translateY(-1px); }
+
+/* 검색 바 */
+.score-search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.score-search-bar input {
+  flex: 1;
+  padding: 9px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  outline: none;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  font-family: 'Inter', sans-serif;
+}
+.score-search-bar input:focus { border-color: var(--score-primary); }
+.score-search-bar button {
+  padding: 9px 16px;
+  background: var(--score-primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.18s;
+}
+.score-search-bar button:hover { background: var(--score-dark); }
+
+/* 안내 배너 */
+.score-tip-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--score-light);
+  border: 1px solid var(--score-border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.score-tip-banner .tip-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+/* 게시글 목록 */
+.score-post-list { display: flex; flex-direction: column; gap: 10px; }
+
+.score-post-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.score-post-card:hover {
+  border-color: var(--score-border);
+  box-shadow: 0 4px 20px rgba(109,40,217,0.10);
+  transform: translateY(-1px);
+}
+
+.score-post-icon {
+  width: 48px; height: 48px;
+  background: var(--score-light);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  border: 1.5px solid var(--score-border);
+}
+
+.score-post-main { flex: 1; min-width: 0; }
+.score-post-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+.score-post-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 340px;
+}
+.score-post-artist {
+  font-size: 0.82rem;
+  color: var(--score-primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 태그들 */
+.score-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.score-tag--inst   { background: #eff6ff; border: 1px solid #bfdbfe; color: #1a56db; }
+.score-tag--genre  { background: #f0fdf4; border: 1px solid #bbf7d0; color: #057a55; }
+.score-tag--diff   { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; }
+.score-tag--tuning { background: #f0fdfa; border: 1px solid #99f6e4; color: #0f766e; }
+
+.score-post-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.score-post-meta span { display: flex; align-items: center; gap: 4px; }
+.score-post-meta i { font-size: 0.7rem; }
+
+.score-post-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 560px;
+}
+
+.score-post-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.score-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.16s;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+.score-action-btn--dl {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1a56db;
+}
+.score-action-btn--dl:hover { background: #dbeafe; }
+.score-action-btn--like {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+.score-action-btn--like:hover { background: #ffe4e6; }
+.score-action-btn--like.liked { background: #be123c; color: #fff; border-color: #be123c; }
+
+/* 페이지네이션 */
+.score-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 24px;
+}
+.page-btn {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.page-btn:hover { border-color: var(--score-primary); color: var(--score-primary); }
+.page-btn.active { background: var(--score-primary); border-color: var(--score-primary); color: #fff; }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* 빈 상태 */
+.score-empty {
+  text-align: center;
+  padding: 64px 20px;
+  color: var(--text-muted);
+}
+.score-empty i {
+  font-size: 2.8rem;
+  color: var(--score-primary);
+  opacity: 0.3;
+  display: block;
+  margin-bottom: 14px;
+}
+.score-empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.score-empty p { font-size: 0.88rem; }
+
+/* 결과 카운트 */
+.score-result-count {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.score-result-count strong { color: var(--score-primary); font-weight: 800; }
+
+/* ════════════════════════════════════════
+   글쓰기 모달
+════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.52);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.score-modal {
+  background: #fff;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+  transform: translateY(20px);
+  transition: transform 0.22s;
+}
+.modal-overlay.open .score-modal { transform: translateY(0); }
+
+.score-modal-header {
+  padding: 18px 22px 14px;
+  border-bottom: 1.5px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.score-modal-header i { color: var(--score-primary); font-size: 1.1rem; }
+.score-modal-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  flex: 1;
+}
+.modal-close-btn {
+  width: 32px; height: 32px;
+  border: none;
+  background: var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+.modal-close-btn:hover { background: #fee2e2; color: #dc2626; }
+
+.score-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 22px;
+}
+
+/* 폼 */
+.upload-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.form-req { color: #dc2626; }
+.form-input, .form-select, .form-textarea {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 13px;
+  font-size: 0.87rem;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--score-primary);
+}
+.form-textarea { resize: vertical; min-height: 72px; }
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+/* 드롭존 */
+.drop-zone {
+  border: 2.5px dashed var(--score-border);
+  border-radius: 12px;
+  background: var(--score-light);
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: var(--score-primary);
+  background: #ede9fe;
+}
+.drop-zone-icon { font-size: 2rem; color: var(--score-primary); opacity: 0.55; margin-bottom: 8px; }
+.drop-zone-text { font-size: 0.9rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 3px; }
+.drop-zone-sub  { font-size: 0.76rem; color: var(--text-muted); }
+.drop-zone input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.file-info {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.file-info i { color: var(--score-primary); }
+.file-info.has-file { color: var(--score-primary); font-weight: 600; }
+
+.score-modal-footer {
+  padding: 14px 22px;
+  border-top: 1.5px solid var(--border-light);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.modal-cancel-btn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--text-secondary);
+  font-size: 0.87rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.modal-cancel-btn:hover { background: var(--border-light); }
+.modal-submit-btn {
+  padding: 9px 24px;
+  border-radius: 8px;
+  border: none;
+  background: var(--score-primary);
+  color: #fff;
+  font-size: 0.87rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.modal-submit-btn:hover { background: var(--score-dark); transform: translateY(-1px); }
+.modal-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ════════════════════════════════════════
+   PDF 미리보기 모달
+════════════════════════════════════════ */
+.pdf-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s;
+}
+.pdf-overlay.open { opacity: 1; pointer-events: auto; }
+.pdf-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+  transform: translateY(20px);
+  transition: transform 0.22s;
+}
+.pdf-overlay.open .pdf-modal { transform: translateY(0); }
+.pdf-modal-header {
+  padding: 14px 20px;
+  border-bottom: 1.5px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.pdf-modal-title { font-size: 0.97rem; font-weight: 800; color: var(--text-primary); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pdf-modal-body { flex: 1; overflow: hidden; background: #f3f4f6; }
+.pdf-viewer { width: 100%; height: 100%; min-height: 520px; border: none; display: block; }
+.pdf-modal-footer {
+  padding: 10px 20px;
+  border-top: 1.5px solid var(--border-light);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.pdf-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: 8px;
+  font-size: 0.84rem; font-weight: 700;
+  cursor: pointer; border: none;
+  font-family: 'Inter', sans-serif; transition: all 0.16s;
+}
+.pdf-btn--dl { background: linear-gradient(135deg,#7c3aed,#6d28d9); color: #fff; }
+.pdf-btn--dl:hover { background: linear-gradient(135deg,#6d28d9,#5b21b6); }
+.pdf-btn--close { background: var(--border-light); color: var(--text-secondary); }
+.pdf-btn--close:hover { background: var(--border); }
+
+/* ── 토스트 ── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: #1e2433;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  z-index: 2000;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 320px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-success i { color: #34d399; }
+.toast-error i   { color: #f87171; }
+.toast-info i    { color: #60a5fa; }
+
+/* ── 홈 FAB ── */
+.home-fab {
+  position: fixed; bottom: 26px; left: 26px;
+  width: 48px; height: 48px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(232,93,4,0.38);
+  z-index: 800;
+  transition: background 0.18s, transform 0.18s;
+}
+.home-fab:hover { background: #c24e03; transform: scale(1.1); }
+.home-fab-tooltip {
+  position: absolute; left: 56px; top: 50%; transform: translateY(-50%);
+  background: #1e2433; color: #fff; font-size: 0.74rem; font-weight: 700;
+  padding: 4px 11px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.18s;
+}
+.home-fab:hover .home-fab-tooltip { opacity: 1; }
+
+/* ── 로딩 스피너 ── */
+.loading-spinner {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.loading-spinner i { font-size: 2rem; color: var(--score-primary); display: block; margin-bottom: 12px; opacity: 0.5; }
+
+/* ── 반응형 ── */
+@media(max-width: 768px) {
+  .score-hero-inner { flex-wrap: wrap; }
+  .score-stats { margin-left: 0; }
+  .upload-form-grid { grid-template-columns: 1fr; }
+  .score-post-card { flex-wrap: wrap; }
+  .score-post-actions { flex-direction: row; width: 100%; }
+  .score-post-title { max-width: 200px; }
+  .score-post-desc { max-width: 100%; }
+}
+@media(max-width: 520px) {
+  .score-hero h1 { font-size: 1.3rem; }
+  .score-stats { gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <i class="fas fa-guitar"></i>
+      <span class="logo-text">Tab<span class="accent">Scribe</span></span>
+    </div>
+    <div class="header-sub">COODUCK 기타 코드 악보 자동생성</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <a href="index.html"       style="display:inline-flex;align-items:center;gap:7px;background:#fff8f4;border:1.5px solid #fcd9c0;color:#e85d04;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#fff0e6'" onmouseout="this.style.background='#fff8f4'"><i class="fas fa-home"></i> 홈</a>
+      <a href="rehearsal.html"  style="display:inline-flex;align-items:center;gap:7px;background:#f0f9ff;border:1.5px solid #bae6fd;color:#0369a1;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'"><i class="fas fa-music"></i> 합주실</a>
+      <a href="repair.html"     style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #ddd6fe;color:#7c3aed;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'"><i class="fas fa-tools"></i> 리페어샵</a>
+      <a href="instrument.html" style="display:inline-flex;align-items:center;gap:7px;background:#f0fdfa;border:1.5px solid #99f6e4;color:#0f766e;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ccfbf1'" onmouseout="this.style.background='#f0fdfa'"><i class="fas fa-guitar"></i> 악기샵</a>
+      <a href="score.html"      style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #a78bfa;color:#6d28d9;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'"><i class="fas fa-file-pdf"></i> 악보공유</a>
+      <a href="community.html"  style="display:inline-flex;align-items:center;gap:7px;background:#fff7f0;border:1.5px solid #fed7aa;color:#ea580c;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ffedd5'" onmouseout="this.style.background='#fff7f0'"><i class="fas fa-users"></i> 커뮤니티</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── 히어로 ── -->
+<div class="score-hero">
+  <div class="score-hero-inner">
+    <div class="score-hero-icon">🎵</div>
+    <div>
+      <h1>코드 악보 공유</h1>
+      <p>기타·베이스 코드 악보를 PDF로 업로드하고 공유하세요 · 무료 다운로드</p>
+    </div>
+    <div class="score-stats">
+      <div class="score-stat-item">
+        <div class="num" id="statTotal">-</div>
+        <div class="lbl">등록 악보</div>
+      </div>
+      <div class="score-stat-item">
+        <div class="num" id="statDownloads">-</div>
+        <div class="lbl">총 다운로드</div>
+      </div>
+      <div class="score-stat-item">
+        <div class="num">🟢</div>
+        <div class="lbl">무료 공유</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 3단 레이아웃 ── -->
+<div class="score-main-layout">
+
+  <!-- 좌측 광고 -->
+  <div class="score-ad-side" id="scoreAdLeft"></div>
+
+  <!-- 사이드바 + 콘텐츠 -->
+  <div class="score-center-wrapper">
+
+    <!-- 사이드바 -->
+    <aside class="score-sidebar">
+      <div class="sidebar-section">
+        <h3>악기별 분류</h3>
+        <ul class="sidebar-menu" id="instMenu">
+          <li><button data-inst="" class="active"><i class="fas fa-th" style="width:16px;color:#6d28d9"></i> 전체 악보</button></li>
+          <li><button data-inst="기타"><i class="fas fa-guitar" style="width:16px;color:#e85d04"></i> 통기타</button></li>
+          <li><button data-inst="일렉기타"><i class="fas fa-bolt" style="width:16px;color:#2563eb"></i> 일렉기타</button></li>
+          <li><button data-inst="베이스"><i class="fas fa-music" style="width:16px;color:#16a34a"></i> 베이스</button></li>
+          <li><button data-inst="우쿨렐레"><i class="fas fa-guitar" style="width:16px;color:#ea580c"></i> 우쿨렐레</button></li>
+          <li><button data-inst="기타 전체"><i class="fas fa-file-alt" style="width:16px;color:#7c3aed"></i> 전체 탭+악보</button></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>난이도별</h3>
+        <ul class="sidebar-menu" id="diffMenu">
+          <li><button data-diff="" class="active"><i class="fas fa-layer-group" style="width:16px;color:#6d28d9"></i> 전체 난이도</button></li>
+          <li><button data-diff="입문"><i class="fas fa-star" style="width:16px;color:#16a34a"></i> ⭐ 입문</button></li>
+          <li><button data-diff="초급"><i class="fas fa-star" style="width:16px;color:#2563eb"></i> ⭐⭐ 초급</button></li>
+          <li><button data-diff="중급"><i class="fas fa-star" style="width:16px;color:#ca8a04"></i> ⭐⭐⭐ 중급</button></li>
+          <li><button data-diff="고급"><i class="fas fa-star" style="width:16px;color:#ea580c"></i> ⭐⭐⭐⭐ 고급</button></li>
+          <li><button data-diff="전문가"><i class="fas fa-star" style="width:16px;color:#dc2626"></i> ⭐⭐⭐⭐⭐ 전문가</button></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>장르별</h3>
+        <ul class="sidebar-menu" id="genreMenu">
+          <li><button data-genre="" class="active"><i class="fas fa-music" style="width:16px;color:#6d28d9"></i> 전체 장르</button></li>
+          <li><button data-genre="팝"><i class="fas fa-compact-disc" style="width:16px;color:#db2777"></i> 팝</button></li>
+          <li><button data-genre="록"><i class="fas fa-fire" style="width:16px;color:#dc2626"></i> 록 / 메탈</button></li>
+          <li><button data-genre="발라드"><i class="fas fa-heart" style="width:16px;color:#9333ea"></i> 발라드</button></li>
+          <li><button data-genre="재즈"><i class="fas fa-saxophone" style="width:16px;color:#ca8a04"></i> 재즈</button></li>
+          <li><button data-genre="블루스"><i class="fas fa-headphones" style="width:16px;color:#0369a1"></i> 블루스</button></li>
+          <li><button data-genre="클래식"><i class="fas fa-music" style="width:16px;color:#16a34a"></i> 클래식</button></li>
+          <li><button data-genre="기타"><i class="fas fa-ellipsis-h" style="width:16px;color:#6b7280"></i> 기타</button></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="score-content">
+
+      <!-- 안내 배너 -->
+      <div class="score-tip-banner">
+        <span class="tip-icon">💡</span>
+        <div>
+          <strong>코드 악보 공유 커뮤니티 오픈!</strong>&nbsp;
+          PDF 형식의 기타·베이스 코드 악보를 자유롭게 올리고 나눠보세요. 모든 악보는 무료로 다운로드할 수 있습니다 🎸
+        </div>
+      </div>
+
+      <!-- 필터 바 -->
+      <div class="score-filter-bar">
+        <div class="score-category-title">
+          <span class="icon-badge" style="background:#f5f3ff;">📄</span>
+          <span id="currentCategoryTitle">전체 악보</span>
+        </div>
+        <div class="top-filter-group">
+          <select class="score-sort-select" id="sortSelect">
+            <option value="latest">최신순</option>
+            <option value="downloads">다운로드순</option>
+            <option value="likes">좋아요순</option>
+          </select>
+          <button class="score-write-btn" id="writeBtn">
+            <i class="fas fa-pen"></i> 악보 등록
+          </button>
+        </div>
+      </div>
+
+      <!-- 검색 바 -->
+      <div class="score-search-bar">
+        <input type="text" id="searchInput" placeholder="곡명, 아티스트 검색…">
+        <button onclick="doSearch()"><i class="fas fa-search"></i> 검색</button>
+      </div>
+
+      <!-- 결과 -->
+      <div class="score-result-count" id="resultCount"></div>
+      <div id="scoreList">
+        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i>악보 목록을 불러오는 중…</div>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <div class="score-pagination" id="pagination"></div>
+
+    </main>
+  </div><!-- /score-center-wrapper -->
+
+  <!-- 우측 광고 -->
+  <div class="score-ad-side" id="scoreAdRight"></div>
+
+</div><!-- /score-main-layout -->
+
+
+<!-- ══════════════════════════════════════════
+     악보 등록 모달
+══════════════════════════════════════════ -->
+<div class="modal-overlay" id="writeModal">
+  <div class="score-modal">
+    <div class="score-modal-header">
+      <i class="fas fa-file-pdf"></i>
+      <div class="score-modal-title">악보 등록하기</div>
+      <button class="modal-close-btn" id="closeWriteModal"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="score-modal-body">
+
+      <!-- 드롭존 -->
+      <div class="drop-zone" id="dropZone" style="margin-bottom:16px;">
+        <div class="drop-zone-icon"><i class="fas fa-file-pdf"></i></div>
+        <div class="drop-zone-text">PDF 파일을 드래그하거나 클릭해서 선택</div>
+        <div class="drop-zone-sub">PDF 형식만 지원 · 최대 10MB</div>
+        <input type="file" id="fileInput" accept=".pdf">
+      </div>
+      <div class="file-info" id="fileInfo"><i class="fas fa-paperclip"></i> 파일을 선택해 주세요</div>
+
+      <div class="upload-form-grid" style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">곡 제목 <span class="form-req">*</span></label>
+          <input class="form-input" id="titleInput" type="text" placeholder="예) Hotel California" maxlength="80">
+        </div>
+        <div class="form-group">
+          <label class="form-label">아티스트 / 밴드 <span class="form-req">*</span></label>
+          <input class="form-input" id="artistInput" type="text" placeholder="예) Eagles" maxlength="60">
+        </div>
+        <div class="form-group">
+          <label class="form-label">악기</label>
+          <select class="form-select" id="instrumentSelect">
+            <option value="기타">🎸 기타 (통기타)</option>
+            <option value="일렉기타">⚡ 일렉기타</option>
+            <option value="베이스">🎵 베이스</option>
+            <option value="우쿨렐레">🎶 우쿨렐레</option>
+            <option value="기타 전체">🎼 기타 전체 (탭+악보)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">장르</label>
+          <select class="form-select" id="genreSelect">
+            <option value="팝">팝</option>
+            <option value="록">록</option>
+            <option value="발라드">발라드</option>
+            <option value="재즈">재즈</option>
+            <option value="클래식">클래식</option>
+            <option value="블루스">블루스</option>
+            <option value="컨트리">컨트리</option>
+            <option value="메탈">메탈</option>
+            <option value="R&B">R&B / 소울</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">난이도</label>
+          <select class="form-select" id="diffSelect">
+            <option value="입문">⭐ 입문</option>
+            <option value="초급">⭐⭐ 초급</option>
+            <option value="중급" selected>⭐⭐⭐ 중급</option>
+            <option value="고급">⭐⭐⭐⭐ 고급</option>
+            <option value="전문가">⭐⭐⭐⭐⭐ 전문가</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">튜닝</label>
+          <input class="form-input" id="tuningInput" type="text" placeholder="예) Standard E / Drop D" maxlength="30">
+        </div>
+        <div class="form-group">
+          <label class="form-label">조성 (Key)</label>
+          <input class="form-input" id="keyInput" type="text" placeholder="예) Am / C Major" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">닉네임</label>
+          <input class="form-input" id="uploaderInput" type="text" placeholder="닉네임 (선택)" maxlength="30">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">설명 (선택)</label>
+          <textarea class="form-textarea" id="descInput" placeholder="악보에 대한 간단한 설명, 연주 팁 등을 입력하세요." maxlength="300"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="score-modal-footer">
+      <button class="modal-cancel-btn" id="cancelWriteModal">취소</button>
+      <button class="modal-submit-btn" id="submitBtn" disabled>
+        <i class="fas fa-upload"></i> 등록하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PDF 미리보기 모달
+══════════════════════════════════════════ -->
+<div class="pdf-overlay" id="pdfOverlay">
+  <div class="pdf-modal">
+    <div class="pdf-modal-header">
+      <i class="fas fa-file-pdf" style="color:#6d28d9;font-size:1rem;flex-shrink:0;"></i>
+      <div class="pdf-modal-title" id="pdfModalTitle">악보 미리보기</div>
+      <button class="modal-close-btn" id="closePdfModal"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="pdf-modal-body">
+      <iframe class="pdf-viewer" id="pdfViewer" title="PDF 미리보기"></iframe>
+    </div>
+    <div class="pdf-modal-footer">
+      <button class="pdf-btn pdf-btn--close" id="pdfCloseBtn">닫기</button>
+      <a class="pdf-btn pdf-btn--dl" id="pdfDownloadBtn" href="#" download><i class="fas fa-download"></i> 다운로드</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── 토스트 ── -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<!-- ── 홈 FAB ── -->
+<a href="index.html" class="home-fab">
+  <i class="fas fa-home"></i>
+  <span class="home-fab-tooltip">홈으로</span>
+</a>
+
+<script src="js/supabase.js"></script>
+<script>
+/* ============================================================
+   악보 공유 페이지 — 메인 스크립트 v2.0 (Supabase 연동)
+   저장소: Supabase (scores 테이블)
+   PDF는 Base64로 file_data 필드에 저장
+============================================================ */
+
+const API = 'scores'; // Supabase 테이블명
+const PAGE_SIZE = 15;
+
+/* ── 상태 ── */
+let currentPage   = 1;
+let totalPages    = 1;
+let currentInst   = '';
+let currentDiff   = '';
+let currentGenre  = '';
+let currentSort   = 'latest';
+let currentSearch = '';
+let likedSet = new Set(JSON.parse(localStorage.getItem('TS_liked_scores') || '[]'));
+
+/* ── 유틸 ── */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(ms){
+  const d = new Date(ms);
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+function diffStars(d){
+  return {입문:'⭐',초급:'⭐⭐',중급:'⭐⭐⭐',고급:'⭐⭐⭐⭐',전문가:'⭐⭐⭐⭐⭐'}[d]||d;
+}
+function instIcon(i){
+  const m = {기타:'fa-guitar',일렉기타:'fa-bolt',베이스:'fa-music',우쿨렐레:'fa-guitar','기타 전체':'fa-file-alt'};
+  return m[i]||'fa-file-pdf';
+}
+function saveLiked(){ localStorage.setItem('TS_liked_scores', JSON.stringify([...likedSet])); }
+
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  const i = t.querySelector('i');
+  i.className = type==='success' ? 'fas fa-check-circle' : type==='error' ? 'fas fa-exclamation-circle' : 'fas fa-info-circle';
+  t.className = `toast toast-${type}`;
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+/* ── Supabase API 헬퍼 ── */
+async function apiGet(options={}){
+  return await SupabaseDB.list('scores', {
+    limit:  options.limit  || PAGE_SIZE,
+    page:   options.page   || 1,
+    search: options.search || '',
+    searchFields: ['title','artist','uploader'],
+    sort:   (options.sort||'-created_at').replace(/^-/,''),
+    order:  (options.sort||'').startsWith('-') ? 'desc' : 'asc',
+  });
+}
+async function apiPost(data){
+  return await SupabaseDB.create('scores', data);
+}
+async function apiPatch(id, data){
+  return await SupabaseDB.update('scores', id, data);
+}
+
+/* ── 목록 로드 ── */
+async function loadScores(){
+  document.getElementById('scoreList').innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i>불러오는 중…</div>';
+  document.getElementById('pagination').innerHTML = '';
+
+  try {
+    const params = { page: currentPage, limit: PAGE_SIZE };
+    if(currentSearch) params.search = currentSearch;
+
+    // 정렬
+    if(currentSort === 'downloads') params.sort = '-downloads';
+    else if(currentSort === 'likes') params.sort = '-likes';
+    else params.sort = '-created_at';
+
+    const data = await apiGet(params);
+    let rows = data.data || [];
+
+    // 클라이언트 필터 (악기/난이도/장르)
+    if(currentInst)  rows = rows.filter(r => r.instrument === currentInst);
+    if(currentDiff)  rows = rows.filter(r => r.difficulty === currentDiff);
+    if(currentGenre) rows = rows.filter(r => r.genre === currentGenre || (currentGenre==='록' && r.genre==='메탈'));
+
+    totalPages = Math.max(1, Math.ceil((currentInst||currentDiff||currentGenre ? rows.length : (data.total||0)) / PAGE_SIZE));
+
+    renderStats();
+    renderList(rows);
+    renderPagination();
+    document.getElementById('resultCount').innerHTML = `<strong>${rows.length}</strong>개 악보`;
+
+  } catch(e){
+    document.getElementById('scoreList').innerHTML = '<div class="loading-spinner"><i class="fas fa-exclamation-circle"></i>불러오기 실패. 새로고침해 주세요.</div>';
+  }
+}
+
+/* ── 통계 ── */
+async function renderStats(){
+  try{
+    const allStat = await SupabaseDB.list('scores', {limit:1});
+    document.getElementById('statTotal').textContent = allStat.total ?? '-';
+    const allData = await SupabaseDB.list('scores', {limit:500});
+    const dl = (allData.data||[]).reduce((s,r)=>s+(r.downloads||0),0);
+    document.getElementById('statDownloads').textContent = dl;
+  } catch{}
+}
+
+/* ── 목록 렌더 ── */
+function renderList(rows){
+  const el = document.getElementById('scoreList');
+  if(!rows.length){
+    el.innerHTML = `
+      <div class="score-empty">
+        <i class="fas fa-music"></i>
+        <div class="score-empty-title">등록된 악보가 없습니다</div>
+        <p>첫 번째 악보를 등록해 보세요!</p>
+      </div>`;
+    return;
+  }
+  el.innerHTML = `<div class="score-post-list">${rows.map(r=>cardHTML(r)).join('')}</div>`;
+}
+
+function cardHTML(r){
+  const liked = likedSet.has(r.id);
+  return `
+  <div class="score-post-card" onclick="openDetail('${r.id}',event)">
+    <div class="score-post-icon"><i class="fas ${instIcon(r.instrument)}"></i></div>
+    <div class="score-post-main">
+      <div class="score-post-top">
+        <span class="score-post-title">${esc(r.title)}</span>
+        <span class="score-post-artist"><i class="fas fa-user-music"></i> ${esc(r.artist)}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px;">
+        <span class="score-tag score-tag--inst"><i class="fas fa-guitar"></i>${esc(r.instrument)}</span>
+        <span class="score-tag score-tag--genre">${esc(r.genre)}</span>
+        <span class="score-tag score-tag--diff">${diffStars(r.difficulty)} ${esc(r.difficulty)}</span>
+        ${r.tuning ? `<span class="score-tag score-tag--tuning"><i class="fas fa-sliders-h"></i>${esc(r.tuning)}</span>` : ''}
+      </div>
+      ${r.desc ? `<div class="score-post-desc">${esc(r.desc)}</div>` : ''}
+      <div class="score-post-meta">
+        <span><i class="fas fa-user"></i>${esc(r.uploader||'익명')}</span>
+        <span><i class="fas fa-calendar"></i>${fmtDate(r.created_at)}</span>
+        <span><i class="fas fa-download"></i>${r.downloads||0}</span>
+        <span><i class="fas fa-heart"></i>${r.likes||0}</span>
+      </div>
+    </div>
+    <div class="score-post-actions" onclick="event.stopPropagation()">
+      <button class="score-action-btn score-action-btn--dl" onclick="downloadScore('${r.id}')"><i class="fas fa-download"></i> 다운로드</button>
+      <button class="score-action-btn score-action-btn--like ${liked?'liked':''}" id="likeBtn_${r.id}" onclick="toggleLike('${r.id}')"><i class="fas fa-heart"></i> ${r.likes||0}</button>
+    </div>
+  </div>`;
+}
+
+/* ── 페이지네이션 ── */
+function renderPagination(){
+  const el = document.getElementById('pagination');
+  if(totalPages<=1){ el.innerHTML=''; return; }
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+  const start = Math.max(1, currentPage-2);
+  const end   = Math.min(totalPages, currentPage+2);
+  if(start>1) html += `<button class="page-btn" onclick="goPage(1)">1</button>${start>2?'<span style="color:var(--text-muted);padding:0 4px;">…</span>':''}`;
+  for(let i=start;i<=end;i++){
+    html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  if(end<totalPages) html += `${end<totalPages-1?'<span style="color:var(--text-muted);padding:0 4px;">…</span>':''}<button class="page-btn" onclick="goPage(${totalPages})">${totalPages}</button>`;
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+  el.innerHTML = html;
+}
+function goPage(p){ currentPage = p; loadScores(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ── 상세(미리보기) ── */
+async function openDetail(id, e){
+  if(e && e.target.closest('.score-post-actions')) return;
+  try{
+    const r = await SupabaseDB.get('scores', id);
+    if(!r.file_data){ showToast('PDF 데이터가 없습니다.','error'); return; }
+    document.getElementById('pdfModalTitle').textContent = `${r.title} — ${r.artist}`;
+    document.getElementById('pdfViewer').src = r.file_data;
+    document.getElementById('pdfDownloadBtn').href = r.file_data;
+    document.getElementById('pdfDownloadBtn').download = r.file_name || `${r.title}.pdf`;
+    document.getElementById('pdfOverlay').classList.add('open');
+    // 조회수 증가
+    apiPatch(id, {views:(r.views||0)+1}).catch(()=>{});
+  } catch(err){ showToast('악보를 불러올 수 없습니다.','error'); }
+}
+
+/* ── 다운로드 ── */
+async function downloadScore(id){
+  try{
+    const r = await SupabaseDB.get('scores', id);
+    if(!r.file_data){ showToast('PDF 데이터가 없습니다.','error'); return; }
+    const a = document.createElement('a');
+    a.href = r.file_data;
+    a.download = r.file_name || `${r.title}.pdf`;
+    a.click();
+    await apiPatch(id, {downloads:(r.downloads||0)+1});
+    showToast('다운로드를 시작합니다.','info');
+    loadScores();
+  } catch(e){ showToast('다운로드에 실패했습니다.','error'); }
+}
+
+/* ── 좋아요 ── */
+async function toggleLike(id){
+  try{
+    const r = await SupabaseDB.get('scores', id);
+    const btn = document.getElementById(`likeBtn_${id}`);
+    if(likedSet.has(id)){
+      likedSet.delete(id);
+      const newLikes = Math.max(0,(r.likes||0)-1);
+      await apiPatch(id, {likes:newLikes});
+      if(btn){ btn.classList.remove('liked'); btn.innerHTML=`<i class="fas fa-heart"></i> ${newLikes}`; }
+    } else {
+      likedSet.add(id);
+      const newLikes = (r.likes||0)+1;
+      await apiPatch(id, {likes:newLikes});
+      if(btn){ btn.classList.add('liked'); btn.innerHTML=`<i class="fas fa-heart"></i> ${newLikes}`; }
+      showToast('좋아요를 눌렀습니다! ❤️','success');
+    }
+    saveLiked();
+  } catch(e){ showToast('처리 중 오류가 발생했습니다.','error'); }
+}
+
+/* ── 사이드바 필터 ── */
+function bindSidebar(){
+  document.getElementById('instMenu').querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('instMenu').querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentInst = btn.dataset.inst;
+      currentPage = 1;
+      updateCategoryTitle();
+      loadScores();
+    });
+  });
+  document.getElementById('diffMenu').querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('diffMenu').querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentDiff = btn.dataset.diff;
+      currentPage = 1;
+      loadScores();
+    });
+  });
+  document.getElementById('genreMenu').querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('genreMenu').querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentGenre = btn.dataset.genre;
+      currentPage = 1;
+      loadScores();
+    });
+  });
+}
+
+function updateCategoryTitle(){
+  const map = {'':'전체 악보','기타':'통기타','일렉기타':'일렉기타','베이스':'베이스','우쿨렐레':'우쿨렐레','기타 전체':'전체 탭+악보'};
+  document.getElementById('currentCategoryTitle').textContent = map[currentInst]||currentInst;
+}
+
+/* ── 검색 ── */
+function doSearch(){
+  currentSearch = document.getElementById('searchInput').value.trim();
+  currentPage   = 1;
+  loadScores();
+}
+document.getElementById('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+document.getElementById('sortSelect').addEventListener('change', e=>{ currentSort=e.target.value; currentPage=1; loadScores(); });
+
+/* ── 글쓰기 모달 ── */
+let selectedFile = null;
+
+document.getElementById('writeBtn').addEventListener('click', ()=>{
+  document.getElementById('writeModal').classList.add('open');
+});
+document.getElementById('closeWriteModal').addEventListener('click', closeWriteModal);
+document.getElementById('cancelWriteModal').addEventListener('click', closeWriteModal);
+document.getElementById('writeModal').addEventListener('click', e=>{ if(e.target===e.currentTarget) closeWriteModal(); });
+
+function closeWriteModal(){
+  document.getElementById('writeModal').classList.remove('open');
+  resetForm();
+}
+function resetForm(){
+  selectedFile = null;
+  document.getElementById('fileInput').value = '';
+  document.getElementById('titleInput').value = '';
+  document.getElementById('artistInput').value = '';
+  document.getElementById('tuningInput').value = '';
+  document.getElementById('keyInput').value = '';
+  document.getElementById('uploaderInput').value = '';
+  document.getElementById('descInput').value = '';
+  document.getElementById('fileInfo').innerHTML = '<i class="fas fa-paperclip"></i> 파일을 선택해 주세요';
+  document.getElementById('fileInfo').classList.remove('has-file');
+  document.getElementById('dropZone').classList.remove('drag-over');
+  document.getElementById('submitBtn').disabled = true;
+}
+
+/* 파일 선택 */
+function handleFile(file){
+  if(!file) return;
+  if(file.type !== 'application/pdf'){ showToast('PDF 파일만 업로드 가능합니다.','error'); return; }
+  if(file.size > 10*1024*1024){ showToast('파일 크기는 10MB 이하여야 합니다.','error'); return; }
+  selectedFile = file;
+  const info = document.getElementById('fileInfo');
+  info.innerHTML = `<i class="fas fa-file-pdf"></i> ${esc(file.name)} (${(file.size/1024/1024).toFixed(2)} MB)`;
+  info.classList.add('has-file');
+  document.getElementById('submitBtn').disabled = false;
+  showToast('파일이 선택됐습니다.','info');
+}
+document.getElementById('fileInput').addEventListener('change', e=>handleFile(e.target.files[0]));
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', ()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e=>{ e.preventDefault(); dz.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+
+/* 등록 */
+document.getElementById('submitBtn').addEventListener('click', async ()=>{
+  const title  = document.getElementById('titleInput').value.trim();
+  const artist = document.getElementById('artistInput').value.trim();
+  if(!title)  { showToast('곡 제목을 입력해 주세요.','error'); return; }
+  if(!artist) { showToast('아티스트명을 입력해 주세요.','error'); return; }
+  if(!selectedFile){ showToast('PDF 파일을 선택해 주세요.','error'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 등록 중…';
+
+  const reader = new FileReader();
+  reader.onload = async e=>{
+    try{
+      await apiPost({
+        title,
+        artist,
+        instrument: document.getElementById('instrumentSelect').value,
+        genre:      document.getElementById('genreSelect').value,
+        difficulty: document.getElementById('diffSelect').value,
+        tuning:     document.getElementById('tuningInput').value.trim(),
+        key:        document.getElementById('keyInput').value.trim(),
+        uploader:   document.getElementById('uploaderInput').value.trim() || '익명',
+        desc:       document.getElementById('descInput').value.trim(),
+        file_name:  selectedFile.name,
+        file_data:  e.target.result,
+        downloads:  0,
+        likes:      0,
+        views:      0,
+      });
+      closeWriteModal();
+      showToast('악보가 등록됐습니다! 🎵','success');
+      currentPage = 1;
+      loadScores();
+    } catch(err){
+      showToast('등록에 실패했습니다. 파일이 너무 크거나 오류가 발생했습니다.','error');
+    } finally{
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-upload"></i> 등록하기';
+    }
+  };
+  reader.onerror = ()=>{
+    showToast('파일 읽기에 실패했습니다.','error');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-upload"></i> 등록하기';
+  };
+  reader.readAsDataURL(selectedFile);
+});
+
+/* ── PDF 미리보기 모달 닫기 ── */
+document.getElementById('closePdfModal').addEventListener('click', closePdfModal);
+document.getElementById('pdfCloseBtn').addEventListener('click', closePdfModal);
+document.getElementById('pdfOverlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) closePdfModal(); });
+function closePdfModal(){
+  document.getElementById('pdfOverlay').classList.remove('open');
+  document.getElementById('pdfViewer').src = '';
+}
+
+/* ── 초기화 ── */
+bindSidebar();
+loadScores();
+
+/* ── 광고 마운트 ── */
+mountAds('scoreAdLeft',  ['SCORE_L1','SCORE_L2','SCORE_L3','SCORE_L4']);
+mountAds('scoreAdRight', ['SCORE_R1','SCORE_R2','SCORE_R3','SCORE_R4'], true);
+</script>
+
+</body>
+</html>

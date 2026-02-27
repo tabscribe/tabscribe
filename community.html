@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커뮤니티 - TabScribe</title>
+    <meta name="description" content="기타리스트·베이시스트·밴드맨을 위한 커뮤니티. 밴드 구인구직, 개인레슨, 중고악기 거래, 자유게시판.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="js/ads.js"></script>
+    <style>
+        /* ── 커뮤니티 전용 스타일 ── */
+        .comm-hero {
+            background: linear-gradient(135deg, #fff7f0 0%, #fef3c7 50%, #ecfdf5 100%);
+            border-bottom: 1px solid var(--border-light);
+            padding: 36px 0 28px;
+        }
+        .comm-hero-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .comm-hero-icon {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #e85d04, #f48c06);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 16px rgba(232,93,4,0.25);
+            flex-shrink: 0;
+        }
+        .comm-hero h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .comm-hero p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+        .comm-stats {
+            margin-left: auto;
+            display: flex;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+        .comm-stat-item {
+            text-align: center;
+        }
+        .comm-stat-item .num {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        .comm-stat-item .lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* ── 메인 레이아웃 ── */
+        .comm-layout {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 28px 20px 60px;
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .comm-layout { grid-template-columns: 1fr; }
+            .comm-sidebar { display: none; }
+        }
+
+        /* ── 사이드바 ── */
+        .comm-sidebar {
+            position: sticky;
+            top: 20px;
+            align-self: start;
+        }
+        .sidebar-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+        }
+        .sidebar-section h3 {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li a, .sidebar-menu li button {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            transition: all 0.15s;
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li button:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .sidebar-menu li a.active, .sidebar-menu li button.active {
+            background: #fff7f0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .sidebar-menu li a .badge, .sidebar-menu li button .badge {
+            margin-left: auto;
+            background: #fee2e2;
+            color: #dc2626;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 99px;
+        }
+        .sidebar-menu li a .badge.blue { background: #dbeafe; color: #2563eb; }
+        .sidebar-menu li a .badge.green { background: #dcfce7; color: #16a34a; }
+        .sidebar-menu li a .badge.orange { background: #fff7ed; color: #ea580c; }
+        .sidebar-menu li button .badge.blue { background: #dbeafe; color: #2563eb; }
+        .sidebar-menu li button .badge.green { background: #dcfce7; color: #16a34a; }
+        .sidebar-menu li button .badge.orange { background: #fff7ed; color: #ea580c; }
+
+        /* 중고장터 서브메뉴 */
+        .used-sub-menu {
+            list-style: none;
+            padding-left: 8px;
+            margin-top: 2px;
+            display: none;
+        }
+        .used-sub-menu.open { display: block; }
+        .used-sub-menu li button {
+            font-size: 0.82rem !important;
+            padding: 5px 10px !important;
+            color: var(--text-muted) !important;
+        }
+        .used-sub-menu li button:hover, .used-sub-menu li button.active {
+            color: var(--accent) !important;
+            background: #fff7f0 !important;
+        }
+
+        /* ── 콘텐츠 영역 ── */
+        .comm-content {}
+
+        /* 탭 + 필터 바 */
+        .tab-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .category-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-title .icon-badge {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .filter-group {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .filter-select {
+            padding: 6px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            background: var(--bg-card);
+            cursor: pointer;
+            outline: none;
+        }
+        .filter-select:focus { border-color: var(--accent); }
+        .write-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .write-btn:hover { background: #c24e03; transform: translateY(-1px); }
+
+        /* 검색 바 */
+        .search-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 9px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+        .search-bar input:focus { border-color: var(--accent); }
+        .search-bar button {
+            padding: 9px 16px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* 게시글 목록 */
+        .post-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .post-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            cursor: pointer;
+            transition: all 0.18s;
+            box-shadow: var(--shadow);
+        }
+        .post-card:hover {
+            border-color: #fdba74;
+            box-shadow: 0 4px 20px rgba(232,93,4,0.10);
+            transform: translateY(-1px);
+        }
+        .post-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .post-category-badge {
+            flex-shrink: 0;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .badge-band { background: #fee2e2; color: #dc2626; }
+        .badge-lesson { background: #dbeafe; color: #2563eb; }
+        .badge-used { background: #dcfce7; color: #16a34a; }
+        .badge-talk { background: #fef9c3; color: #ca8a04; }
+        .badge-info { background: #f3e8ff; color: #9333ea; }
+
+        .post-title-area { flex: 1; min-width: 0; }
+        .post-title {
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .post-preview {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .post-price {
+            flex-shrink: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #16a34a;
+            margin-left: auto;
+            padding-left: 12px;
+        }
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 10px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .post-meta span { display: flex; align-items: center; gap: 4px; }
+        .post-tags {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .tag {
+            padding: 2px 8px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+
+        /* 중고장터 카드 그리드 */
+        .gear-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .gear-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.18s;
+            box-shadow: var(--shadow);
+        }
+        .gear-card:hover {
+            border-color: #86efac;
+            box-shadow: 0 6px 24px rgba(22,163,74,0.12);
+            transform: translateY(-2px);
+        }
+        .gear-card-img {
+            height: 140px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+        .gear-card-img .subcategory-icon {
+            font-size: 3.5rem;
+            opacity: 0.6;
+        }
+        .gear-status-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+        .status-active { background: #dcfce7; color: #16a34a; }
+        .status-sold { background: #f1f5f9; color: #94a3b8; }
+        .gear-card-body { padding: 12px 14px; }
+        .gear-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .gear-card-author {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .gear-card-price {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #16a34a;
+        }
+        .gear-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* 레슨 카드 */
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+        .lesson-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.18s;
+            box-shadow: var(--shadow);
+        }
+        .lesson-card:hover {
+            border-color: #93c5fd;
+            box-shadow: 0 6px 24px rgba(37,99,235,0.10);
+            transform: translateY(-2px);
+        }
+        .lesson-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .lesson-avatar {
+            width: 46px; height: 46px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .lesson-card-title {
+            font-size: 0.93rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+        .lesson-card-author {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .lesson-card-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .lesson-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .lesson-price {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #2563eb;
+        }
+        .lesson-badge {
+            padding: 3px 8px;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        /* 구인구직 카드 */
+        .recruit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 14px;
+        }
+        .recruit-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.18s;
+            box-shadow: var(--shadow);
+        }
+        .recruit-card:hover {
+            border-color: #fca5a5;
+            box-shadow: 0 6px 24px rgba(220,38,38,0.08);
+            transform: translateY(-2px);
+        }
+        .recruit-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .recruit-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .recruit-title {
+            font-size: 0.93rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .recruit-author { font-size: 0.76rem; color: var(--text-muted); }
+        .recruit-body {
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .recruit-footer {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .recruit-tag {
+            padding: 3px 8px;
+            background: #fff1f2;
+            color: #dc2626;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        .recruit-location {
+            padding: 3px 8px;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            border-radius: 6px;
+            font-size: 0.72rem;
+        }
+
+        /* 빈 목록 안내 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+        .empty-state p { font-size: 0.9rem; }
+
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 24px;
+        }
+        .page-btn {
+            width: 34px; height: 34px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+        }
+        .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+
+        /* 글쓰기 모달 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(10px);
+            transition: transform 0.2s;
+        }
+        .modal-overlay.open .modal { transform: translateY(0); }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 { font-size: 1.1rem; font-weight: 800; color: var(--text-primary); }
+        .modal-close {
+            width: 32px; height: 32px;
+            border: none;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: #fee2e2; color: #dc2626; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block;
+            font-size: 0.83rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .btn-cancel {
+            padding: 9px 18px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-submit {
+            padding: 9px 22px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-submit:hover { background: #c24e03; }
+
+        /* 게시글 상세 모달 */
+        .detail-modal { max-width: 680px; }
+        .detail-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .detail-meta {
+            display: flex;
+            gap: 14px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .detail-meta span { display: flex; align-items: center; gap: 4px; }
+        .detail-body {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+        .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+        .detail-contact {
+            padding: 12px 16px;
+            background: #fff7f0;
+            border: 1px solid #fed7aa;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            color: #ea580c;
+        }
+        .detail-contact strong { display: block; margin-bottom: 4px; }
+        .detail-price-box {
+            padding: 12px 16px;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 10px;
+            margin-bottom: 14px;
+        }
+        .detail-price-box .price-lbl { font-size: 0.8rem; color: #16a34a; font-weight: 600; margin-bottom: 4px; }
+        .detail-price-box .price-val { font-size: 1.3rem; font-weight: 800; color: #15803d; }
+
+        /* 토스트 */
+        .toast {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            padding: 12px 20px;
+            background: #1e2433;
+            color: #fff;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 로딩 스피너 */
+        .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            color: var(--text-muted);
+            gap: 10px;
+        }
+        .spinner {
+            width: 22px; height: 22px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 안내 배너 */
+        .mule-tip-banner {
+            background: linear-gradient(90deg, #fffbeb, #fff7f0);
+            border: 1.5px solid #fed7aa;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            font-size: 0.82rem;
+            color: #92400e;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .mule-tip-banner .tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── 댓글 영역 ── */
+        .comment-section {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1.5px solid var(--border-light);
+        }
+        .comment-section-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin-bottom: 16px;
+        }
+        .comment-count-badge {
+            background: #e85d04;
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            min-width: 22px;
+            text-align: center;
+        }
+
+        /* 댓글 작성 폼 */
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .comment-form-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .comment-author-input {
+            width: 130px;
+            flex-shrink: 0;
+            padding: 8px 11px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.84rem;
+            color: var(--text-primary);
+            background: #fff;
+            outline: none;
+        }
+        .comment-author-input:focus { border-color: var(--accent); }
+        .comment-textarea {
+            flex: 1;
+            padding: 8px 11px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.84rem;
+            color: var(--text-primary);
+            background: #fff;
+            resize: none;
+            min-height: 64px;
+            outline: none;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        .comment-textarea:focus { border-color: var(--accent); }
+        .comment-submit-btn {
+            align-self: flex-end;
+            padding: 8px 18px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+        .comment-submit-btn:hover { background: #c24e03; }
+        .comment-submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* 댓글 목록 */
+        .comment-list { display: flex; flex-direction: column; gap: 2px; }
+
+        /* 개별 댓글 */
+        .comment-item {
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid var(--border-light);
+            transition: background 0.15s;
+        }
+        .comment-item:hover { background: #fafbff; }
+        .comment-item.is-reply {
+            margin-left: 32px;
+            background: #f8fafc;
+            border-left: 3px solid #e0e7ff;
+        }
+        .comment-item.is-reply:hover { background: #f0f4ff; }
+        .comment-item.is-deleted .comment-body {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .comment-avatar {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #92400e;
+            flex-shrink: 0;
+        }
+        .comment-item.is-reply .comment-avatar {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #3730a3;
+        }
+        .comment-author-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .comment-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+        .comment-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .comment-action-btn {
+            padding: 3px 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: transparent;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex; align-items: center; gap: 3px;
+        }
+        .comment-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .comment-action-btn.like-active { border-color: #e85d04; color: #e85d04; background: #fff7f0; }
+        .comment-action-btn.delete-btn:hover { border-color: #dc2626; color: #dc2626; background: #fff1f2; }
+
+        .comment-body {
+            font-size: 0.87rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            word-break: break-word;
+            padding-left: 36px;
+        }
+
+        /* 대댓글 작성 폼 (인라인 토글) */
+        .reply-form-wrap {
+            margin-top: 8px;
+            padding-left: 36px;
+            display: none;
+        }
+        .reply-form-wrap.open { display: block; }
+        .reply-form {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+            background: #f0f4ff;
+            border: 1.5px solid #c7d2fe;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .reply-textarea {
+            flex: 1;
+            padding: 7px 10px;
+            border: 1.5px solid #c7d2fe;
+            border-radius: 7px;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+            background: #fff;
+            resize: none;
+            min-height: 52px;
+            outline: none;
+            font-family: inherit;
+        }
+        .reply-textarea:focus { border-color: #6366f1; }
+        .reply-author-input {
+            width: 110px;
+            flex-shrink: 0;
+            padding: 7px 10px;
+            border: 1.5px solid #c7d2fe;
+            border-radius: 7px;
+            font-size: 0.82rem;
+            background: #fff;
+            outline: none;
+        }
+        .reply-author-input:focus { border-color: #6366f1; }
+        .reply-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .reply-submit-btn {
+            padding: 6px 14px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s;
+        }
+        .reply-submit-btn:hover { background: #4f46e5; }
+        .reply-cancel-btn {
+            padding: 6px 14px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .reply-cancel-btn:hover { background: var(--bg-secondary); }
+
+        /* 댓글 로딩/빈 상태 */
+        .comment-empty {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .comment-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+        }
+        .comment-spinner {
+            width: 16px; height: 16px;
+            border: 2.5px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        /* 게시글 카드 댓글 수 뱃지 */
+        .comment-cnt {
+            display: flex; align-items: center; gap: 3px;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+        .comment-cnt i { font-size: 0.72rem; }
+
+        /* ── 커뮤니티 메인 레이아웃 (Grid 3단) ── */
+        .comm-main-layout {
+            display: grid;
+            grid-template-columns: 172px minmax(0,1fr) 172px;
+            gap: 14px;
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 20px 16px 60px;
+            align-items: start;
+        }
+        /* 광고 컬럼 ── sticky, 넘침 없이 */
+        .comm-main-layout > .gw-ad-col {
+            width: 172px;
+            min-width: 0;
+            max-width: 172px;
+            position: sticky;
+            top: 76px;
+            align-self: flex-start;
+            z-index: 1;
+            overflow: visible;
+            flex-shrink: 0;
+        }
+        /* 중앙 콘텐츠 래퍼 ── 절대 넘치지 않게 */
+        .comm-center-wrapper {
+            min-width: 0;
+            overflow: hidden;
+        }
+        /* 커뮤니티 3단 레이아웃 반응형 */
+        @media (max-width: 1300px) {
+            .comm-main-layout {
+                grid-template-columns: 172px minmax(0,1fr);
+            }
+            #commAdRight.gw-ad-col { display: none !important; }
+        }
+        @media (max-width: 900px) {
+            .comm-main-layout {
+                grid-template-columns: minmax(0,1fr);
+            }
+            #commAdLeft.gw-ad-col  { display: none !important; }
+        }
+        /* ── 홈 FAB 버튼 ── */
+        .home-fab{position:fixed;bottom:26px;left:26px;width:48px;height:48px;background:#d45d00;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;box-shadow:0 4px 16px rgba(212,93,0,.38);z-index:800;transition:background .18s,transform .18s;}
+        .home-fab:hover{background:#b84e00;transform:scale(1.1);}
+        .home-fab-tooltip{position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#1e2433;color:#fff;font-size:.74rem;font-weight:700;padding:4px 11px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;}
+        .home-fab:hover .home-fab-tooltip{opacity:1;}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <i class="fas fa-guitar"></i>
+                <span class="logo-text">Tab<span class="accent">Scribe</span></span>
+            </div>
+            <div class="header-sub">COODUCK 기타 코드 악보 자동생성</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <a href="index.html" style="display:inline-flex;align-items:center;gap:7px;background:#fff8f4;border:1.5px solid #fcd9c0;color:#e85d04;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#fff0e6'" onmouseout="this.style.background='#fff8f4'">
+                    <i class="fas fa-music"></i> 타브 생성
+                </a>
+                <a href="rehearsal.html" style="display:inline-flex;align-items:center;gap:7px;background:#f0f9ff;border:1.5px solid #bae6fd;color:#0369a1;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'">
+                    <i class="fas fa-drum"></i> 합주실
+                </a>
+                <a href="community.html" style="display:inline-flex;align-items:center;gap:7px;background:#fff7f0;border:1.5px solid #fed7aa;color:#ea580c;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;" >
+                    <i class="fas fa-users"></i> 커뮤니티
+                </a>
+                <a href="repair.html" style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #ddd6fe;color:#7c3aed;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
+                    <i class="fas fa-tools"></i> 리페어샵
+                </a>
+                <a href="instrument.html" style="display:inline-flex;align-items:center;gap:7px;background:#f0fdfa;border:1.5px solid #99f6e4;color:#0f766e;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ccfbf1'" onmouseout="this.style.background='#f0fdfa'">
+                    <i class="fas fa-guitar"></i> 악기샵
+                </a>
+                <a href="score.html" style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #ddd6fe;color:#6d28d9;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
+                    <i class="fas fa-file-pdf"></i> 악보공유
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 커뮤니티 히어로 -->
+    <div class="comm-hero">
+        <div class="comm-hero-inner">
+            <div class="comm-hero-icon">🎸</div>
+            <div>
+                <h1>뮤지션 커뮤니티</h1>
+                <p>밴드 구인구직 · 개인레슨 · 중고악기거래 · 자유게시판</p>
+            </div>
+            <div class="comm-stats">
+                <div class="comm-stat-item">
+                    <div class="num" id="totalPosts">-</div>
+                    <div class="lbl">전체 게시글</div>
+                </div>
+                <div class="comm-stat-item">
+                    <div class="num" id="todayPosts">3</div>
+                    <div class="lbl">오늘 등록</div>
+                </div>
+                <div class="comm-stat-item">
+                    <div class="num">🟢</div>
+                    <div class="lbl">활성</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 레이아웃 (3단: 광고 | 카테고리+콘텐츠 | 광고) -->
+    <div class="comm-main-layout">
+        <!-- 좌측 광고 사이드바 -->
+        <div class="gw-ad-col gw-ad-left" id="commAdLeft"></div>
+
+        <!-- 사이드바 + 콘텐츠 래퍼 -->
+        <div class="comm-center-wrapper" style="display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px;">
+        <aside class="comm-sidebar" style="position:sticky;top:20px;align-self:start;">
+            <div class="sidebar-section">
+                <h3>전체 메뉴</h3>
+                <ul class="sidebar-menu" id="sideMenu">
+                    <li><button data-cat="all" class="active"><i class="fas fa-home" style="width:16px;color:#e85d04"></i> 전체글 보기</button></li>
+                    <li><button data-cat="free_talk"><i class="fas fa-comment-dots" style="width:16px;color:#ca8a04"></i> 자유게시판</button></li>
+                    <li><button data-cat="info"><i class="fas fa-star" style="width:16px;color:#9333ea"></i> 장비리뷰 / 정보</button></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🎸 밴드 구인구직</h3>
+                <ul class="sidebar-menu">
+                    <li><button data-cat="band_recruit" data-sub="all"><i class="fas fa-users" style="width:16px;color:#dc2626"></i> 전체 구인구직</button></li>
+                    <li><button data-cat="band_recruit" data-sub="guitarist"><i class="fas fa-guitar" style="width:16px;color:#dc2626"></i> 기타리스트 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="bassist"><i class="fas fa-music" style="width:16px;color:#dc2626"></i> 베이시스트 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="drummer"><i class="fas fa-drum" style="width:16px;color:#dc2626"></i> 드러머 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="vocalist"><i class="fas fa-microphone" style="width:16px;color:#dc2626"></i> 보컬리스트 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="band_join"><i class="fas fa-user-plus" style="width:16px;color:#dc2626"></i> 밴드 찾습니다</button></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🎓 개인 레슨</h3>
+                <ul class="sidebar-menu">
+                    <li><button data-cat="lesson" data-sub="all"><i class="fas fa-chalkboard-teacher" style="width:16px;color:#2563eb"></i> 전체 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="guitar"><i class="fas fa-guitar" style="width:16px;color:#2563eb"></i> 기타 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="bass"><i class="fas fa-music" style="width:16px;color:#2563eb"></i> 베이스 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="drum"><i class="fas fa-drum" style="width:16px;color:#2563eb"></i> 드럼 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="vocal"><i class="fas fa-microphone-alt" style="width:16px;color:#2563eb"></i> 보컬 레슨</button></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🛒 중고장터</h3>
+                <ul class="sidebar-menu">
+                    <li>
+                        <button data-cat="used_gear" data-sub="all" id="usedAllBtn">
+                            <i class="fas fa-shopping-bag" style="width:16px;color:#16a34a"></i> 전체 중고장터
+                        </button>
+                    </li>
+                    <li><button data-cat="used_gear" data-sub="acoustic"><i class="fas fa-guitar" style="width:16px;color:#16a34a"></i> 어쿠스틱 기타</button></li>
+                    <li><button data-cat="used_gear" data-sub="electric"><i class="fas fa-bolt" style="width:16px;color:#16a34a"></i> 일렉 기타</button></li>
+                    <li><button data-cat="used_gear" data-sub="bass"><i class="fas fa-music" style="width:16px;color:#16a34a"></i> 베이스 기타</button></li>
+                    <li><button data-cat="used_gear" data-sub="effector"><i class="fas fa-sliders-h" style="width:16px;color:#16a34a"></i> 이펙터</button></li>
+                    <li><button data-cat="used_gear" data-sub="drum"><i class="fas fa-drum" style="width:16px;color:#16a34a"></i> 드럼</button></li>
+                    <li><button data-cat="used_gear" data-sub="pa"><i class="fas fa-volume-up" style="width:16px;color:#16a34a"></i> PA / 음향</button></li>
+                    <li><button data-cat="used_gear" data-sub="amp"><i class="fas fa-plug" style="width:16px;color:#16a34a"></i> 앰프</button></li>
+                    <li><button data-cat="used_gear" data-sub="etc"><i class="fas fa-ellipsis-h" style="width:16px;color:#16a34a"></i> 기타 용품</button></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 콘텐츠 -->
+        <main class="comm-content">
+            <!-- 안내 배너 -->
+            <div class="mule-tip-banner">
+                <span class="tip-icon">💡</span>
+                <div>
+                    <strong style="display:inline;font-weight:700;">뮤지션 커뮤니티 베타 오픈!</strong>
+                    &nbsp;밴드 구인구직, 개인레슨 매칭, 중고악기 거래까지! 게시글을 등록해보세요 🎸
+                </div>
+            </div>
+
+            <!-- 상단 필터 바 -->
+            <div class="tab-filter-bar">
+                <div class="category-title" id="categoryTitle">
+                    <span class="icon-badge" style="background:#fff7f0;">🏠</span>
+                    전체글 보기
+                </div>
+                <div class="filter-group">
+                    <select class="filter-select" id="sortSelect">
+                        <option value="latest">최신순</option>
+                        <option value="views">조회수순</option>
+                        <option value="likes">좋아요순</option>
+                    </select>
+                    <button class="write-btn" id="writeBtn">
+                        <i class="fas fa-pen"></i> 글쓰기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 검색 바 -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="제목, 내용, 작성자 검색..." />
+                <button id="searchBtn"><i class="fas fa-search"></i></button>
+            </div>
+
+            <!-- 게시글 목록 -->
+            <div id="postContainer">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <span>불러오는 중...</span>
+                </div>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div class="pagination" id="pagination"></div>
+        </main>
+        </div><!-- /comm-center-wrapper -->
+
+        <!-- 우측 광고 사이드바 -->
+        <div class="gw-ad-col gw-ad-right" id="commAdRight"></div>
+    </div>
+
+    <!-- 글쓰기 모달 -->
+    <div class="modal-overlay" id="writeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-pen" style="color:var(--accent);margin-right:8px;"></i>게시글 작성</h2>
+                <button class="modal-close" id="closeWriteModal">✕</button>
+            </div>
+            <div class="form-group">
+                <label>카테고리 *</label>
+                <select id="formCategory">
+                    <option value="">카테고리 선택</option>
+                    <option value="band_recruit">🎸 밴드 구인구직</option>
+                    <option value="lesson">🎓 개인 레슨</option>
+                    <option value="used_gear">🛒 중고장터</option>
+                    <option value="free_talk">💬 자유게시판</option>
+                    <option value="info">⭐ 장비리뷰 / 정보</option>
+                </select>
+            </div>
+            <div class="form-group" id="subCatGroup" style="display:none;">
+                <label>세부 카테고리</label>
+                <select id="formSubcategory"></select>
+            </div>
+            <div class="form-group">
+                <label>제목 *</label>
+                <input type="text" id="formTitle" placeholder="제목을 입력하세요" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>작성자 닉네임 *</label>
+                    <input type="text" id="formAuthor" placeholder="닉네임" />
+                </div>
+                <div class="form-group">
+                    <label>지역</label>
+                    <input type="text" id="formLocation" placeholder="서울 강남구" />
+                </div>
+            </div>
+            <div class="form-group" id="priceGroup" style="display:none;">
+                <label>가격 (원)</label>
+                <input type="number" id="formPrice" placeholder="0" />
+            </div>
+            <div class="form-group" id="contactGroup" style="display:none;">
+                <label>연락처 / SNS</label>
+                <input type="text" id="formContact" placeholder="카카오톡 ID, 인스타그램 등" />
+            </div>
+            <div class="form-group">
+                <label>내용 *</label>
+                <textarea id="formContent" placeholder="내용을 입력하세요..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>태그 (쉼표로 구분)</label>
+                <input type="text" id="formTags" placeholder="기타, 입문자, 서울 ..." />
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelWrite">취소</button>
+                <button class="btn-submit" id="submitPost">등록하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 게시글 상세 모달 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal detail-modal">
+            <div class="modal-header">
+                <div id="detailCategoryBadge"></div>
+                <button class="modal-close" id="closeDetailModal">✕</button>
+            </div>
+            <!-- 게시글 본문 -->
+            <div id="detailContent"></div>
+
+            <!-- ── 댓글 영역 ── -->
+            <div class="comment-section">
+                <div class="comment-section-title">
+                    <i class="fas fa-comments" style="color:var(--accent);"></i>
+                    댓글
+                    <span class="comment-count-badge" id="commentCountBadge">0</span>
+                </div>
+
+                <!-- 댓글 작성 폼 -->
+                <div class="comment-form">
+                    <div class="comment-form-row">
+                        <input type="text" class="comment-author-input" id="newCommentAuthor" placeholder="닉네임" maxlength="20" />
+                        <textarea class="comment-textarea" id="newCommentText" placeholder="댓글을 남겨보세요..." maxlength="500" rows="2"></textarea>
+                    </div>
+                    <div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;">
+                        <span id="newCommentCharCount" style="font-size:0.75rem;color:var(--text-muted);">0/500</span>
+                        <button class="comment-submit-btn" id="submitCommentBtn">
+                            <i class="fas fa-paper-plane"></i> 댓글 등록
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 댓글 목록 -->
+                <div id="commentList">
+                    <div class="comment-loading">
+                        <div class="comment-spinner"></div> 댓글 불러오는 중...
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel" id="closeDetailBtn">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 홈 FAB 버튼 -->
+    <a href="index.html" id="gw-home-fab" class="home-fab" title="홈으로">
+        <i class="fas fa-home"></i>
+        <span class="home-fab-tooltip">홈으로</span>
+    </a>
+
+    <script src="js/supabase.js"></script>
+    <script>
+    /* ═══════════════════════════════════════════════════
+       TabScribe 커뮤니티 v2.0 — Supabase 연동
+       - 밴드 구인구직 / 개인레슨 / 중고장터 / 자유게시판
+       ═══════════════════════════════════════════════════ */
+    const API = 'community_posts'; // Supabase 테이블명
+
+    const CATEGORY_INFO = {
+        all:        { label: '전체글 보기',       icon: '🏠', badge: 'badge-talk' },
+        band_recruit:{ label: '밴드 구인구직',     icon: '🎸', badge: 'badge-band' },
+        lesson:     { label: '개인 레슨',         icon: '🎓', badge: 'badge-lesson' },
+        used_gear:  { label: '중고장터',           icon: '🛒', badge: 'badge-used' },
+        free_talk:  { label: '자유게시판',         icon: '💬', badge: 'badge-talk' },
+        info:       { label: '장비리뷰 / 정보',    icon: '⭐', badge: 'badge-info' },
+    };
+
+    const SUBCATEGORY_OPTIONS = {
+        band_recruit: [
+            { value: 'all', label: '전체' },
+            { value: 'guitarist', label: '기타리스트 모집' },
+            { value: 'bassist', label: '베이시스트 모집' },
+            { value: 'drummer', label: '드러머 모집' },
+            { value: 'vocalist', label: '보컬리스트 모집' },
+            { value: 'keyboardist', label: '키보디스트 모집' },
+            { value: 'band_join', label: '밴드 찾습니다' },
+        ],
+        lesson: [
+            { value: 'all', label: '전체' },
+            { value: 'guitar', label: '기타 레슨' },
+            { value: 'bass', label: '베이스 레슨' },
+            { value: 'drum', label: '드럼 레슨' },
+            { value: 'vocal', label: '보컬 레슨' },
+            { value: 'keyboard', label: '건반 레슨' },
+        ],
+        used_gear: [
+            { value: 'all', label: '전체' },
+            { value: 'acoustic', label: '어쿠스틱 기타' },
+            { value: 'electric', label: '일렉 기타' },
+            { value: 'bass', label: '베이스 기타' },
+            { value: 'effector', label: '이펙터' },
+            { value: 'drum', label: '드럼' },
+            { value: 'pa', label: 'PA / 음향' },
+            { value: 'amp', label: '앰프' },
+            { value: 'etc', label: '기타 용품' },
+        ],
+        free_talk: [], info: [],
+    };
+
+    const GEAR_ICON = {
+        acoustic: '🎸', electric: '⚡', bass: '🎵',
+        effector: '🎛️', drum: '🥁', pa: '🔊', amp: '🔌', etc: '🎼'
+    };
+
+    // ── 상태 ──
+    let state = {
+        category: 'all',
+        subcategory: 'all',
+        sort: 'latest',
+        search: '',
+        page: 1,
+        totalPages: 1,
+        posts: [],
+    };
+
+    // ── 카테고리별 광고 매핑 (각 사이드 4개씩) ──
+    const COMM_AD_MAP = {
+        all:          { left: ['COMM_ALL_L1','COMM_ALL_L2','COMM_ALL_L3','COMM_ALL_L4'],       right: ['COMM_ALL_R1','COMM_ALL_R2','COMM_ALL_R3','COMM_ALL_R4']       },
+        band_recruit: { left: ['COMM_BAND_L1','COMM_BAND_L2','COMM_BAND_L3','COMM_BAND_L4'],   right: ['COMM_BAND_R1','COMM_BAND_R2','COMM_BAND_R3','COMM_BAND_R4']   },
+        lesson:       { left: ['COMM_LESSON_L1','COMM_LESSON_L2','COMM_LESSON_L3','COMM_LESSON_L4'], right: ['COMM_LESSON_R1','COMM_LESSON_R2','COMM_LESSON_R3','COMM_LESSON_R4'] },
+        used_gear:    { left: ['COMM_USED_L1','COMM_USED_L2','COMM_USED_L3','COMM_USED_L4'],   right: ['COMM_USED_R1','COMM_USED_R2','COMM_USED_R3','COMM_USED_R4']   },
+        free_talk:    { left: ['COMM_FREE_L1','COMM_FREE_L2','COMM_FREE_L3','COMM_FREE_L4'],   right: ['COMM_FREE_R1','COMM_FREE_R2','COMM_FREE_R3','COMM_FREE_R4']   },
+        info:         { left: ['COMM_INFO_L1','COMM_INFO_L2','COMM_INFO_L3','COMM_INFO_L4'],   right: ['COMM_INFO_R1','COMM_INFO_R2','COMM_INFO_R3','COMM_INFO_R4']   },
+    };
+
+    function updateCommAds(cat) {
+        const map = COMM_AD_MAP[cat] || COMM_AD_MAP.all;
+        if (typeof mountAds === 'function') {
+            mountAds('commAdLeft',  map.left);
+            mountAds('commAdRight', map.right);
+        }
+    }
+
+    // ── 즉시 실행 (코드 로드 직후) ──
+    setupSideMenu();
+    setupWriteModal();
+    setupDetailModal();
+    loadPosts();
+    updateTotalCount();
+    updateCommAds('all');
+
+    // ─── 사이드 메뉴 ───
+    function setupSideMenu() {
+        document.querySelectorAll('#sideMenu button, .sidebar-section button[data-cat]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cat = btn.dataset.cat;
+                const sub = btn.dataset.sub || 'all';
+                state.category = cat;
+                state.subcategory = sub;
+                state.page = 1;
+                state.search = '';
+                document.getElementById('searchInput').value = '';
+                updateCategoryTitle(cat, sub);
+                setActiveMenuBtn(btn);
+                loadPosts();
+                updateCommAds(cat); // 카테고리 변경 시 광고 갱신
+            });
+        });
+        document.getElementById('sortSelect').addEventListener('change', e => {
+            state.sort = e.target.value;
+            loadPosts();
+        });
+        document.getElementById('searchBtn').addEventListener('click', doSearch);
+        document.getElementById('searchInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') doSearch();
+        });
+    }
+
+    function setActiveMenuBtn(active) {
+        document.querySelectorAll('.sidebar-section button[data-cat]').forEach(b => b.classList.remove('active'));
+        active.classList.add('active');
+    }
+
+    function doSearch() {
+        state.search = document.getElementById('searchInput').value.trim();
+        state.page = 1;
+        loadPosts();
+    }
+
+    function updateCategoryTitle(cat, sub) {
+        const info = CATEGORY_INFO[cat] || CATEGORY_INFO.all;
+        let label = info.label;
+        if (sub && sub !== 'all' && SUBCATEGORY_OPTIONS[cat]) {
+            const found = SUBCATEGORY_OPTIONS[cat].find(o => o.value === sub);
+            if (found) label = found.label;
+        }
+        document.getElementById('categoryTitle').innerHTML = `
+            <span class="icon-badge" style="background:#fff7f0;">${info.icon}</span>
+            ${label}
+        `;
+    }
+
+    // ─── 데이터 로드 ───
+    async function loadPosts() {
+        const container = document.getElementById('postContainer');
+        container.innerHTML = '<div class="loading-state"><div class="spinner"></div><span>불러오는 중...</span></div>';
+
+        try {
+            const limit = 12;
+            const result = await SupabaseDB.list('community_posts', {
+                limit: 200,
+                page: 1,
+                search: state.search,
+                searchFields: ['title','content','author'],
+                sort: 'created_at',
+                order: 'desc',
+            });
+            const data = result;
+            let posts = data.data || [];
+
+            // 카테고리 필터 (클라이언트 측)
+            if (state.category !== 'all') {
+                posts = posts.filter(p => p.category === state.category);
+            }
+            if (state.subcategory && state.subcategory !== 'all') {
+                posts = posts.filter(p => p.subcategory === state.subcategory);
+            }
+
+            // 정렬
+            if (state.sort === 'views') {
+                posts.sort((a, b) => (b.views || 0) - (a.views || 0));
+            } else if (state.sort === 'likes') {
+                posts.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            } else {
+                posts.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+            }
+
+            state.posts = posts;
+            state.totalPages = Math.ceil(posts.length / limit) || 1;
+
+            renderPosts(posts);
+            renderPagination();
+        } catch (e) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>데이터를 불러오지 못했습니다.</p></div>`;
+        }
+    }
+
+    async function updateTotalCount() {
+        try {
+            const result = await SupabaseDB.list('community_posts', { limit: 1 });
+            document.getElementById('totalPosts').textContent = result.total || 0;
+        } catch { document.getElementById('totalPosts').textContent = '-'; }
+    }
+
+    // ─── 렌더링 ───
+    function renderPosts(posts) {
+        const container = document.getElementById('postContainer');
+        if (!posts || posts.length === 0) {
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>등록된 게시글이 없습니다.<br>첫 글을 남겨보세요!</p></div>`;
+            return;
+        }
+
+        const cat = state.category;
+
+        if (cat === 'used_gear') {
+            container.innerHTML = `<div class="gear-grid">${posts.map(renderGearCard).join('')}</div>`;
+        } else if (cat === 'lesson') {
+            container.innerHTML = `<div class="lesson-grid">${posts.map(renderLessonCard).join('')}</div>`;
+        } else if (cat === 'band_recruit') {
+            container.innerHTML = `<div class="recruit-grid">${posts.map(renderRecruitCard).join('')}</div>`;
+        } else {
+            container.innerHTML = `<div class="post-list">${posts.map(renderPostCard).join('')}</div>`;
+        }
+
+        // 클릭 이벤트
+        container.querySelectorAll('[data-post-id]').forEach(el => {
+            el.addEventListener('click', () => openDetail(el.dataset.postId));
+        });
+
+        // 카드별 댓글 수 비동기 로드
+        loadCommentCounts(posts.map(p => p.id));
+    }
+
+    // ─── 카드 댓글 수 비동기 채우기 ───
+    async function loadCommentCounts(postIds) {
+        if (!postIds || postIds.length === 0) return;
+        try {
+            const res = await fetch(`${COMMENT_API}?limit=500`);
+            if (!res.ok) return;
+            const data = await res.json();
+            const all = (data.data || []).filter(c => !c.is_deleted);
+
+            // postId 별 카운트
+            const countMap = {};
+            all.forEach(c => {
+                if (!countMap[c.post_id]) countMap[c.post_id] = 0;
+                countMap[c.post_id]++;
+            });
+
+            // 각 카드 업데이트
+            postIds.forEach(pid => {
+                const cnt = countMap[pid] || 0;
+                const el = document.querySelector(`[data-post-id="${pid}"] .comment-cnt-val`);
+                if (el) el.textContent = cnt;
+            });
+        } catch { /* silent */ }
+    }
+
+    function getCategoryBadge(cat, sub) {
+        const info = CATEGORY_INFO[cat] || {};
+        const cls = info.badge || 'badge-talk';
+        let label = info.label || cat;
+        if (sub && sub !== 'all' && SUBCATEGORY_OPTIONS[cat]) {
+            const f = SUBCATEGORY_OPTIONS[cat].find(o => o.value === sub);
+            if (f) label = f.label;
+        }
+        return `<span class="post-category-badge ${cls}">${label}</span>`;
+    }
+
+    function fmtPrice(p) {
+        if (!p) return '';
+        return Number(p).toLocaleString('ko-KR') + '원';
+    }
+
+    function fmtDate(ts) {
+        if (!ts) return '';
+        const d = new Date(ts);
+        const now = new Date();
+        const diff = Math.floor((now - d) / 60000);
+        if (diff < 1) return '방금';
+        if (diff < 60) return `${diff}분 전`;
+        if (diff < 1440) return `${Math.floor(diff/60)}시간 전`;
+        return d.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' });
+    }
+
+    function renderPostCard(p) {
+        const tags = Array.isArray(p.tags) ? p.tags.slice(0, 3).map(t => `<span class="tag">#${t}</span>`).join('') : '';
+        const priceHtml = p.price ? `<span class="post-price">${fmtPrice(p.price)}</span>` : '';
+        return `
+        <div class="post-card" data-post-id="${p.id}">
+            <div class="post-card-top">
+                ${getCategoryBadge(p.category, p.subcategory)}
+                <div class="post-title-area">
+                    <div class="post-title">${escHtml(p.title || '')}</div>
+                    <div class="post-preview">${escHtml((p.content || '').replace(/<[^>]+>/g, '').slice(0, 60))}...</div>
+                </div>
+                ${priceHtml}
+            </div>
+            ${tags ? `<div class="post-tags">${tags}</div>` : ''}
+            <div class="post-meta">
+                <span><i class="fas fa-user"></i> ${escHtml(p.author || '익명')}</span>
+                ${p.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(p.location)}</span>` : ''}
+                <span><i class="fas fa-eye"></i> ${p.views || 0}</span>
+                <span><i class="fas fa-heart"></i> ${p.likes || 0}</span>
+                <span class="comment-cnt"><i class="fas fa-comment"></i> <span class="comment-cnt-val">0</span></span>
+                <span><i class="fas fa-clock"></i> ${fmtDate(p.created_at)}</span>
+            </div>
+        </div>`;
+    }
+
+    function renderGearCard(p) {
+        const icon = GEAR_ICON[p.subcategory] || '🎼';
+        const bgColor = p.subcategory === 'acoustic' ? '#fef9c3' :
+                        p.subcategory === 'electric' ? '#dbeafe' :
+                        p.subcategory === 'bass' ? '#dcfce7' :
+                        p.subcategory === 'effector' ? '#f3e8ff' :
+                        p.subcategory === 'drum' ? '#fff1f2' :
+                        p.subcategory === 'pa' ? '#fff7ed' : '#f0f9ff';
+        const statusBadge = p.status === 'sold'
+            ? `<span class="gear-status-badge status-sold">판매완료</span>`
+            : `<span class="gear-status-badge status-active">판매중</span>`;
+        return `
+        <div class="gear-card" data-post-id="${p.id}">
+            <div class="gear-card-img" style="background:linear-gradient(135deg, ${bgColor}, #f8fafc);">
+                <span class="subcategory-icon">${icon}</span>
+                ${statusBadge}
+            </div>
+            <div class="gear-card-body">
+                <div class="gear-card-title">${escHtml(p.title || '')}</div>
+                <div class="gear-card-author"><i class="fas fa-user" style="font-size:0.72rem;"></i> ${escHtml(p.author || '익명')}  ·  ${p.location ? escHtml(p.location) : ''}</div>
+                <div class="gear-card-price">${fmtPrice(p.price)}</div>
+                <div class="gear-card-meta">
+                    <span><i class="fas fa-eye"></i> ${p.views || 0}</span>
+                    <span class="comment-cnt"><i class="fas fa-comment"></i> <span class="comment-cnt-val">0</span></span>
+                    <span><i class="fas fa-clock"></i> ${fmtDate(p.created_at)}</span>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function renderLessonCard(p) {
+        const sub = SUBCATEGORY_OPTIONS.lesson.find(o => o.value === p.subcategory);
+        const subLabel = sub ? sub.label : '레슨';
+        const icons = { guitar: '🎸', bass: '🎵', drum: '🥁', vocal: '🎤', keyboard: '🎹' };
+        const icon = icons[p.subcategory] || '🎓';
+        return `
+        <div class="lesson-card" data-post-id="${p.id}">
+            <div class="lesson-card-header">
+                <div class="lesson-avatar">${icon}</div>
+                <div>
+                    <div class="lesson-card-title">${escHtml(p.title || '')}</div>
+                    <div class="lesson-card-author"><i class="fas fa-user"></i> ${escHtml(p.author || '익명')} · ${p.location ? escHtml(p.location) : ''}</div>
+                </div>
+            </div>
+            <div class="lesson-card-desc">${escHtml((p.content || '').replace(/<[^>]+>/g, ''))}</div>
+            <div class="lesson-price-row">
+                <div class="lesson-price">${p.price ? fmtPrice(p.price) + '/회' : '협의'}</div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="comment-cnt" style="font-size:0.75rem;"><i class="fas fa-comment"></i> <span class="comment-cnt-val">0</span></span>
+                    <span class="lesson-badge">${subLabel}</span>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function renderRecruitCard(p) {
+        const sub = SUBCATEGORY_OPTIONS.band_recruit.find(o => o.value === p.subcategory);
+        const subLabel = sub ? sub.label : '구인';
+        const icons = { guitarist: '🎸', bassist: '🎵', drummer: '🥁', vocalist: '🎤', keyboardist: '🎹', band_join: '🔍' };
+        const icon = icons[p.subcategory] || '🎸';
+        const tags = Array.isArray(p.tags) ? p.tags.slice(0, 3).map(t =>
+            `<span class="recruit-tag">${escHtml(t)}</span>`).join('') : '';
+        const locTag = p.location ? `<span class="recruit-location"><i class="fas fa-map-marker-alt"></i> ${escHtml(p.location)}</span>` : '';
+        return `
+        <div class="recruit-card" data-post-id="${p.id}">
+            <div class="recruit-header">
+                <div class="recruit-icon">${icon}</div>
+                <div>
+                    <div class="recruit-title">${escHtml(p.title || '')}</div>
+                    <div class="recruit-author">${escHtml(p.author || '익명')} · <i class="fas fa-eye"></i> ${p.views || 0} · ${fmtDate(p.created_at)}</div>
+                </div>
+            </div>
+            <div class="recruit-body">${escHtml((p.content || '').replace(/<[^>]+>/g, ''))}</div>
+            <div class="recruit-footer">${tags}${locTag}</div>
+            <div style="padding-top:8px;">
+                <span class="comment-cnt"><i class="fas fa-comment"></i> <span class="comment-cnt-val">0</span> 댓글</span>
+            </div>
+        </div>`;
+    }
+
+    // ─── 페이지네이션 ───
+    function renderPagination() {
+        const pg = document.getElementById('pagination');
+        if (state.totalPages <= 1) { pg.innerHTML = ''; return; }
+        let html = '';
+        for (let i = 1; i <= Math.min(state.totalPages, 10); i++) {
+            html += `<button class="page-btn${i === state.page ? ' active' : ''}" data-page="${i}">${i}</button>`;
+        }
+        pg.innerHTML = html;
+        pg.querySelectorAll('.page-btn').forEach(b => {
+            b.addEventListener('click', () => {
+                state.page = parseInt(b.dataset.page);
+                loadPosts();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    }
+
+    // ─── 게시글 상세 ───
+    function openDetail(postId) {
+        const p = state.posts.find(x => x.id === postId);
+        if (!p) return;
+
+        const info = CATEGORY_INFO[p.category] || {};
+        const badge = getCategoryBadge(p.category, p.subcategory);
+        document.getElementById('detailCategoryBadge').innerHTML = badge;
+
+        const tags = Array.isArray(p.tags) ? p.tags.map(t => `<span class="tag">#${t}</span>`).join('') : '';
+        const priceHtml = p.price ? `
+            <div class="detail-price-box">
+                <div class="price-lbl">💰 판매가격</div>
+                <div class="price-val">${fmtPrice(p.price)}</div>
+            </div>` : '';
+        const contactHtml = p.contact ? `
+            <div class="detail-contact">
+                <strong><i class="fas fa-phone"></i> 연락처</strong>
+                ${escHtml(p.contact)}
+            </div>` : '';
+
+        document.getElementById('detailContent').innerHTML = `
+            <div class="detail-title">${escHtml(p.title || '')}</div>
+            <div class="detail-meta">
+                <span><i class="fas fa-user"></i> ${escHtml(p.author || '익명')}</span>
+                ${p.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(p.location)}</span>` : ''}
+                <span><i class="fas fa-eye"></i> ${p.views || 0}</span>
+                <span><i class="fas fa-heart"></i> ${p.likes || 0}</span>
+                <span><i class="fas fa-clock"></i> ${fmtDate(p.created_at)}</span>
+            </div>
+            ${priceHtml}
+            <div class="detail-body">${escHtml((p.content || '').replace(/<[^>]+>/g, ''))}</div>
+            ${tags ? `<div class="detail-tags">${tags}</div>` : ''}
+            ${contactHtml}
+        `;
+
+        document.getElementById('detailModal').classList.add('open');
+        // 조회수 증가
+        incrementViews(p.id, p.views || 0);
+        // 댓글 로드
+        loadComments(p.id);
+    }
+
+    async function incrementViews(id, currentViews) {
+        try {
+            await SupabaseDB.update('community_posts', id, { views: currentViews + 1 });
+        } catch {}
+    }
+
+    function setupDetailModal() {
+        document.getElementById('closeDetailModal').addEventListener('click', () => {
+            document.getElementById('detailModal').classList.remove('open');
+        });
+        document.getElementById('closeDetailBtn').addEventListener('click', () => {
+            document.getElementById('detailModal').classList.remove('open');
+        });
+        document.getElementById('detailModal').addEventListener('click', e => {
+            if (e.target === e.currentTarget) e.currentTarget.classList.remove('open');
+        });
+        // 댓글 기능 초기화
+        setupComments();
+    }
+
+    // ─── 글쓰기 모달 ───
+    function setupWriteModal() {
+        document.getElementById('writeBtn').addEventListener('click', openWriteModal);
+        document.getElementById('closeWriteModal').addEventListener('click', closeWriteModal);
+        document.getElementById('cancelWrite').addEventListener('click', closeWriteModal);
+        document.getElementById('writeModal').addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeWriteModal();
+        });
+        document.getElementById('formCategory').addEventListener('change', onCategoryChange);
+        document.getElementById('submitPost').addEventListener('click', submitPost);
+    }
+
+    function openWriteModal() {
+        // 현재 카테고리 기본값 설정
+        if (state.category !== 'all') {
+            document.getElementById('formCategory').value = state.category;
+            onCategoryChange();
+        }
+        document.getElementById('writeModal').classList.add('open');
+    }
+
+    function closeWriteModal() {
+        document.getElementById('writeModal').classList.remove('open');
+        resetWriteForm();
+    }
+
+    function resetWriteForm() {
+        ['formCategory','formTitle','formAuthor','formLocation','formPrice','formContact','formContent','formTags']
+            .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        document.getElementById('subCatGroup').style.display = 'none';
+        document.getElementById('priceGroup').style.display = 'none';
+        document.getElementById('contactGroup').style.display = 'none';
+    }
+
+    function onCategoryChange() {
+        const cat = document.getElementById('formCategory').value;
+        const subGrp = document.getElementById('subCatGroup');
+        const priceGrp = document.getElementById('priceGroup');
+        const contactGrp = document.getElementById('contactGroup');
+
+        // 서브카테고리
+        const opts = SUBCATEGORY_OPTIONS[cat];
+        if (opts && opts.length > 0) {
+            const subSel = document.getElementById('formSubcategory');
+            subSel.innerHTML = opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+            subGrp.style.display = 'block';
+        } else {
+            subGrp.style.display = 'none';
+        }
+
+        // 가격 필드
+        priceGrp.style.display = (cat === 'used_gear') ? 'block' : 'none';
+        // 연락처
+        contactGrp.style.display = (cat === 'lesson' || cat === 'band_recruit') ? 'block' : 'none';
+    }
+
+    async function submitPost() {
+        const cat    = document.getElementById('formCategory').value;
+        const title  = document.getElementById('formTitle').value.trim();
+        const author = document.getElementById('formAuthor').value.trim();
+        const content= document.getElementById('formContent').value.trim();
+
+        if (!cat || !title || !author || !content) {
+            showToast('⚠️ 카테고리, 제목, 작성자, 내용을 입력해주세요.');
+            return;
+        }
+
+        const subSel = document.getElementById('formSubcategory');
+        const subcat = subSel && document.getElementById('subCatGroup').style.display !== 'none'
+            ? subSel.value : '';
+        const location= document.getElementById('formLocation').value.trim();
+        const price   = document.getElementById('priceGroup').style.display !== 'none'
+            ? parseInt(document.getElementById('formPrice').value) || 0 : 0;
+        const contact = document.getElementById('formContact').value.trim();
+        const tagsRaw = document.getElementById('formTags').value.trim();
+        const tags    = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+        const btn = document.getElementById('submitPost');
+        btn.disabled = true;
+        btn.textContent = '등록 중...';
+
+        try {
+            await SupabaseDB.create('community_posts', {
+                category: cat,
+                subcategory: subcat,
+                title, author, content, location,
+                price: price || null,
+                contact: contact || null,
+                tags,
+                views: 0,
+                likes: 0,
+                status: 'active'
+            });
+
+            closeWriteModal();
+            showToast('✅ 게시글이 등록되었습니다!');
+            // 해당 카테고리로 이동
+            state.category = cat;
+            state.subcategory = 'all';
+            state.page = 1;
+            updateCategoryTitle(cat, 'all');
+            loadPosts();
+            updateTotalCount();
+        } catch {
+            showToast('❌ 등록에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '등록하기';
+        }
+    }
+
+    // ─── 유틸 ───
+    function escHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    let _toastTimer;
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(_toastTimer);
+        _toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       댓글 기능 v1.0
+       - 댓글 목록 로드 / 등록 / 삭제 / 대댓글 / 좋아요
+       ═══════════════════════════════════════════════════ */
+    const COMMENT_API = 'community_comments'; // Supabase 테이블명
+
+    // 현재 열린 게시글 ID
+    let _currentPostId = null;
+    // 댓글 캐시: { [postId]: [commentObj, ...] }
+    const _commentCache = {};
+
+    // ─── 댓글 초기화 (setupDetailModal 에서 호출) ───
+    function setupComments() {
+        // 댓글 등록 버튼
+        document.getElementById('submitCommentBtn').addEventListener('click', submitComment);
+
+        // 엔터(Ctrl+Enter) 단축키
+        document.getElementById('newCommentText').addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') submitComment();
+        });
+
+        // 글자수 카운터
+        document.getElementById('newCommentText').addEventListener('input', () => {
+            const len = document.getElementById('newCommentText').value.length;
+            document.getElementById('newCommentCharCount').textContent = `${len}/500`;
+        });
+    }
+
+    // ─── 댓글 로드 ───
+    async function loadComments(postId) {
+        _currentPostId = postId;
+        const listEl = document.getElementById('commentList');
+        const badgeEl = document.getElementById('commentCountBadge');
+
+        listEl.innerHTML = '<div class="comment-loading"><div class="comment-spinner"></div> 댓글 불러오는 중...</div>';
+        badgeEl.textContent = '…';
+
+        try {
+            // Supabase: post_id 필터를 서버에서 처리
+            const result = await SupabaseDB.list('community_comments', {
+                limit: 500,
+                filters: { post_id: postId },
+                sort: 'created_at',
+                order: 'asc',
+            });
+            // 삭제되지 않은 댓글만
+            const all = (result.data || []).filter(c => !c.is_deleted);
+
+            _commentCache[postId] = all;
+            renderComments(all, postId);
+
+            // 뱃지
+            const total = all.length;
+            badgeEl.textContent = total;
+        } catch {
+            listEl.innerHTML = '<div class="comment-empty">댓글을 불러오지 못했습니다.</div>';
+            badgeEl.textContent = '0';
+        }
+    }
+
+    // ─── 댓글 렌더링 ───
+    function renderComments(comments, postId) {
+        const listEl = document.getElementById('commentList');
+
+        if (!comments || comments.length === 0) {
+            listEl.innerHTML = '<div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요! 💬</div>';
+            return;
+        }
+
+        // 부모/자식 구조 분리
+        const roots   = comments.filter(c => !c.parent_id);
+        const replies  = comments.filter(c =>  c.parent_id);
+
+        let html = '<div class="comment-list">';
+        roots.forEach(root => {
+            html += buildCommentHTML(root, false);
+            // 이 댓글에 달린 대댓글
+            const children = replies.filter(r => r.parent_id === root.id);
+            children.forEach(child => {
+                html += buildCommentHTML(child, true);
+            });
+        });
+        html += '</div>';
+        listEl.innerHTML = html;
+
+        // 이벤트 바인딩
+        bindCommentEvents(listEl, postId);
+    }
+
+    function buildCommentHTML(c, isReply) {
+        const initial = (c.author || '?')[0].toUpperCase();
+        const replyClass = isReply ? ' is-reply' : '';
+        const likesNum = c.likes || 0;
+        const replyBtn = !isReply
+            ? `<button class="comment-action-btn reply-toggle-btn" data-comment-id="${c.id}"><i class="fas fa-reply"></i> 답글</button>`
+            : '';
+        return `
+        <div class="comment-item${replyClass}" data-cid="${c.id}">
+            <div class="comment-header">
+                <div class="comment-avatar">${escHtml(initial)}</div>
+                <span class="comment-author-name">${escHtml(c.author || '익명')}</span>
+                <span class="comment-date">${fmtDate(c.created_at)}</span>
+                <div class="comment-actions">
+                    ${replyBtn}
+                    <button class="comment-action-btn like-btn${likesNum > 0 ? ' like-active' : ''}" data-comment-id="${c.id}" data-likes="${likesNum}">
+                        <i class="fas fa-thumbs-up"></i> ${likesNum > 0 ? likesNum : ''}
+                    </button>
+                    <button class="comment-action-btn delete-btn" data-comment-id="${c.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="comment-body">${escHtml(c.content || '')}</div>
+            ${!isReply ? `
+            <div class="reply-form-wrap" id="replyForm-${c.id}">
+                <div class="reply-form">
+                    <input type="text" class="reply-author-input" id="replyAuthor-${c.id}" placeholder="닉네임" maxlength="20" />
+                    <textarea class="reply-textarea" id="replyText-${c.id}" placeholder="답글을 입력하세요..." maxlength="300" rows="2"></textarea>
+                    <div class="reply-btns">
+                        <button class="reply-submit-btn" data-parent-id="${c.id}"><i class="fas fa-paper-plane"></i> 등록</button>
+                        <button class="reply-cancel-btn" data-target="replyForm-${c.id}">취소</button>
+                    </div>
+                </div>
+            </div>` : ''}
+        </div>`;
+    }
+
+    // ─── 이벤트 바인딩 ───
+    function bindCommentEvents(container, postId) {
+        // 답글 토글
+        container.querySelectorAll('.reply-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cid = btn.dataset.commentId;
+                const formWrap = document.getElementById(`replyForm-${cid}`);
+                if (!formWrap) return;
+                const isOpen = formWrap.classList.contains('open');
+                // 다른 답글 폼 모두 닫기
+                container.querySelectorAll('.reply-form-wrap.open').forEach(w => w.classList.remove('open'));
+                if (!isOpen) {
+                    formWrap.classList.add('open');
+                    document.getElementById(`replyAuthor-${cid}`)?.focus();
+                }
+            });
+        });
+
+        // 답글 취소
+        container.querySelectorAll('.reply-cancel-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.dataset.target;
+                document.getElementById(targetId)?.classList.remove('open');
+            });
+        });
+
+        // 답글 등록
+        container.querySelectorAll('.reply-submit-btn').forEach(btn => {
+            btn.addEventListener('click', () => submitReply(btn.dataset.parentId, postId));
+        });
+
+        // 답글 Ctrl+Enter
+        container.querySelectorAll('.reply-textarea').forEach(ta => {
+            ta.addEventListener('keydown', e => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    const parentId = ta.id.replace('replyText-', '');
+                    submitReply(parentId, postId);
+                }
+            });
+        });
+
+        // 좋아요
+        container.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', () => likeComment(btn, postId));
+        });
+
+        // 삭제
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => deleteComment(btn.dataset.commentId, postId));
+        });
+    }
+
+    // ─── 댓글 등록 ───
+    async function submitComment() {
+        const author  = document.getElementById('newCommentAuthor').value.trim();
+        const content = document.getElementById('newCommentText').value.trim();
+
+        if (!author) { showToast('⚠️ 닉네임을 입력해주세요.'); return; }
+        if (!content) { showToast('⚠️ 댓글 내용을 입력해주세요.'); return; }
+        if (!_currentPostId) return;
+
+        const btn = document.getElementById('submitCommentBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 등록 중...';
+
+        try {
+            await SupabaseDB.create('community_comments', {
+                post_id: _currentPostId,
+                parent_id: null,
+                author,
+                content,
+                likes: 0,
+                is_deleted: false
+            });
+
+            // 입력 초기화
+            document.getElementById('newCommentText').value = '';
+            document.getElementById('newCommentCharCount').textContent = '0/500';
+
+            showToast('✅ 댓글이 등록되었습니다!');
+            await loadComments(_currentPostId);
+
+            // 게시글 카드의 댓글 수도 갱신
+            refreshCommentCount(_currentPostId);
+        } catch {
+            showToast('❌ 댓글 등록에 실패했습니다.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> 댓글 등록';
+        }
+    }
+
+    // ─── 대댓글 등록 ───
+    async function submitReply(parentId, postId) {
+        const authorEl  = document.getElementById(`replyAuthor-${parentId}`);
+        const contentEl = document.getElementById(`replyText-${parentId}`);
+        const author  = authorEl?.value.trim();
+        const content = contentEl?.value.trim();
+
+        if (!author)  { showToast('⚠️ 닉네임을 입력해주세요.'); return; }
+        if (!content) { showToast('⚠️ 답글 내용을 입력해주세요.'); return; }
+
+        try {
+            await SupabaseDB.create('community_comments', {
+                post_id: postId,
+                parent_id: parentId,
+                author,
+                content,
+                likes: 0,
+                is_deleted: false
+            });
+
+            showToast('✅ 답글이 등록되었습니다!');
+            await loadComments(postId);
+            refreshCommentCount(postId);
+        } catch {
+            showToast('❌ 답글 등록에 실패했습니다.');
+        }
+    }
+
+    // ─── 댓글 좋아요 ───
+    async function likeComment(btn, postId) {
+        const cid    = btn.dataset.commentId;
+        const likes  = parseInt(btn.dataset.likes) || 0;
+        const newVal = likes + 1;
+        btn.disabled = true;
+
+        try {
+            await SupabaseDB.update('community_comments', cid, { likes: newVal });
+            btn.dataset.likes = newVal;
+            btn.classList.add('like-active');
+            btn.innerHTML = `<i class="fas fa-thumbs-up"></i> ${newVal}`;
+        } catch {
+            showToast('❌ 좋아요 처리에 실패했습니다.');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // ─── 댓글 삭제 ───
+    async function deleteComment(cid, postId) {
+        if (!confirm('댓글을 삭제하시겠습니까?')) return;
+
+        try {
+            await SupabaseDB.update('community_comments', cid, { is_deleted: true, content: '삭제된 댓글입니다.' });
+            showToast('🗑️ 댓글이 삭제되었습니다.');
+            await loadComments(postId);
+            refreshCommentCount(postId);
+        } catch {
+            showToast('❌ 삭제에 실패했습니다.');
+        }
+    }
+
+    // ─── 게시글 카드 댓글 수 갱신 ───
+    function refreshCommentCount(postId) {
+        const cached = _commentCache[postId];
+        if (!cached) return;
+        const cnt = cached.length;
+        // 목록 카드의 댓글 수 스팬 업데이트
+        const el = document.querySelector(`[data-post-id="${postId}"] .comment-cnt-val`);
+        if (el) el.textContent = cnt;
+    }
+    </script>
+</body>
+</html>

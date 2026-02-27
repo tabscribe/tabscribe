@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>악기샵 찾기 — TabScribe</title>
+<meta name="description" content="악기 전문 쇼핑몰 정보. 고퍼우드, 버즈비, 프리버드, 스쿨뮤직 등 공식 웹사이트 운영 악기 전문 업체 목록. 기타, 드럼, 건반, 레코딩 장비 구매.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --orange:    #d45d00;
+  --orange-lt: #fff7f0;
+  --orange-bd: #f5c39c;
+  --blue:      #1a56db;
+  --blue-lt:   #eff6ff;
+  --blue-bd:   #bfdbfe;
+  --teal:      #0f766e;
+  --teal-lt:   #f0fdfa;
+  --teal-bd:   #99f6e4;
+  --green:     #057a55;
+  --green-lt:  #f0fdf4;
+  --green-bd:  #bbf7d0;
+  --naver:     #03c75a;
+  --naver-lt:  #f0fff7;
+  --naver-bd:  #a7f3c9;
+  --text:      #111827;
+  --sub:       #374151;
+  --muted:     #6b7280;
+  --line:      #e5e7eb;
+  --line-lt:   #f3f4f6;
+  --bg:        #f9fafb;
+  --card:      #ffffff;
+  --radius:    12px;
+  --shadow:    0 2px 12px rgba(0,0,0,.07);
+}
+html{scroll-behavior:smooth;font-family:'Inter','Noto Sans KR',sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
+
+.header{background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.07);}
+.header-inner{max-width:1240px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:10px;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.logo-icon{color:var(--orange);font-size:1.2rem;}
+.logo-text{font-size:1.08rem;font-weight:800;color:var(--text);}
+.logo-text .acc{color:var(--orange);}
+.logo-badge{background:var(--teal-lt);border:1.5px solid var(--teal-bd);color:var(--teal);font-size:.67rem;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+.header-nav{margin-left:auto;display:flex;gap:8px;flex-shrink:0;}
+.nav-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:8px;border:1.5px solid var(--line);font-size:.79rem;font-weight:600;color:var(--sub);text-decoration:none;background:#fff;transition:all .15s;white-space:nowrap;font-family:'Inter','Noto Sans KR',sans-serif;}
+.nav-btn:hover{border-color:var(--orange);color:var(--orange);}
+.nav-btn.active{border-color:var(--teal);color:var(--teal);background:var(--teal-lt);}
+
+.hero{background:linear-gradient(135deg,#f0fdfa 0%,#fafffe 50%,#f0f9ff 100%);border-bottom:1.5px solid var(--line);padding:44px 24px 36px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--teal-bd);color:var(--teal);padding:5px 14px;border-radius:20px;font-size:.77rem;font-weight:700;margin-bottom:14px;box-shadow:0 2px 8px rgba(15,118,110,.1);}
+.hero h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:900;color:var(--text);margin-bottom:8px;}
+.hero h1 span{color:var(--teal);}
+.hero-sub{color:var(--muted);font-size:.93rem;max-width:580px;margin:0 auto 10px;}
+.hero-notice{display:inline-flex;align-items:center;gap:6px;background:#f0fff7;border:1px solid var(--naver-bd);color:var(--green);padding:5px 14px;border-radius:8px;font-size:.75rem;font-weight:600;margin-bottom:22px;}
+.hero-stats{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;}
+.hero-stat{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;}
+.hero-stat-num{font-size:1.45rem;font-weight:900;color:var(--teal);}
+.hero-stat-label{font-size:.7rem;color:var(--muted);font-weight:600;margin-top:1px;}
+
+/* ── 3컬럼 페이지 레이아웃 ── */
+.page-layout{max-width:1560px;margin:0 auto;padding:28px 20px 80px;display:grid;grid-template-columns:200px 1fr 200px;gap:22px;align-items:start;}
+.container{min-width:0;}
+
+/* ── 사이드 패널 공통 ── */
+.side-panel{display:flex;flex-direction:column;gap:16px;position:sticky;top:72px;}
+
+/* 프로모 배너 카드 */
+.promo-card{display:block;border-radius:14px;overflow:hidden;text-decoration:none;background:linear-gradient(165deg,#0a1a14 0%,#0e2a1e 60%,#0f3022 100%);border:1.5px solid #1a5c40;box-shadow:0 4px 20px rgba(0,0,0,.22);transition:transform .22s,box-shadow .22s;}
+.promo-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(15,118,110,.3);border-color:#0f766e;}
+.promo-card-img{width:100%;height:130px;object-fit:cover;object-position:center;filter:brightness(.82) contrast(1.05);display:block;}
+.promo-card-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;}
+.promo-card-brand{font-size:.5rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#5ee7c8;display:flex;align-items:center;gap:4px;}
+.promo-card-brand::before{content:'';display:inline-block;width:10px;height:1.5px;background:#5ee7c8;flex-shrink:0;}
+.promo-card-title{font-size:.78rem;font-weight:800;color:#d4fdf4;line-height:1.3;margin-top:2px;}
+.promo-card-sub{font-size:.63rem;color:#9de8d4;line-height:1.45;}
+.promo-card-cta{display:inline-block;margin-top:6px;font-size:.6rem;font-weight:700;color:#0a1a14;background:linear-gradient(135deg,#2dd4bf,#0f766e);padding:3px 10px;border-radius:20px;align-self:flex-start;box-shadow:0 2px 8px rgba(15,118,110,.35);transition:box-shadow .2s;}
+.promo-card:hover .promo-card-cta{box-shadow:0 4px 14px rgba(15,118,110,.55);}
+
+/* 위젯 (정보 패널) */
+.side-widget{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.side-widget-head{padding:10px 13px;font-size:.72rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;}
+.side-widget-head--orange{background:linear-gradient(135deg,var(--orange),#e07820);}
+.side-widget-head--blue{background:linear-gradient(135deg,#1a56db,#3b6fd4);}
+.side-widget-head--green{background:linear-gradient(135deg,#057a55,#0d9e6e);}
+.side-widget-head--teal{background:linear-gradient(135deg,#0f766e,#14a396);}
+.side-widget-head--naver{background:linear-gradient(135deg,#03c75a,#05a84a);}
+.side-widget-body{padding:12px 13px;display:flex;flex-direction:column;gap:8px;}
+.side-widget-item{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;color:var(--sub);line-height:1.45;padding-bottom:7px;border-bottom:1px solid var(--line-lt);}
+.side-widget-item:last-child{border-bottom:none;padding-bottom:0;}
+.side-widget-icon{color:var(--teal);font-size:.72rem;flex-shrink:0;margin-top:2px;}
+.side-widget-icon--orange{color:var(--orange);}
+.side-widget-icon--green{color:var(--green);}
+.side-widget-icon--naver{color:#03c75a;}
+.side-widget-text strong{display:block;font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:1px;}
+
+/* 링크 위젯 */
+.side-links{display:flex;flex-direction:column;gap:5px;padding:10px 13px;}
+.side-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:var(--line-lt);text-decoration:none;font-size:.73rem;font-weight:600;color:var(--sub);transition:all .15s;}
+.side-link:hover{background:var(--teal-lt);color:var(--teal);}
+.side-link i{width:14px;text-align:center;flex-shrink:0;}
+
+@media(max-width:1100px){
+  .page-layout{grid-template-columns:170px 1fr 170px;gap:14px;}
+}
+@media(max-width:860px){
+  .page-layout{grid-template-columns:1fr;padding:18px 14px 60px;}
+  .side-panel{display:none;}
+}
+
+.filter-bar{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
+.filter-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:150px;}
+.filter-label{font-size:.71rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.filter-input{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-size:.87rem;font-family:'Inter','Noto Sans KR',sans-serif;transition:border-color .2s;width:100%;}
+.filter-input:focus{outline:none;border-color:var(--teal);}
+.search-wrap{position:relative;flex:2;min-width:200px;}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.87rem;}
+.search-input{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:8px 12px 8px 34px;color:var(--text);font-size:.87rem;font-family:'Inter','Noto Sans KR',sans-serif;width:100%;transition:border-color .2s;}
+.search-input:focus{outline:none;border-color:var(--teal);}
+.reset-btn{background:var(--teal-lt);border:1.5px solid var(--teal-bd);color:var(--teal);border-radius:8px;padding:8px 16px;font-size:.84rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Inter','Noto Sans KR',sans-serif;}
+.reset-btn:hover{background:#ccfbf1;}
+
+/* 카테고리 필터 버튼 */
+.category-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+.cat-tab{padding:6px 14px;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .18s;border:1.5px solid var(--line);background:#fff;color:var(--sub);font-family:'Inter','Noto Sans KR',sans-serif;}
+.cat-tab:hover{border-color:var(--teal);color:var(--teal);}
+.cat-tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+.gu-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;}
+.gu-tab{padding:6px 14px;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .18s;border:1.5px solid var(--line);background:#fff;color:var(--sub);font-family:'Inter','Noto Sans KR',sans-serif;}
+.gu-tab:hover{border-color:var(--teal);color:var(--teal);}
+.gu-tab.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+.gu-tab .cnt{display:inline-flex;align-items:center;justify-content:center;background:rgba(0,0,0,.08);border-radius:8px;padding:0 6px;font-size:.69rem;margin-left:3px;}
+.gu-tab.active .cnt{background:rgba(255,255,255,.25);}
+
+.result-count{font-size:.83rem;color:var(--muted);margin-bottom:14px;}
+.result-count strong{color:var(--teal);font-weight:800;}
+
+.gu-section{margin-bottom:36px;}
+.gu-section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--line);}
+.gu-section-title{font-size:1.04rem;font-weight:800;color:var(--text);}
+.gu-section-badge{background:var(--teal-lt);border:1.5px solid var(--teal-bd);color:var(--teal);padding:2px 10px;border-radius:10px;font-size:.71rem;font-weight:700;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;transition:all .2s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.card:hover{border-color:var(--teal-bd);transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,118,110,.1);}
+
+.card-name{font-size:.97rem;font-weight:800;color:var(--text);line-height:1.3;}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.tag{padding:2px 8px;border-radius:6px;font-size:.68rem;font-weight:700;}
+.tag--gu{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;}
+.tag--dong{background:var(--teal-lt);border:1px solid var(--teal-bd);color:var(--teal);}
+.tag--feature{background:var(--green-lt);border:1px solid var(--green-bd);color:#15803d;}
+.tag--cat{background:var(--orange-lt);border:1px solid var(--orange-bd);color:var(--orange);}
+.tag--online{background:var(--naver-lt);border:1px solid var(--naver-bd);color:#059669;}
+
+.card-info{display:flex;flex-direction:column;gap:5px;}
+.card-row{display:flex;align-items:flex-start;gap:8px;font-size:.82rem;}
+.card-row-icon{color:var(--teal);width:14px;flex-shrink:0;margin-top:2px;font-size:.76rem;}
+.card-row-text{color:var(--sub);line-height:1.45;}
+.card-row-text strong{color:var(--text);}
+.card-row-text a{color:var(--teal);text-decoration:none;font-weight:600;}
+.card-row-text a:hover{text-decoration:underline;}
+
+.card-items{background:var(--teal-lt);border:1.5px solid var(--teal-bd);border-radius:8px;padding:7px 12px;}
+.card-items-label{font-size:.68rem;color:var(--muted);font-weight:700;margin-bottom:4px;}
+.card-items-list{display:flex;flex-wrap:wrap;gap:4px;}
+
+.card-features{display:flex;flex-wrap:wrap;gap:4px;}
+.card-footer{display:flex;gap:7px;margin-top:2px;}
+.card-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;transition:all .16s;border:1.5px solid transparent;font-family:'Inter','Noto Sans KR',sans-serif;}
+.card-btn--map{background:var(--blue-lt);border-color:var(--blue-bd);color:var(--blue);}
+.card-btn--map:hover{background:#dbeafe;transform:translateY(-1px);box-shadow:0 3px 8px rgba(26,86,219,.15);}
+.card-btn--store{background:var(--naver-lt);border-color:var(--naver-bd);color:#059669;}
+.card-btn--store:hover{background:#d1fae5;transform:translateY(-1px);box-shadow:0 3px 8px rgba(5,150,105,.15);}
+
+.empty{text-align:center;padding:56px 20px;color:var(--muted);}
+.empty i{font-size:2.4rem;margin-bottom:12px;display:block;color:var(--teal);opacity:.4;}
+.empty p{font-size:.93rem;}
+
+@media(max-width:768px){
+  .header-inner{padding:0 14px;}
+  .filter-bar{padding:14px;}
+  .cards-grid{grid-template-columns:1fr;}
+  .hero{padding:30px 14px 24px;}
+  .hero-stats{gap:10px;}
+}
+@media(max-width:520px){
+  .logo-badge{display:none;}
+  .nav-btn span{display:none;}
+  .gu-tab,.cat-tab{font-size:.74rem;padding:5px 10px;}
+}
+
+/* ── 홈 FAB 버튼 ── */
+.home-fab{position:fixed;bottom:26px;left:26px;width:48px;height:48px;background:#d45d00;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;box-shadow:0 4px 16px rgba(212,93,0,.38);z-index:800;transition:background .18s,transform .18s;}
+.home-fab:hover{background:#b84e00;transform:scale(1.1);}
+.home-fab-tooltip{position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#1e2433;color:#fff;font-size:.74rem;font-weight:700;padding:4px 11px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;}
+.home-fab:hover .home-fab-tooltip{opacity:1;}
+</style>
+<script src="js/ads.js"></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <i class="fas fa-guitar logo-icon"></i>
+      <span class="logo-text">Tab<span class="acc">Scribe</span></span>
+    </a>
+    <span class="logo-badge">악기샵 찾기</span>
+    <nav class="header-nav">
+      <a href="index.html" class="nav-btn"><i class="fas fa-home"></i> <span>홈</span></a>
+      <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> <span>합주실 찾기</span></a>
+      <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> <span>리페어샵</span></a>
+      <a href="instrument.html" class="nav-btn active"><i class="fas fa-guitar"></i> <span>악기샵</span></a>
+      <a href="community.html" class="nav-btn"><i class="fas fa-users"></i> <span>커뮤니티</span></a>
+      <a href="score.html" class="nav-btn"><i class="fas fa-file-pdf"></i> <span>악보공유</span></a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-badge"><i class="fas fa-guitar"></i> 기타·베이스 악기샵 정보</div>
+  <h1>🎸 <span>악기샵</span> 찾기</h1>
+  <p class="hero-sub">공식 웹사이트를 운영하는 악기 전문 쇼핑몰을 수록했습니다. 온라인 구매 및 오프라인 방문 모두 가능한 업체들입니다.</p>
+  <p class="hero-notice"><i class="fas fa-globe"></i> 공식 사이트 링크를 통해 온라인 구매가 가능합니다</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num" id="totalCount">0</div><div class="hero-stat-label">등록 악기샵</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" id="guCount">0</div><div class="hero-stat-label">구 수</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" id="storeCount">0</div><div class="hero-stat-label">공식사이트</div></div>
+  </div>
+</section>
+
+<div class="page-layout">
+
+  <!-- ── 왼쪽 광고 사이드 ── -->
+  <div id="instrumentAdLeft" class="gw-ad-col gw-ad-left"></div>
+
+  <!-- ── 메인 콘텐츠 ── -->
+  <div class="container">
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <i class="fas fa-search search-icon"></i>
+      <input class="search-input" id="searchInput" type="text" placeholder="샵 이름, 주소, 취급 악기 검색...">
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">구 선택</label>
+      <select class="filter-input" id="guSelect"><option value="">전체 구</option></select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">카테고리</label>
+      <select class="filter-input" id="catSelect">
+        <option value="">전체</option>
+        <option value="기타">기타 전문</option>
+        <option value="베이스">베이스 전문</option>
+        <option value="중고">중고악기</option>
+        <option value="부품">부품·액세서리</option>
+        <option value="종합">종합악기</option>
+      </select>
+    </div>
+    <button class="reset-btn" id="resetBtn"><i class="fas fa-redo-alt"></i> 초기화</button>
+  </div>
+  <div class="gu-tabs" id="guTabs"></div>
+  <p class="result-count" id="resultCount"></p>
+  <div id="shopList"></div>
+  </div>
+
+  <!-- ── 오른쪽 광고 사이드 ── -->
+  <div id="instrumentAdRight" class="gw-ad-col gw-ad-right"></div>
+
+</div><!-- /page-layout -->
+
+<script>
+/* =============================================================
+   악기 전문 쇼핑몰 데이터
+   수록 기준: ① 공식 웹사이트 운영 확인
+             ② 악기 판매·제조 전문 업체
+             ③ 2024~2025 실제 운영 확인
+   store : 공식 웹사이트 URL
+============================================================= */
+const SHOPS = [
+
+  /* ───────── 고퍼우드 ───────── */
+  {
+    name:'고퍼우드 (Gopherwood)',
+    gu:'경기 동두천시', dong:'행선로',
+    address:'경기도 동두천시 행선로110번길 52-9',
+    tel:'031-877-5073',
+    hours:'평일 09:30~18:30 (점심 12:00~13:00, 주말·공휴일 휴무)',
+    category:['통기타','일렉기타','우쿨렐레'],
+    items:['통기타','일렉기타','베이스기타','우쿨렐레','미니기타','어린이기타'],
+    features:['국내 기타·우쿨렐레 제조 브랜드','온라인 쇼핑몰 운영','A/S 전문 (010-8161-5073)'],
+    map:'https://map.naver.com/p/search/%EA%B3%A0%ED%8D%BC%EC%9A%B0%EB%93%9C%20%EB%8F%99%EB%91%90%EC%B2%9C',
+    store:'https://gopherwood.co.kr/',
+    desc:'국내 기타·우쿨렐레 전문 제조 브랜드. 입문용부터 중급용까지 다양한 라인업 보유.'
+  },
+
+  /* ───────── 버즈비 ───────── */
+  {
+    name:'버즈비 (Buzzbee)',
+    gu:'마포구', dong:'동교동',
+    address:'서울특별시 마포구 와우산로 173 (동교동)',
+    tel:'1600-7940',
+    hours:'평일 11:00~20:00, 토요일 11:00~17:00 (일·공휴일 휴무)',
+    category:['기타','베이스','종합'],
+    items:['일렉기타','어쿠스틱기타','베이스','기타앰프','기타이펙터','레코딩장비','키보드·신디사이저','드럼·퍼커션'],
+    features:['오프라인 매장 + 온라인 쇼핑몰','600개 이상 국내외 브랜드','3만여 종 취급','buzzbee TV 유튜브 운영'],
+    map:'https://map.naver.com/p/search/%EB%B2%84%EC%A6%88%EB%B9%84%20%EB%8F%99%EA%B5%90%EB%8F%99',
+    store:'https://www.buzzbee.co.kr/main/index.php',
+    desc:'3만여 종 악기·액세서리 취급 온·오프라인 전문 쇼핑몰. 600개 이상 국내외 브랜드 보유. 악기 전 직원 연주 가능.'
+  },
+
+  /* ───────── 프리버드 ───────── */
+  {
+    name:'프리버드 (Freebud)',
+    gu:'마포구', dong:'서교동',
+    address:'서울특별시 마포구 와우산로21길 19-16 (서교동) 3층',
+    tel:'1600-5150',
+    hours:'평일 10:00~18:00 (점심 12:00~13:00, 주말·공휴일 휴무)',
+    category:['기타','드럼','건반','종합'],
+    items:['기타','드럼','건반·피아노','레코딩','앰프·이펙터','우쿨렐레','바이올린·관악기'],
+    features:['대한민국 최초 온·오프라인 악기 전문 쇼핑몰 (2000년 창업)','깁슨·펜더·야마하 등 취급','전국 매장 운영'],
+    map:'https://map.naver.com/p/search/%ED%94%84%EB%A6%AC%EB%B2%84%EB%93%9C%20%EC%84%9C%EA%B5%90%EB%8F%99',
+    store:'https://www.freebud.co.kr/main/index.php',
+    desc:'2000년 오픈, 대한민국 최초 온·오프라인 악기 전문 쇼핑몰. 기타·드럼·건반·레코딩 등 전 품목 취급.'
+  },
+
+  /* ───────── 스쿨뮤직 ───────── */
+  {
+    name:'스쿨뮤직 (Schoolmusic)',
+    gu:'정보 없음', dong:'정보 없음',
+    address:'공식 웹사이트 접근 제한 (정보 확인 불가)',
+    tel:'정보 없음',
+    hours:'정보 없음',
+    category:['기타','드럼','건반','종합'],
+    items:['기타','베이스','드럼','건반','관악기','현악기','레코딩'],
+    features:['악기 전문 온라인 쇼핑몰'],
+    map:'https://map.naver.com/p/search/%EC%8A%A4%EC%BF%A8%EB%AE%A4%EC%A7%81',
+    store:'https://www.schoolmusic.co.kr/Shop/index.php3',
+    desc:'악기 전문 온라인 쇼핑몰 스쿨뮤직. 다양한 악기 카테고리 운영.'
+  },
+
+];
+
+/* ── 렌더 엔진 ── */
+let filteredShops = [...SHOPS];
+let activeGu = '';
+let activeCat = '';
+
+function init() {
+  const allGu = [...new Set(SHOPS.map(s => s.gu))];
+  document.getElementById('totalCount').textContent = SHOPS.length;
+  document.getElementById('guCount').textContent    = allGu.length;
+  document.getElementById('storeCount').textContent = SHOPS.filter(s => s.store).length;
+
+  const guSel = document.getElementById('guSelect');
+  [...allGu].sort().forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g; opt.textContent = g;
+    guSel.appendChild(opt);
+  });
+
+  buildGuTabs();
+  renderShops();
+  bindEvents();
+}
+
+function buildGuTabs() {
+  const tabs = document.getElementById('guTabs');
+  tabs.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'gu-tab' + (activeGu === '' ? ' active' : '');
+  allBtn.innerHTML = `전체 <span class="cnt">${SHOPS.length}</span>`;
+  allBtn.onclick = () => { activeGu = ''; syncGuSelect(); buildGuTabs(); applyFilters(); };
+  tabs.appendChild(allBtn);
+
+  [...new Set(SHOPS.map(s => s.gu))].sort().forEach(g => {
+    const cnt = SHOPS.filter(s => s.gu === g).length;
+    const btn = document.createElement('button');
+    btn.className = 'gu-tab' + (activeGu === g ? ' active' : '');
+    btn.innerHTML = `${g} <span class="cnt">${cnt}</span>`;
+    btn.onclick = () => { activeGu = g; syncGuSelect(); buildGuTabs(); applyFilters(); };
+    tabs.appendChild(btn);
+  });
+}
+
+function syncGuSelect() {
+  document.getElementById('guSelect').value = activeGu;
+}
+
+function applyFilters() {
+  const q   = document.getElementById('searchInput').value.trim().toLowerCase();
+  const gu  = document.getElementById('guSelect').value;
+  const cat = document.getElementById('catSelect').value;
+
+  filteredShops = SHOPS.filter(s => {
+    if (gu && s.gu !== gu) return false;
+    if (cat && !s.category.some(c => c.includes(cat))) return false;
+    if (q) {
+      const hay = [s.name, s.gu, s.dong, s.address, s.desc,
+                   ...s.items, ...s.features, ...s.category].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  renderShops();
+}
+
+function renderShops() {
+  const list = document.getElementById('shopList');
+  const cnt  = document.getElementById('resultCount');
+  cnt.innerHTML = `<strong>${filteredShops.length}</strong>개 악기샵`;
+
+  if (filteredShops.length === 0) {
+    list.innerHTML = `<div class="empty"><i class="fas fa-guitar"></i><p>검색 결과가 없습니다.</p></div>`;
+    return;
+  }
+
+  const byGu = {};
+  filteredShops.forEach(s => {
+    if (!byGu[s.gu]) byGu[s.gu] = [];
+    byGu[s.gu].push(s);
+  });
+
+  list.innerHTML = Object.entries(byGu).map(([gu, shops]) => `
+    <div class="gu-section">
+      <div class="gu-section-header">
+        <span class="gu-section-title">${gu}</span>
+        <span class="gu-section-badge">${shops.length}개</span>
+      </div>
+      <div class="cards-grid">${shops.map(s => cardHTML(s)).join('')}</div>
+    </div>`).join('');
+}
+
+function cardHTML(s) {
+  const catTags     = s.category.map(c => `<span class="tag tag--cat">${c}</span>`).join('');
+  const itemTags    = s.items.map(i => `<span class="tag tag--feature">${i}</span>`).join('');
+  const featureTags = s.features.map(f => `<span class="tag tag--online">${f}</span>`).join('');
+
+  return `
+  <div class="card">
+    <div>
+      <div class="card-name">${s.name}</div>
+      <div class="card-tags">
+        <span class="tag tag--gu">${s.gu}</span>
+        <span class="tag tag--dong">${s.dong}</span>
+        ${catTags}
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-row"><i class="fas fa-map-marker-alt card-row-icon"></i><span class="card-row-text">${s.address}</span></div>
+      <div class="card-row"><i class="fas fa-phone card-row-icon"></i><span class="card-row-text"><strong><a href="tel:${s.tel.replace(/-/g,'')}">${s.tel}</a></strong></span></div>
+      <div class="card-row"><i class="fas fa-clock card-row-icon"></i><span class="card-row-text">${s.hours}</span></div>
+      <div class="card-row"><i class="fas fa-comment-alt card-row-icon"></i><span class="card-row-text">${s.desc}</span></div>
+    </div>
+    <div class="card-items">
+      <div class="card-items-label">🎸 취급 품목</div>
+      <div class="card-items-list">${itemTags}</div>
+    </div>
+    <div class="card-features">${featureTags}</div>
+    <div class="card-footer">
+      <a class="card-btn card-btn--map" href="${s.map}" target="_blank" rel="noopener noreferrer"><i class="fas fa-map-marker-alt"></i> 지도</a>
+      <a class="card-btn card-btn--store" href="${s.store}" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i> 공식 사이트</a>
+    </div>
+  </div>`;
+}
+
+function bindEvents() {
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('guSelect').addEventListener('change', function () {
+    activeGu = this.value;
+    buildGuTabs();
+    applyFilters();
+  });
+  document.getElementById('catSelect').addEventListener('change', applyFilters);
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('guSelect').value    = '';
+    document.getElementById('catSelect').value   = '';
+    activeGu = '';
+    buildGuTabs();
+    applyFilters();
+  });
+}
+
+// 즉시 실행 (DOM 이미 파싱 완료)
+init();
+mountAds('instrumentAdLeft',  ['INSTRUMENT_L1','INSTRUMENT_L2','INSTRUMENT_L3','INSTRUMENT_L4']);
+mountAds('instrumentAdRight', ['INSTRUMENT_R1','INSTRUMENT_R2','INSTRUMENT_R3','INSTRUMENT_R4']);
+</script>
+
+<!-- 홈 FAB 버튼 -->
+<a href="index.html" id="gw-home-fab" class="home-fab" title="홈으로">
+    <i class="fas fa-home"></i>
+    <span class="home-fab-tooltip">홈으로</span>
+</a>
+</body>
+</html>
