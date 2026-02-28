@@ -67,5 +67,45 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- ============================================================
--- 완료! 위 SQL을 모두 실행한 뒤 회원가입 테스트를 진행하세요.
+-- 6. ratings 테이블 생성 (쿠슐랭 가이드 평가)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.ratings (
+  id          TEXT        PRIMARY KEY,
+  page        TEXT        NOT NULL,   -- 'rehearsal' | 'repair' | 'instrument' | 'academy' | 'venue'
+  place_id    TEXT        NOT NULL,   -- 'rehearsal_사운드시티_합주실_홍대역점' 형태
+  place_name  TEXT        NOT NULL,
+  user_id     TEXT        NOT NULL,   -- Supabase auth.users.id (UUID)
+  score1      INTEGER     NOT NULL CHECK (score1 BETWEEN 1 AND 5),
+  score2      INTEGER     NOT NULL CHECK (score2 BETWEEN 1 AND 5),
+  label1      TEXT,
+  label2      TEXT,
+  created_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000,
+  updated_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+-- 같은 유저가 같은 장소에 중복 평가 불가
+CREATE UNIQUE INDEX IF NOT EXISTS ratings_user_place_unique
+  ON public.ratings (place_id, user_id);
+
+-- RLS 활성화
+ALTER TABLE public.ratings ENABLE ROW LEVEL SECURITY;
+
+-- 누구나 읽기 가능
+CREATE POLICY "ratings_select_all"
+  ON public.ratings FOR SELECT
+  USING (true);
+
+-- 로그인한 유저만 자기 평가 등록
+CREATE POLICY "ratings_insert_auth"
+  ON public.ratings FOR INSERT
+  WITH CHECK (auth.uid()::text = user_id);
+
+-- 본인 평가만 삭제 가능
+CREATE POLICY "ratings_delete_own"
+  ON public.ratings FOR DELETE
+  USING (auth.uid()::text = user_id);
+
+-- ============================================================
+-- 완료! 위 SQL을 모두 실행한 뒤 회원가입·평가 테스트를 진행하세요.
 -- ============================================================

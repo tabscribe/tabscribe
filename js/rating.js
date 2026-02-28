@@ -109,31 +109,63 @@ function debounce(fn, ms) {
   };
 }
 
+/* ── Supabase 접속 정보 (auth.js와 동일) ── */
+const _SB_URL = 'https://aubagaamktdmtvfabcbd.supabase.co';
+const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YmFnYWFta3RkbXR2ZmFiY2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxOTc5NDksImV4cCI6MjA4Nzc3Mzk0OX0.XoKiaw8nCJc1Hq9OjiURrGi_ZA-6sU4xhqqpDGcC2IM';
+const _SB_HDR = {
+  'Content-Type':  'application/json',
+  'apikey':        _SB_KEY,
+  'Authorization': 'Bearer ' + _SB_KEY,
+  'Prefer':        'return=representation',
+};
+
 async function fetchRatings(page) {
   try {
-    const res = await fetch(`tables/ratings?limit=1000&sort=created_at`);
+    const url = `${_SB_URL}/rest/v1/ratings?page=eq.${encodeURIComponent(page)}&limit=1000&order=created_at.asc`;
+    const res = await fetch(url, { headers: _SB_HDR });
     if (!res.ok) return [];
     const data = await res.json();
-    return (data.data || []).filter(r => r.page === page);
+    return Array.isArray(data) ? data : [];
   } catch { return []; }
 }
 
 async function submitRating(payload) {
-  const res = await fetch('tables/ratings', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+  /* id·타임스탬프 자동 생성 */
+  const body = {
+    ...payload,
+    id: crypto.randomUUID ? crypto.randomUUID()
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        }),
+    created_at: Date.now(),
+    updated_at: Date.now(),
+  };
+  const res = await fetch(`${_SB_URL}/rest/v1/ratings`, {
+    method:  'POST',
+    headers: _SB_HDR,
+    body:    JSON.stringify(body),
   });
   if (!res.ok) {
-    const err = await res.text().catch(() => res.status);
-    throw new Error('submitRating failed: ' + err);
+    const errText = await res.text().catch(() => String(res.status));
+    let msg = '평가 저장 실패 (' + res.status + ')';
+    try {
+      const errJson = JSON.parse(errText);
+      if (errJson.code === '23505') msg = '이미 이 장소에 평가하셨어요. 기존 평가를 삭제 후 다시 평가해주세요.';
+      else if (errJson.message) msg = errJson.message;
+    } catch(_) { msg += ': ' + errText; }
+    throw new Error(msg);
   }
-  return res.json();
+  const rows = await res.json();
+  return Array.isArray(rows) ? rows[0] : rows;
 }
 
 async function deleteRating(id) {
-  const res = await fetch(`tables/ratings/${id}`, { method: 'DELETE' });
-  if (!res.ok && res.status !== 204) {
+  const res = await fetch(`${_SB_URL}/rest/v1/ratings?id=eq.${id}`, {
+    method:  'DELETE',
+    headers: _SB_HDR,
+  });
+  if (!res.ok) {
     throw new Error('deleteRating failed: ' + res.status);
   }
   return true;
@@ -704,8 +736,21 @@ window.submitRatingNow = async function() {
   const btn = document.getElementById('submitRatingBtn');
   btn.disabled = true; btn.style.opacity = '.7'; btn.textContent = '제출 중...';
   try {
-    const uid = getCurrentUserId();
-    if (!uid) throw new Error('로그인 정보를 찾을 수 없어요. 다시 로그인해주세요.');
+    /* user_id: window.currentUser 우선, 없으면 Supabase 세션 직접 확인 */
+    let uid = getCurrentUserId();
+    if (!uid) {
+      try {
+        const sb = (typeof getClient === 'function') ? getClient() : null;
+        if (sb) {
+          const { data } = await sb.auth.getSession();
+          if (data?.session?.user) {
+            uid = data.session.user.id;
+            window.currentUser = { id: uid, email: data.session.user.email };
+          }
+        }
+      } catch(_) {}
+    }
+    if (!uid) throw new Error('로그인 정보를 찾을 수 없어요. 페이지를 새로고침 후 다시 시도해주세요.');
     await submitRating({ page, place_id: placeId, place_name: placeName, user_id: uid, score1: star1, score2: star2, label1: cfg.label1, label2: cfg.label2 });
     const msg = document.getElementById('ratingMsg');
     msg.textContent = '🎉 쿠슐랭 평가가 등록됐어요! 감사합니다!';
@@ -733,6 +778,21 @@ window.deleteRatingNow = async function() {
   const btn = document.querySelector('#ratingModal button[onclick="deleteRatingNow()"]');
   if (btn) { btn.disabled = true; btn.textContent = '삭제 중...'; }
   try {
+    /* 삭제 전 세션 재확인 */
+    let uid = getCurrentUserId();
+    if (!uid) {
+      try {
+        const sb = (typeof getClient === 'function') ? getClient() : null;
+        if (sb) {
+          const { data } = await sb.auth.getSession();
+          if (data?.session?.user) {
+            uid = data.session.user.id;
+            window.currentUser = { id: uid, email: data.session.user.email };
+          }
+        }
+      } catch(_) {}
+    }
+    if (!uid) throw new Error('로그인 정보를 찾을 수 없어요. 페이지를 새로고침 후 다시 시도해주세요.');
     await deleteRating(deleteId);
     const msg = document.getElementById('ratingMsg');
     if (msg) { msg.textContent = '✅ 평가가 삭제됐어요.'; msg.style.color = '#059669'; }
