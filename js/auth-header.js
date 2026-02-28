@@ -22,9 +22,45 @@
   let profile = null;
   if (session) {
     profile = await getProfile(session.user.id);
+    /* rating.js 등에서 동기적으로 사용할 수 있도록 window에 저장 */
+    window._cdkuSession = session;
+    window._cdkuProfile = profile;
+    window.currentUser  = {
+      id:       session.user.id,
+      email:    session.user.email,
+      nickname: profile?.nickname || session.user.email.split('@')[0],
+    };
+  } else {
+    window._cdkuSession = null;
+    window._cdkuProfile = null;
+    window.currentUser  = null;
   }
 
   renderHeaderAuth(session, profile);
+
+  /* 로그인 상태가 바뀌면 평가 버튼 상태도 갱신 */
+  if (typeof supabase !== 'undefined' && typeof getClient === 'function') {
+    const sb = getClient();
+    if (sb) sb.auth.onAuthStateChange(async (event, sess) => {
+      if (sess) {
+        const p = await getProfile(sess.user.id);
+        window._cdkuSession = sess;
+        window._cdkuProfile = p;
+        window.currentUser  = {
+          id:       sess.user.id,
+          email:    sess.user.email,
+          nickname: p?.nickname || sess.user.email.split('@')[0],
+        };
+      } else {
+        window._cdkuSession = null;
+        window._cdkuProfile = null;
+        window.currentUser  = null;
+      }
+      renderHeaderAuth(sess, sess ? window._cdkuProfile : null);
+      /* 카드 평가 버튼 재렌더 */
+      if (typeof window.reloadRatingBadges === 'function') window.reloadRatingBadges();
+    });
+  }
 })();
 
 function renderHeaderAuth(session, profile) {

@@ -4670,6 +4670,39 @@ body {
     .header-auth-btns { display: none; }
 }
 
+/* ── 네비게이션 정보 페이지 구역 배지 ── */
+.nav-info-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px 3px 6px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border: 1.5px solid #6ee7b7;
+    border-radius: 20px;
+    position: relative;
+}
+.nav-info-group::before {
+    content: '📍 정보';
+    font-size: .62rem;
+    font-weight: 800;
+    color: #059669;
+    background: #d1fae5;
+    border: 1px solid #6ee7b7;
+    border-radius: 20px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    letter-spacing: .02em;
+    flex-shrink: 0;
+}
+.nav-info-group .nav-btn {
+    border-color: transparent;
+    background: transparent;
+}
+.nav-info-group .nav-btn:hover {
+    background: rgba(255,255,255,.8);
+    border-color: #6ee7b7;
+}
+
 /* 햄버거 버튼 — 기본 숨김 */
 .hamburger-btn {
     display: none;

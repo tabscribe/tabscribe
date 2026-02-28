@@ -85,16 +85,16 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .nav-btn:hover{border-color:var(--orange);color:var(--orange);}
 .nav-btn.active{border-color:var(--teal);color:var(--teal);background:var(--teal-lt);}
 
-.hero{background:linear-gradient(135deg,#f0fdfa 0%,#fafffe 50%,#f0f9ff 100%);border-bottom:1.5px solid var(--line);padding:44px 24px 36px;text-align:center;}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--teal-bd);color:var(--teal);padding:5px 14px;border-radius:20px;font-size:.77rem;font-weight:700;margin-bottom:14px;box-shadow:0 2px 8px rgba(15,118,110,.1);}
-.hero h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:900;color:var(--text);margin-bottom:8px;}
+.hero{background:linear-gradient(135deg,#f0fdfa 0%,#fafffe 50%,#f0f9ff 100%);border-bottom:1.5px solid var(--line);padding:8px 20px 6px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid var(--teal-bd);color:var(--teal);padding:2px 9px;border-radius:20px;font-size:.68rem;font-weight:700;margin-bottom:4px;box-shadow:0 2px 6px rgba(15,118,110,.1);}
+.hero h1{font-size:clamp(1rem,2.5vw,1.3rem);font-weight:900;color:var(--text);margin-bottom:3px;}
 .hero h1 span{color:var(--teal);}
-.hero-sub{color:var(--muted);font-size:.93rem;max-width:580px;margin:0 auto 10px;}
-.hero-notice{display:inline-flex;align-items:center;gap:6px;background:#f0fff7;border:1px solid var(--naver-bd);color:var(--green);padding:5px 14px;border-radius:8px;font-size:.75rem;font-weight:600;margin-bottom:22px;}
-.hero-stats{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;}
-.hero-stat{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;}
-.hero-stat-num{font-size:1.45rem;font-weight:900;color:var(--teal);}
-.hero-stat-label{font-size:.7rem;color:var(--muted);font-weight:600;margin-top:1px;}
+.hero-sub{color:var(--muted);font-size:.76rem;max-width:620px;margin:0 auto 4px;}
+.hero-notice{display:inline-flex;align-items:center;gap:5px;background:#f0fff7;border:1px solid var(--naver-bd);color:var(--green);padding:2px 9px;border-radius:8px;font-size:.67rem;font-weight:600;margin-bottom:6px;}
+.hero-stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.hero-stat{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:3px 12px;text-align:center;box-shadow:var(--shadow);min-width:60px;}
+.hero-stat-num{font-size:.95rem;font-weight:900;color:var(--teal);}
+.hero-stat-label{font-size:.65rem;color:var(--muted);font-weight:600;margin-top:0;}
 
 /* ── 3컬럼 페이지 레이아웃 ── */
 .page-layout{max-width:1560px;margin:0 auto;padding:28px 20px 80px;display:grid;grid-template-columns:200px 1fr 200px;gap:22px;align-items:start;}
@@ -205,7 +205,33 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .card-items-list{display:flex;flex-wrap:wrap;gap:4px;}
 
 .card-features{display:flex;flex-wrap:wrap;gap:4px;}
-.card-footer{display:flex;gap:7px;margin-top:2px;}
+.card-footer{
+  margin-top:14px;
+  background:linear-gradient(135deg,#f0fdf4,#ecfdf5);
+  border:1.5px solid #a7f3d0;
+  border-radius:12px;
+  padding:10px 10px 8px;
+}
+.card-footer-label{
+  font-size:.65rem;
+  font-weight:800;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  margin-bottom:7px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.card-footer-label::before{
+  content:'';
+  display:inline-block;
+  width:6px;height:6px;
+  background:#0f766e;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.card-footer-btns{display:flex;gap:7px;}
 .card-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;transition:all .16s;border:1.5px solid transparent;font-family:'Inter','Noto Sans KR',sans-serif;}
 .card-btn--map{background:var(--blue-lt);border-color:var(--blue-bd);color:var(--blue);}
 .card-btn--map:hover{background:#dbeafe;transform:translateY(-1px);box-shadow:0 3px 8px rgba(26,86,219,.15);}
@@ -225,7 +251,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
   .header-inner{padding:0 14px;}
   .filter-bar{padding:14px;}
   .cards-grid{grid-template-columns:1fr;}
-  .hero{padding:30px 14px 24px;}
+  .hero{padding:14px 14px 12px;}
   .hero-stats{gap:10px;}
   .hero h1{font-size:clamp(1.3rem,5vw,1.8rem);}
 }
@@ -238,14 +264,27 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .home-fab:hover{background:#b84e00;transform:scale(1.1);}
 .home-fab-tooltip{position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#1e2433;color:#fff;font-size:.74rem;font-weight:700;padding:4px 11px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;}
 .home-fab:hover .home-fab-tooltip{opacity:1;}
+
+/* ── 네비 정보 구역 ── */
+.nav-info-group{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 6px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1.5px solid #6ee7b7;border-radius:20px;position:relative;}
+.nav-info-group::before{content:'📍 정보';font-size:.62rem;font-weight:800;color:#059669;background:#d1fae5;border:1px solid #6ee7b7;border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;}
+.nav-info-group .nav-btn{border-color:transparent;background:transparent;}
+.nav-info-group .nav-btn:hover{background:rgba(255,255,255,.8);border-color:#6ee7b7;}
+/* ── auth 버튼 ── */
+.header-auth-btns{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.nav-btn--login{background:var(--orange-lt);border-color:var(--orange-bd);color:var(--orange) !important;}
+.nav-btn--login:hover{background:#ffe4cc !important;}
+.header-profile-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:8px;border:1.5px solid var(--line);font-size:.79rem;font-weight:600;color:var(--sub);text-decoration:none;background:#fff;transition:all .15s;white-space:nowrap;}
+.header-profile-btn:hover{background:#f8fafc;}
+.nav-btn--logout{background:none;cursor:pointer;font-family:'Inter','Noto Sans KR',sans-serif;}
+@media(max-width:860px){.header-auth-btns{display:none;}}
 </style>
-<script src="js/ads.js"></script>
 </head>
 <body>
-
+<script src="js/ads.js"></script>
 <header class="header">
   <div class="header-inner">
-    <a href="index.html" class="logo" aria-label="코드덕쿠 홈으로 이동">
+    <a href="index.html" class="logo">
       <i class="fas fa-guitar logo-icon"></i>
       <div class="logo-textbox">
           <span class="logo-text">Code<span class="acc">ducku</span></span>
@@ -254,10 +293,13 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
     </a>
     <span class="logo-badge">악기샵 찾기</span>
     <nav class="header-nav">
-      <a href="index.html" class="nav-btn"><i class="fas fa-home"></i> <span>홈</span></a>
-      <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> <span>합주실 찾기</span></a>
-      <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> <span>리페어샵</span></a>
-      <a href="instrument.html" class="nav-btn active"><i class="fas fa-guitar"></i> <span>악기샵</span></a>
+      <div class="nav-info-group">
+        <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> <span>합주실 찾기</span></a>
+        <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> <span>리페어샵 찾기</span></a>
+        <a href="instrument.html" class="nav-btn active"><i class="fas fa-guitar"></i> <span>악기샵 찾기</span></a>
+        <a href="academy.html" class="nav-btn"><i class="fas fa-school"></i> <span>음악학원 찾기</span></a>
+        <a href="venue.html" class="nav-btn"><i class="fas fa-theater-masks"></i> <span>공연장 찾기</span></a>
+      </div>
       <a href="community.html" class="nav-btn"><i class="fas fa-users"></i> <span>커뮤니티</span></a>
       <a href="score.html" class="nav-btn"><i class="fas fa-file-pdf"></i> <span>악보공유</span></a>
     </nav>
@@ -271,8 +313,10 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
   <div class="mobile-menu" id="mobileMenu">
     <a href="index.html" class="mobile-menu-item"><i class="fas fa-home" style="color:#e85d04"></i> 홈 (타브 생성)</a>
     <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실 찾기</a>
-    <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵</a>
-    <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵</a>
+    <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵 찾기</a>
+    <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵 찾기</a>
+    <a href="academy.html" class="mobile-menu-item"><i class="fas fa-school" style="color:#d45d00"></i> 음악학원 찾기</a>
+    <a href="venue.html" class="mobile-menu-item"><i class="fas fa-theater-masks" style="color:#7c3aed"></i> 공연장 찾기</a>
     <a href="community.html" class="mobile-menu-item"><i class="fas fa-users" style="color:#ea580c"></i> 커뮤니티</a>
     <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf" style="color:#6d28d9"></i> 악보공유</a>
     <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
@@ -301,6 +345,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 
   <!-- ── 메인 콘텐츠 ── -->
   <div class="container">
+  <!-- 명예의 전당 (필터 위에 표시) -->
+  <div id="hofContainer"><div style="background:linear-gradient(160deg,#0f0c29,#1a1a4e,#24243e);border-radius:18px;padding:18px 16px;margin-bottom:20px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">🍋</div><div style="font-size:.85rem;color:#a5b4fc;font-weight:700;">쿠슐랭 가이드 불러오는 중...</div></div></div>
   <div class="filter-bar">
     <div class="search-wrap">
       <i class="fas fa-search search-icon"></i>
@@ -493,6 +539,14 @@ function renderShops() {
       </div>
       <div class="cards-grid">${shops.map(s => cardHTML(s)).join('')}</div>
     </div>`).join('');
+
+  /* 카드 렌더 후 평가 섹션 갱신 */
+  if (typeof refreshAllCardRatings === 'function') {
+    const agg = aggregateRatings(window._allRatings || []);
+    const aggMap = {};
+    agg.forEach(a => aggMap[a.place_id] = a);
+    refreshAllCardRatings('instrument', aggMap);
+  }
 }
 
 function cardHTML(s) {
@@ -522,8 +576,15 @@ function cardHTML(s) {
     </div>
     <div class="card-features">${featureTags}</div>
     <div class="card-footer">
-      <a class="card-btn card-btn--map" href="${s.map}" target="_blank" rel="noopener noreferrer"><i class="fas fa-map-marker-alt"></i> 지도</a>
-      <a class="card-btn card-btn--store" href="${s.store}" target="_blank" rel="noopener noreferrer"><i class="fas fa-globe"></i> 공식 사이트</a>
+      <div class="card-footer-label"><i class="fas fa-info-circle" style="color:#0f766e;font-size:.7rem;"></i> 정보 바로가기</div>
+      <div class="card-footer-btns">
+        <a class="card-btn card-btn--map" href="${s.map}" target="_blank" rel="noopener noreferrer" data-guard="1"><i class="fas fa-map-marker-alt"></i> 지도</a>
+        <a class="card-btn card-btn--store" href="${s.store}" target="_blank" rel="noopener noreferrer" data-guard="1"><i class="fas fa-globe"></i> 공식 사이트</a>
+      </div>
+    </div>
+    <div class="card-rating-area" id="rating_${s.name.replace(/\s+/g,'_').slice(0,20)}"></div>
+    <div style="margin-top:8px;text-align:right;">
+      <button class="rate-btn" style="background:#f0fdfa;border-color:#99f6e4;color:#0f766e;" onclick="openRatingModal('instrument','${s.name.replace(/'/g,"\\'")}')"><i class="fas fa-star"></i> 평가하기</button>
     </div>
   </div>`;
 }
@@ -578,12 +639,36 @@ mountAds('instrumentAdRight', ['INSTRUMENT_R1','INSTRUMENT_R2','INSTRUMENT_R3','
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/auth-header.js"></script>
+<script src="js/rating.js"></script>
 <script>
 document.addEventListener('click', async function(e) {
-  const target = e.target.closest('a[href^="tel:"], a[href^="http"], .card-action-btn, [data-guard]');
+  const target = e.target.closest('[data-guard]');
   if (!target) return;
   if (await requireLogin('instrument.html')) { e.preventDefault(); e.stopImmediatePropagation(); }
 }, true);
+// ── 평가 시스템 ──
+window._allRatings = [];
+window._hofLoading = false;
+async function loadHallOfFame() {
+  if (window._hofLoading) return;
+  window._hofLoading = true;
+  try {
+    window._allRatings = await fetchRatings('instrument');
+    const agg = aggregateRatings(window._allRatings);
+    const aggMap = {};
+    agg.forEach(a => aggMap[a.place_id] = a);
+    const hof = document.getElementById('hofContainer');
+    if (hof) hof.innerHTML = buildHallOfFame('instrument', agg);
+    refreshAllCardRatings('instrument', aggMap);
+  } catch(e) { console.warn('rating load failed', e); }
+  finally { window._hofLoading = false; }
+}
+window.reloadRatingBadges = debounce(loadHallOfFame, 600);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadHallOfFame, { once: true });
+} else {
+  loadHallOfFame();
+}
 </script>
 </body>
 </html>

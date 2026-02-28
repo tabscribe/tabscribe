@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#d45d00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="images/og-thumbnail.png" type="image/png">
+<link rel="apple-touch-icon" href="images/og-thumbnail.png">
+<title>공연장 찾기 — 코드덕쿠</title>
+<meta name="description" content="밴드·인디 공연을 위한 공연장(클럽·라이브홀·소극장) 정보. 홍대, 신촌, 이태원 등 서울 주요 공연장 목록.">
+<!-- 검색엔진 최적화 (SEO) -->
+<meta name="robots" content="index, follow">
+<meta name="author" content="COODUCK">
+<meta name="keywords" content="공연장, 라이브홀, 클럽, 소극장, 밴드 공연, 홍대 공연장, 인디 공연, 코드덕쿠, Codeducku">
+<link rel="canonical" href="https://codeducku.vercel.app/venue.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="공연장 찾기 — 코드덕쿠">
+<meta property="og:description" content="밴드·인디 공연을 위한 공연장(클럽·라이브홀·소극장) 정보.">
+<meta property="og:image" content="https://www.genspark.ai/api/files/s/EsaPAYLv">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="코드덕쿠 by COODUCK">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="공연장 찾기 — 코드덕쿠">
+<meta name="twitter:description" content="밴드·인디 공연을 위한 공연장 정보를 확인하세요.">
+<meta name="twitter:image" content="https://www.genspark.ai/api/files/s/EsaPAYLv">
+<!-- Google Search Console 소유권 인증 -->
+<meta name="google-site-verification" content="y_LIOep_Kgw8SPVqt4XB5oCKlfscobw2V2fkQV2J6HM" />
+<!-- Naver Search Advisor 소유권 인증 -->
+<meta name="naver-site-verification" content="72f154aec62c295b28b8f27b077b8c961e862892" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --orange:    #d45d00;
+  --orange-lt: #fff7f0;
+  --orange-bd: #f5c39c;
+  --blue:      #1a56db;
+  --blue-lt:   #eff6ff;
+  --blue-bd:   #bfdbfe;
+  --teal:      #0f766e;
+  --teal-lt:   #f0fdfa;
+  --teal-bd:   #99f6e4;
+  --green:     #057a55;
+  --green-lt:  #f0fdf4;
+  --green-bd:  #bbf7d0;
+  --purple:    #7c3aed;
+  --purple-lt: #f5f3ff;
+  --purple-bd: #ddd6fe;
+  --naver:     #03c75a;
+  --naver-lt:  #f0fff7;
+  --naver-bd:  #a7f3c9;
+  --text:      #111827;
+  --sub:       #374151;
+  --muted:     #6b7280;
+  --line:      #e5e7eb;
+  --line-lt:   #f3f4f6;
+  --bg:        #f9fafb;
+  --card:      #ffffff;
+  --radius:    12px;
+  --shadow:    0 2px 12px rgba(0,0,0,.07);
+}
+html{scroll-behavior:smooth;font-family:'Inter','Noto Sans KR',sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
+
+.header{background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.07);}
+.header-inner{max-width:1240px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:10px;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
+.logo-icon{color:var(--orange);font-size:1.2rem;}
+.logo-textbox{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1;}
+.logo-text{font-size:1.08rem;font-weight:800;color:var(--text);line-height:1.15;}
+.logo-text .acc{color:var(--orange);}
+.logo-ko{font-size:0.58rem;font-weight:600;letter-spacing:0.16em;color:var(--muted);line-height:1;white-space:nowrap;}
+.logo-badge{background:var(--purple-lt);border:1.5px solid var(--purple-bd);color:var(--purple);font-size:.67rem;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+.header-nav{margin-left:auto;display:flex;gap:8px;flex-shrink:0;}
+.hamburger-btn{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;padding:0;flex-shrink:0;margin-left:auto;}
+.hamburger-btn span{display:block;width:18px;height:2px;background:#334155;border-radius:2px;transition:all .25s ease;transform-origin:center;}
+.hamburger-btn.is-open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger-btn.is-open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger-btn.is-open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;flex-direction:column;background:#fff;border-top:1px solid var(--line);padding:8px 16px 12px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.mobile-menu.is-open{display:flex;}
+.mobile-menu-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-size:.88rem;font-weight:600;color:#334155;text-decoration:none;transition:background .15s;border-bottom:1px solid #f1f5f9;}
+.mobile-menu-item:last-child{border-bottom:none;}
+.mobile-menu-item:hover{background:#f8fafc;}
+.nav-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:8px;border:1.5px solid var(--line);font-size:.79rem;font-weight:600;color:var(--sub);text-decoration:none;background:#fff;transition:all .15s;white-space:nowrap;font-family:'Inter','Noto Sans KR',sans-serif;}
+.nav-btn:hover{border-color:var(--orange);color:var(--orange);}
+.nav-btn.active{border-color:var(--purple);color:var(--purple);background:var(--purple-lt);}
+
+.hero{background:linear-gradient(135deg,#f5f3ff 0%,#fafffe 50%,#f0f9ff 100%);border-bottom:1.5px solid var(--line);padding:8px 20px 6px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid var(--purple-bd);color:var(--purple);padding:2px 9px;border-radius:20px;font-size:.68rem;font-weight:700;margin-bottom:4px;box-shadow:0 2px 6px rgba(124,58,237,.1);}
+.hero h1{font-size:clamp(1rem,2.5vw,1.3rem);font-weight:900;color:var(--text);margin-bottom:3px;}
+.hero h1 span{color:var(--purple);}
+.hero-sub{color:var(--muted);font-size:.76rem;max-width:620px;margin:0 auto 4px;}
+.hero-notice{display:inline-flex;align-items:center;gap:5px;background:#f5f3ff;border:1px solid var(--purple-bd);color:var(--purple);padding:2px 9px;border-radius:8px;font-size:.67rem;font-weight:600;margin-bottom:6px;}
+.hero-stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.hero-stat{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:3px 12px;text-align:center;box-shadow:var(--shadow);min-width:60px;}
+.hero-stat-num{font-size:.95rem;font-weight:900;color:var(--purple);}
+.hero-stat-label{font-size:.65rem;color:var(--muted);font-weight:600;margin-top:0;}
+
+/* ── 3컬럼 페이지 레이아웃 ── */
+.page-layout{max-width:1560px;margin:0 auto;padding:28px 20px 80px;display:grid;grid-template-columns:200px 1fr 200px;gap:22px;align-items:start;}
+.container{min-width:0;}
+
+/* ── 사이드 패널 공통 ── */
+.side-panel{display:flex;flex-direction:column;gap:16px;position:sticky;top:72px;}
+
+/* 위젯 (정보 패널) */
+.side-widget{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.side-widget-head{padding:10px 13px;font-size:.72rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px;}
+.side-widget-head--orange{background:linear-gradient(135deg,var(--orange),#e07820);}
+.side-widget-head--blue{background:linear-gradient(135deg,#1a56db,#3b6fd4);}
+.side-widget-head--green{background:linear-gradient(135deg,#057a55,#0d9e6e);}
+.side-widget-head--teal{background:linear-gradient(135deg,#0f766e,#14a396);}
+.side-widget-head--purple{background:linear-gradient(135deg,#7c3aed,#9d5df5);}
+.side-widget-body{padding:12px 13px;display:flex;flex-direction:column;gap:8px;}
+.side-widget-item{display:flex;align-items:flex-start;gap:8px;font-size:.74rem;color:var(--sub);line-height:1.45;padding-bottom:7px;border-bottom:1px solid var(--line-lt);}
+.side-widget-item:last-child{border-bottom:none;padding-bottom:0;}
+.side-widget-icon{color:var(--purple);font-size:.72rem;flex-shrink:0;margin-top:2px;}
+.side-widget-text strong{display:block;font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:1px;}
+
+/* 링크 위젯 */
+.side-links{display:flex;flex-direction:column;gap:5px;padding:10px 13px;}
+.side-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:var(--line-lt);text-decoration:none;font-size:.73rem;font-weight:600;color:var(--sub);transition:all .15s;}
+.side-link:hover{background:var(--purple-lt);color:var(--purple);}
+.side-link i{width:14px;text-align:center;flex-shrink:0;}
+
+@media(max-width:1100px){
+  .page-layout{grid-template-columns:170px 1fr 170px;gap:14px;}
+}
+@media(max-width:860px){
+  .page-layout{grid-template-columns:1fr;padding:18px 14px 60px;}
+  .side-panel{display:none;}
+}
+
+.filter-bar{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
+.filter-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:150px;}
+.filter-label{font-size:.71rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.filter-input{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-size:.87rem;font-family:'Inter','Noto Sans KR',sans-serif;transition:border-color .2s;width:100%;}
+.filter-input:focus{outline:none;border-color:var(--purple);}
+.search-wrap{position:relative;flex:2;min-width:200px;}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.87rem;}
+.search-input{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:8px 12px 8px 34px;color:var(--text);font-size:.87rem;font-family:'Inter','Noto Sans KR',sans-serif;width:100%;transition:border-color .2s;}
+.search-input:focus{outline:none;border-color:var(--purple);}
+.reset-btn{background:var(--purple-lt);border:1.5px solid var(--purple-bd);color:var(--purple);border-radius:8px;padding:8px 16px;font-size:.84rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Inter','Noto Sans KR',sans-serif;}
+.reset-btn:hover{background:#ede9fe;}
+
+/* 카테고리 필터 버튼 */
+.category-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+.cat-tab{padding:6px 14px;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .18s;border:1.5px solid var(--line);background:#fff;color:var(--sub);font-family:'Inter','Noto Sans KR',sans-serif;}
+.cat-tab:hover{border-color:var(--purple);color:var(--purple);}
+.cat-tab.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+
+.gu-tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;}
+.gu-tab{padding:6px 14px;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .18s;border:1.5px solid var(--line);background:#fff;color:var(--sub);font-family:'Inter','Noto Sans KR',sans-serif;}
+.gu-tab:hover{border-color:var(--purple);color:var(--purple);}
+.gu-tab.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+.gu-tab .cnt{display:inline-flex;align-items:center;justify-content:center;background:rgba(0,0,0,.08);border-radius:8px;padding:0 6px;font-size:.69rem;margin-left:3px;}
+.gu-tab.active .cnt{background:rgba(255,255,255,.25);}
+
+.result-count{font-size:.83rem;color:var(--muted);margin-bottom:14px;}
+.result-count strong{color:var(--purple);font-weight:800;}
+
+.gu-section{margin-bottom:36px;}
+.gu-section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--line);}
+.gu-section-title{font-size:1.04rem;font-weight:800;color:var(--text);}
+.gu-section-badge{background:var(--purple-lt);border:1.5px solid var(--purple-bd);color:var(--purple);padding:2px 10px;border-radius:10px;font-size:.71rem;font-weight:700;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;transition:all .2s;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.card:hover{border-color:var(--purple-bd);transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.1);}
+
+.card-name{font-size:.97rem;font-weight:800;color:var(--text);line-height:1.3;}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.tag{padding:2px 8px;border-radius:6px;font-size:.68rem;font-weight:700;}
+.tag--gu{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;}
+.tag--dong{background:var(--purple-lt);border:1px solid var(--purple-bd);color:var(--purple);}
+.tag--feature{background:var(--green-lt);border:1px solid var(--green-bd);color:#15803d;}
+.tag--cat{background:var(--orange-lt);border:1px solid var(--orange-bd);color:var(--orange);}
+.tag--capacity{background:#fef9c3;border:1px solid #fde68a;color:#92400e;}
+
+.card-info{display:flex;flex-direction:column;gap:5px;}
+.card-row{display:flex;align-items:flex-start;gap:8px;font-size:.82rem;}
+.card-row-icon{color:var(--purple);width:14px;flex-shrink:0;margin-top:2px;font-size:.76rem;}
+.card-row-text{color:var(--sub);line-height:1.45;}
+.card-row-text strong{color:var(--text);}
+.card-row-text a{color:var(--purple);text-decoration:none;font-weight:600;}
+.card-row-text a:hover{text-decoration:underline;}
+
+.card-items{background:var(--purple-lt);border:1.5px solid var(--purple-bd);border-radius:8px;padding:7px 12px;}
+.card-items-label{font-size:.68rem;color:var(--muted);font-weight:700;margin-bottom:4px;}
+.card-items-list{display:flex;flex-wrap:wrap;gap:4px;}
+
+.card-features{display:flex;flex-wrap:wrap;gap:4px;}
+.card-footer{
+  margin-top:14px;
+  background:linear-gradient(135deg,#faf7ff,#f5f3ff);
+  border:1.5px solid #ddd6fe;
+  border-radius:12px;
+  padding:10px 10px 8px;
+  position:relative;
+}
+.card-footer-label{
+  font-size:.65rem;
+  font-weight:800;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  margin-bottom:7px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+.card-footer-label::before{
+  content:'';
+  display:inline-block;
+  width:6px;height:6px;
+  background:#b45309;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.card-footer-btns{display:flex;gap:7px;}
+.card-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;transition:all .16s;border:1.5px solid transparent;font-family:'Inter','Noto Sans KR',sans-serif;cursor:pointer;}
+.card-btn--map{background:var(--blue-lt);border-color:var(--blue-bd);color:var(--blue);}
+.card-btn--map:hover{background:#dbeafe;transform:translateY(-1px);box-shadow:0 3px 8px rgba(26,86,219,.15);}
+.card-btn--site{background:var(--purple-lt);border-color:var(--purple-bd);color:var(--purple);}
+.card-btn--site:hover{background:#ede9fe;transform:translateY(-1px);box-shadow:0 3px 8px rgba(124,58,237,.15);}
+.card-btn--book{background:var(--orange-lt);border-color:var(--orange-bd);color:var(--orange);}
+.card-btn--book:hover{background:#ffedd5;transform:translateY(-1px);box-shadow:0 3px 8px rgba(212,93,0,.15);}
+
+.empty{text-align:center;padding:56px 20px;color:var(--muted);}
+.empty i{font-size:2.4rem;margin-bottom:12px;display:block;color:var(--purple);opacity:.4;}
+.empty p{font-size:.93rem;}
+
+/* 공사중 배너 */
+.coming-soon-banner{background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:2px dashed var(--purple-bd);border-radius:16px;padding:40px 24px;text-align:center;margin-bottom:24px;}
+.coming-soon-icon{font-size:3rem;margin-bottom:12px;display:block;}
+.coming-soon-title{font-size:1.2rem;font-weight:800;color:var(--purple);margin-bottom:8px;}
+.coming-soon-desc{color:var(--muted);font-size:.9rem;line-height:1.6;}
+
+@media(max-width:860px){
+  .header-nav{display:none;}
+  .hamburger-btn{display:flex;}
+  .logo-badge{display:none;}
+}
+@media(max-width:768px){
+  .header-inner{padding:0 14px;}
+  .filter-bar{padding:14px;}
+  .cards-grid{grid-template-columns:1fr;}
+  .hero{padding:14px 14px 12px;}
+  .hero-stats{gap:10px;}
+  .hero h1{font-size:clamp(1.3rem,5vw,1.8rem);}
+}
+@media(max-width:520px){
+  .gu-tab,.cat-tab{font-size:.74rem;padding:5px 10px;}
+}
+
+/* ── 홈 FAB 버튼 ── */
+.home-fab{position:fixed;bottom:26px;left:26px;width:48px;height:48px;background:#d45d00;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;box-shadow:0 4px 16px rgba(212,93,0,.38);z-index:800;transition:background .18s,transform .18s;}
+.home-fab:hover{background:#b84e00;transform:scale(1.1);}
+.home-fab-tooltip{position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#1e2433;color:#fff;font-size:.74rem;font-weight:700;padding:4px 11px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;}
+.home-fab:hover .home-fab-tooltip{opacity:1;}
+
+/* ── 네비 정보 구역 ── */
+.nav-info-group{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 6px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1.5px solid #6ee7b7;border-radius:20px;}
+.nav-info-group::before{content:'📍 정보';font-size:.62rem;font-weight:800;color:#059669;background:#d1fae5;border:1px solid #6ee7b7;border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;}
+.nav-info-group .nav-btn{border-color:transparent;background:transparent;}
+.nav-info-group .nav-btn:hover{background:rgba(255,255,255,.8);border-color:#6ee7b7;}
+.nav-info-group .nav-btn.active{background:rgba(255,255,255,.9);}
+
+/* Auth 버튼 스타일 */
+.header-auth-btns{display:flex;align-items:center;gap:6px;margin-left:6px;}
+.nav-btn--login{background:var(--orange-lt);border-color:var(--orange-bd);color:var(--orange);}
+.nav-btn--login:hover{background:#ffedd5;border-color:var(--orange);}
+.nav-btn--logout{background:none;border:1.5px solid var(--line);color:var(--muted);cursor:pointer;}
+.nav-btn--logout:hover{border-color:#ef4444;color:#ef4444;}
+.header-profile-btn{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:20px;background:linear-gradient(135deg,var(--orange),#e07820);color:#fff;text-decoration:none;font-size:.8rem;font-weight:700;border:none;transition:all .18s;box-shadow:0 2px 8px rgba(212,93,0,.25);}
+.header-profile-btn:hover{background:linear-gradient(135deg,#b84e00,#c96a10);transform:translateY(-1px);box-shadow:0 4px 12px rgba(212,93,0,.35);}
+.header-profile-btn i{font-size:1rem;}
+</style>
+<script src="js/ads.js"></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo" aria-label="코드덕쿠 홈으로 이동">
+      <i class="fas fa-guitar logo-icon"></i>
+      <div class="logo-textbox">
+          <span class="logo-text">Code<span class="acc">ducku</span></span>
+          <span class="logo-ko">코드덕쿠</span>
+      </div>
+    </a>
+    <span class="logo-badge">공연장 찾기</span>
+    <nav class="header-nav" id="headerNav">
+      <div class="nav-info-group">
+        <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> <span>합주실 찾기</span></a>
+        <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> <span>리페어샵 찾기</span></a>
+        <a href="instrument.html" class="nav-btn"><i class="fas fa-guitar"></i> <span>악기샵 찾기</span></a>
+        <a href="academy.html" class="nav-btn"><i class="fas fa-school"></i> <span>음악학원 찾기</span></a>
+        <a href="venue.html" class="nav-btn active"><i class="fas fa-theater-masks"></i> <span>공연장 찾기</span></a>
+      </div>
+      <a href="score.html" class="nav-btn"><i class="fas fa-file-pdf"></i> <span>악보공유</span></a>
+      <a href="community.html" class="nav-btn"><i class="fas fa-users"></i> <span>커뮤니티</span></a>
+    </nav>
+    <div class="header-auth-btns">
+        <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
+        <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none"><i class="fas fa-user-circle"></i><span id="headerNickname"></span></a>
+        <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+    </div>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="mobile-menu-item"><i class="fas fa-home" style="color:#e85d04"></i> 홈 (타브 생성)</a>
+    <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실 찾기</a>
+    <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵 찾기</a>
+    <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵 찾기</a>
+    <a href="academy.html" class="mobile-menu-item"><i class="fas fa-school" style="color:#d45d00"></i> 음악학원 찾기</a>
+    <a href="venue.html" class="mobile-menu-item"><i class="fas fa-theater-masks" style="color:#7c3aed"></i> 공연장 찾기</a>
+    <a href="community.html" class="mobile-menu-item"><i class="fas fa-users" style="color:#ea580c"></i> 커뮤니티</a>
+    <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf" style="color:#6d28d9"></i> 악보공유</a>
+    <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
+        <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
+        <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-badge"><i class="fas fa-theater-masks"></i> 밴드·인디 공연장 정보</div>
+  <h1>🎭 <span>공연장</span> 찾기</h1>
+  <p class="hero-sub">밴드 공연, 인디 공연을 위한 클럽·라이브홀·소극장 정보를 제공합니다. 직접 공연해보세요!</p>
+  <p class="hero-notice"><i class="fas fa-info-circle"></i> 네이버 지도 등록 기준 — 실제 운영 라이브홀·공연장 정보를 수록합니다</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num" id="totalCount">0</div><div class="hero-stat-label">등록 공연장</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" id="guCount">0</div><div class="hero-stat-label">지역 수</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" id="bookCount">0</div><div class="hero-stat-label">예약 가능</div></div>
+  </div>
+</section>
+
+<div class="page-layout">
+
+  <!-- ── 왼쪽 사이드 ── -->
+  <div class="side-panel">
+    <div class="side-widget">
+      <div class="side-widget-head side-widget-head--purple"><i class="fas fa-info-circle"></i> 공연장 안내</div>
+      <div class="side-widget-body">
+        <div class="side-widget-item">
+          <i class="fas fa-microphone side-widget-icon"></i>
+          <div class="side-widget-text">
+            <strong>공연 문의</strong>
+            각 공연장 공식 사이트 또는 SNS를 통해 문의하세요.
+          </div>
+        </div>
+        <div class="side-widget-item">
+          <i class="fas fa-calendar-check side-widget-icon"></i>
+          <div class="side-widget-text">
+            <strong>예약 방법</strong>
+            지도 버튼으로 위치 확인 후, 공식 사이트에서 예약하세요.
+          </div>
+        </div>
+        <div class="side-widget-item">
+          <i class="fas fa-volume-up side-widget-icon"></i>
+          <div class="side-widget-text">
+            <strong>PA·음향 확인</strong>
+            방문 전 PA 장비, 드럼 유무, 음향 조건을 미리 확인하세요.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="side-widget">
+      <div class="side-widget-head side-widget-head--orange"><i class="fas fa-link"></i> 관련 페이지</div>
+      <div class="side-links">
+        <a href="rehearsal.html" class="side-link"><i class="fas fa-music"></i> 합주실 찾기</a>
+        <a href="repair.html" class="side-link"><i class="fas fa-tools"></i> 리페어샵 찾기</a>
+        <a href="instrument.html" class="side-link"><i class="fas fa-guitar"></i> 악기샵 찾기</a>
+        <a href="academy.html" class="side-link"><i class="fas fa-school"></i> 음악학원 찾기</a>
+        <a href="community.html" class="side-link"><i class="fas fa-users"></i> 커뮤니티</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 메인 콘텐츠 ── -->
+  <div class="container">
+  <!-- 명예의 전당 (필터 위에 표시) -->
+  <div id="hofContainer"><div style="background:linear-gradient(160deg,#0f0c29,#1a1a4e,#24243e);border-radius:18px;padding:18px 16px;margin-bottom:20px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">🍋</div><div style="font-size:.85rem;color:#a5b4fc;font-weight:700;">쿠슐랭 가이드 불러오는 중...</div></div></div>
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <i class="fas fa-search search-icon"></i>
+      <input class="search-input" id="searchInput" type="text" placeholder="공연장 이름, 주소, 특징 검색...">
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">지역 선택</label>
+      <select class="filter-input" id="guSelect"><option value="">전체 지역</option></select>
+    </div>
+    <div class="filter-group">
+      <label class="filter-label">타입</label>
+      <select class="filter-input" id="catSelect">
+        <option value="">전체</option>
+        <option value="라이브홀">라이브홀</option>
+        <option value="클럽">클럽</option>
+        <option value="공연장">공연장</option>
+        <option value="복합문화">복합문화공간</option>
+      </select>
+    </div>
+    <button class="reset-btn" id="resetBtn"><i class="fas fa-redo-alt"></i> 초기화</button>
+  </div>
+  <div class="gu-tabs" id="guTabs"></div>
+  <p class="result-count" id="resultCount"></p>
+
+  <div id="venueList"></div>
+  </div>
+
+  <!-- ── 오른쪽 사이드 ── -->
+  <div class="side-panel">
+    <div class="side-widget">
+      <div class="side-widget-head side-widget-head--purple"><i class="fas fa-star"></i> 공연 팁</div>
+      <div class="side-widget-body">
+        <div class="side-widget-item">
+          <i class="fas fa-clipboard-check side-widget-icon"></i>
+          <div class="side-widget-text">
+            <strong>사전 답사</strong>
+            공연 전 미리 방문해 무대 크기, PA 환경을 파악하세요.
+          </div>
+        </div>
+        <div class="side-widget-item">
+          <i class="fas fa-users side-widget-icon"></i>
+          <div class="side-widget-text">
+            <strong>객석 수 확인</strong>
+            소규모 클럽(50~150명)부터 대형 홀까지 규모가 다양합니다.
+          </div>
+        </div>
+        <div class="side-widget-item">
+          <i class="fas fa-clock side-widget-icon"></i>
+          <div class="side-widget-text">
+            <strong>리허설 시간</strong>
+            공연 당일 사운드 체크 시간이 보장되는지 확인하세요.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-layout -->
+
+<script>
+/* =============================================================
+   공연장 데이터
+   업체 정보 추가 예정
+============================================================= */
+const VENUES = [
+
+  /* ───────── 마포구 ───────── */
+  {
+    name: '웨스트브릿지 라이브홀',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    category: ['라이브홀'],
+    features: ['네이버페이', '휠체어 출입 가능'],
+    map: 'https://map.naver.com/p/search/%EC%9B%A8%EC%8A%A4%ED%8A%B8%EB%B8%8C%EB%A6%BF%EC%A7%80%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EC%84%9C%EA%B5%90%EB%8F%99',
+    desc: '홍대 인근 라이브홀. 네이버페이 결제 가능, 휠체어 출입 가능.',
+    bookable: false
+  },
+  {
+    name: 'KT&G 상상마당 라이브홀',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '10:00 운영 시작',
+    category: ['라이브홀'],
+    features: ['휠체어 출입 가능', 'KT&G 상상마당'],
+    map: 'https://map.naver.com/p/search/KT%26G%20%EC%83%81%EC%83%81%EB%A7%88%EB%8B%B9%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80',
+    site: 'https://www.sangsangmadang.com/',
+    desc: '홍대 KT&G 상상마당 내 공연장. 인디·밴드 공연의 성지.',
+    bookable: false
+  },
+  {
+    name: '신한카드 SOL페이스퀘어 라이브홀 메세나폴리스',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    category: ['라이브홀'],
+    features: ['메세나폴리스 내 위치'],
+    map: 'https://map.naver.com/p/search/%EB%A9%94%EC%84%B8%EB%82%98%ED%8F%B4%EB%A6%AC%EC%8A%A4%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80',
+    desc: '메세나폴리스 홍대 내 라이브홀.',
+    bookable: false
+  },
+  {
+    name: '라디오가가 라이브홀',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '~22:00',
+    category: ['라이브홀', '클럽'],
+    features: ['인디 공연 전문'],
+    map: 'https://map.naver.com/p/search/%EB%9D%BC%EB%94%94%EC%98%A4%EA%B0%80%EA%B0%80%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 대표 인디 라이브홀.',
+    bookable: false
+  },
+  {
+    name: '라이브홀 롤러코스터',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '24시간 연중무휴',
+    category: ['라이브홀'],
+    features: ['24시간 운영'],
+    map: 'https://map.naver.com/p/search/%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EB%A1%A4%EB%9F%AC%EC%BD%94%EC%8A%A4%ED%84%B0%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 라이브홀. 24시간 연중무휴 운영.',
+    bookable: false
+  },
+  {
+    name: '옥타바리움 라이브홀',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '24시간 연중무휴',
+    category: ['라이브홀'],
+    features: ['24시간 운영'],
+    map: 'https://map.naver.com/p/search/%EC%98%A5%ED%83%80%EB%B0%94%EB%A6%AC%EC%9B%80%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80',
+    desc: '홍대 라이브홀. 24시간 연중무휴 운영.',
+    bookable: false
+  },
+  {
+    name: '홍대 롤링홀',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '~22:00',
+    category: ['라이브홀'],
+    features: ['홍대 대표 공연장'],
+    map: 'https://map.naver.com/p/search/%ED%99%8D%EB%8C%80%20%EB%A1%A4%EB%A7%81%ED%99%80',
+    desc: '홍대를 대표하는 인디 공연장. 수많은 인디 밴드의 무대.',
+    bookable: false
+  },
+  {
+    name: '라이브클럽 빵',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '~22:30',
+    category: ['클럽', '라이브홀'],
+    features: ['인디 공연 전문'],
+    map: 'https://map.naver.com/p/search/%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%81%B4%EB%9F%BD%20%EB%B9%B5%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 라이브클럽. 인디 공연 전문.',
+    bookable: false
+  },
+  {
+    name: '스페이스브릭',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    category: ['공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4%EB%B8%8C%EB%A6%AD%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 공연장.',
+    bookable: false
+  },
+  {
+    name: '가온스테이지',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '~20:00',
+    category: ['공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EA%B0%80%EC%98%A8%EC%8A%A4%ED%85%8C%EC%9D%B4%EC%A7%80%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 공연장.',
+    bookable: false
+  },
+  {
+    name: 'SETi LIVE HALL',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '~23:00',
+    category: ['라이브홀'],
+    features: ['네이버페이', '휠체어 출입 가능'],
+    map: 'https://map.naver.com/p/search/SETi%20LIVE%20HALL%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 라이브홀. 네이버페이 결제 가능.',
+    bookable: false
+  },
+  {
+    name: '감마홀',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '24시간 연중무휴',
+    category: ['공연장'],
+    features: ['24시간 운영'],
+    map: 'https://map.naver.com/p/search/%EA%B0%90%EB%A7%88%ED%99%80%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 공연장. 24시간 연중무휴 운영.',
+    bookable: false
+  },
+  {
+    name: 'clubAOR',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    category: ['클럽', '공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/clubAOR%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 라이브 클럽.',
+    bookable: false
+  },
+  {
+    name: 'NOL 씨어터 합정 동양생명홀',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    category: ['공연장'],
+    features: ['휠체어 출입 가능'],
+    map: 'https://map.naver.com/p/search/NOL%20%EC%94%A8%EC%96%B4%ED%84%B0%20%ED%95%A9%EC%A0%95',
+    desc: '합정 동양생명홀 내 공연장. 휠체어 출입 가능.',
+    bookable: false
+  },
+  {
+    name: '컨벤트펍',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    category: ['공연장', '클럽'],
+    features: ['휠체어 출입 가능'],
+    map: 'https://map.naver.com/p/search/%EC%BB%A8%EB%B2%A4%ED%8A%B8%ED%8E%8D%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 공연·문화 복합 공간.',
+    bookable: false
+  },
+  {
+    name: '홍대우주정거장',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '24시간 연중무휴',
+    category: ['공연장'],
+    features: ['24시간 운영'],
+    map: 'https://map.naver.com/p/search/%ED%99%8D%EB%8C%80%EC%9A%B0%EC%A3%BC%EC%A0%95%EA%B1%B0%EC%9E%A5',
+    desc: '홍대 공연장. 24시간 운영.',
+    bookable: false
+  },
+  {
+    name: '클럽 라이브앤라우드',
+    gu: '마포구', dong: '동교동',
+    address: '서울특별시 마포구 동교동',
+    hours: '~24:00',
+    category: ['클럽', '라이브홀'],
+    features: ['네이버페이'],
+    map: 'https://map.naver.com/p/search/%ED%81%B4%EB%9F%BD%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EC%95%A4%EB%9D%BC%EC%9A%B0%EB%93%9C%20%EB%8F%99%EA%B5%90%EB%8F%99',
+    desc: '홍대 동교동 라이브클럽. ~24:00 운영.',
+    bookable: false
+  },
+  {
+    name: '스페이스한강',
+    gu: '마포구', dong: '창전동',
+    address: '서울특별시 마포구 창전동',
+    hours: '~22:00',
+    category: ['공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4%ED%95%9C%EA%B0%95%20%EB%A7%88%ED%8F%AC',
+    desc: '마포구 창전동 공연장.',
+    bookable: false
+  },
+  {
+    name: '아로아로',
+    gu: '마포구', dong: '합정동',
+    address: '서울특별시 마포구 합정동',
+    hours: '~22:00',
+    category: ['공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EC%95%84%EB%A1%9C%EC%95%84%EB%A1%9C%20%ED%95%A9%EC%A0%95',
+    desc: '합정동 공연장.',
+    bookable: false
+  },
+  {
+    name: '생기 스튜디오',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    category: ['공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EC%83%9D%EA%B8%B0%20%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 공연·연극시설.',
+    bookable: false
+  },
+  {
+    name: '아스트라 라이브',
+    gu: '마포구', dong: '서교동',
+    address: '서울특별시 마포구 서교동',
+    hours: '~22:00',
+    category: ['공연장'],
+    features: ['휠체어 출입 가능'],
+    map: 'https://map.naver.com/p/search/%EC%95%84%EC%8A%A4%ED%8A%B8%EB%9D%BC%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%ED%99%8D%EB%8C%80',
+    desc: '홍대 공연·연극시설. 휠체어 출입 가능.',
+    bookable: false
+  },
+
+  /* ───────── 서대문구 ───────── */
+  {
+    name: '아지토 라이브 홀',
+    gu: '서대문구', dong: '대현동',
+    address: '서울특별시 서대문구 대현동',
+    hours: '24시간 운영',
+    category: ['라이브홀'],
+    features: ['24시간 운영'],
+    map: 'https://map.naver.com/p/search/%EC%95%84%EC%A7%80%ED%86%A0%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%ED%99%80%20%EB%8C%80%ED%98%84%EB%8F%99',
+    desc: '신촌 대현동 24시간 운영 라이브홀.',
+    bookable: false
+  },
+  {
+    name: '신촌 디앤디 라이브공연장',
+    gu: '서대문구', dong: '창천동',
+    address: '서울특별시 서대문구 창천동',
+    category: ['공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EC%8B%A0%EC%B4%8C%20%EB%94%94%EC%95%A4%EB%94%94%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EA%B3%B5%EC%97%B0%EC%9E%A5',
+    desc: '신촌 창천동 공연장.',
+    bookable: false
+  },
+  {
+    name: '프리버드라이브홀',
+    gu: '서대문구', dong: '창천동',
+    address: '서울특별시 서대문구 창천동',
+    category: ['라이브홀'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%ED%94%84%EB%A6%AC%EB%B2%84%EB%93%9C%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EC%84%9C%EB%8C%80%EB%AC%B8',
+    desc: '신촌 창천동 라이브홀.',
+    bookable: false
+  },
+  {
+    name: '복합문화공간 몽향',
+    gu: '서대문구', dong: '창천동',
+    address: '서울특별시 서대문구 창천동',
+    hours: '24시간 연중무휴',
+    category: ['복합문화'],
+    features: ['24시간 운영'],
+    map: 'https://map.naver.com/p/search/%EB%B3%B5%ED%95%A9%EB%AC%B8%ED%99%94%EA%B3%B5%EA%B0%84%20%EB%AA%BD%ED%96%A5',
+    desc: '신촌 창천동 복합문화공간. 24시간 연중무휴.',
+    bookable: false
+  },
+
+  /* ───────── 영등포구 ───────── */
+  {
+    name: '명화라이브홀',
+    gu: '영등포구', dong: '영등포동2가',
+    address: '서울특별시 영등포구 영등포동2가',
+    category: ['라이브홀'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EB%AA%85%ED%99%94%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EC%98%81%EB%93%B1%ED%8F%AC',
+    desc: '영등포 라이브홀.',
+    bookable: false
+  },
+  {
+    name: '그레이존 라이브홀',
+    gu: '영등포구', dong: '대림동',
+    address: '서울특별시 영등포구 대림동',
+    category: ['라이브홀'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EA%B7%B8%EB%A0%88%EC%9D%B4%EC%A1%B4%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EB%8C%80%EB%A6%BC',
+    desc: '대림동 라이브홀.',
+    bookable: false
+  },
+  {
+    name: '숲세권 라이브',
+    gu: '영등포구', dong: '문래동3가',
+    address: '서울특별시 영등포구 문래동3가',
+    hours: '24시간 운영',
+    category: ['공연장'],
+    features: ['24시간 운영'],
+    map: 'https://map.naver.com/p/search/%EC%88%B2%EC%84%B8%EA%B6%8C%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%EB%AC%B8%EB%9E%98',
+    desc: '문래동 공연·연극시설. 24시간 운영.',
+    bookable: false
+  },
+  {
+    name: '문래재즈IN',
+    gu: '영등포구', dong: '문래동4가',
+    address: '서울특별시 영등포구 문래동4가',
+    hours: '13:00 운영 시작',
+    category: ['공연장'],
+    features: ['네이버페이', '재즈 전문'],
+    map: 'https://map.naver.com/p/search/%EB%AC%B8%EB%9E%98%EC%9E%AC%EC%A6%88IN',
+    desc: '문래동 재즈 전문 공연장.',
+    bookable: true
+  },
+  {
+    name: 'GBN 라이브하우스',
+    gu: '영등포구', dong: '문래동3가',
+    address: '서울특별시 영등포구 문래동3가',
+    category: ['라이브홀'],
+    features: [],
+    map: 'https://map.naver.com/p/search/GBN%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%95%98%EC%9A%B0%EC%8A%A4%20%EB%AC%B8%EB%9E%98',
+    desc: '문래동 라이브하우스.',
+    bookable: false
+  },
+
+  /* ───────── 서초구 ───────── */
+  {
+    name: '퍼플노이즈라이브홀',
+    gu: '서초구', dong: '방배동',
+    address: '서울특별시 서초구 방배동',
+    hours: '~24:00',
+    category: ['라이브홀'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%ED%8D%BC%ED%94%8C%EB%85%B8%EC%9D%B4%EC%A6%88%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EB%B0%A9%EB%B0%B0%EB%8F%99',
+    desc: '방배동 라이브홀.',
+    bookable: false
+  },
+
+  /* ───────── 용산구 ───────── */
+  {
+    name: '노들섬 라이브하우스',
+    gu: '용산구', dong: '이촌동',
+    address: '서울특별시 용산구 이촌동 노들섬',
+    hours: '~20:00',
+    category: ['라이브홀'],
+    features: ['노들섬 내 위치'],
+    map: 'https://map.naver.com/p/search/%EB%85%B8%EB%93%A4%EC%84%AC%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%95%98%EC%9A%B0%EC%8A%A4',
+    site: 'https://nodeul.org/',
+    desc: '한강 노들섬 내 라이브하우스. 자연과 음악이 어우러진 공간.',
+    bookable: false
+  },
+  {
+    name: '대원콘텐츠라이브',
+    gu: '용산구', dong: '한강로3가',
+    address: '서울특별시 용산구 한강로3가',
+    hours: '~21:00',
+    category: ['공연장'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EB%8C%80%EC%9B%90%EC%BD%98%ED%85%90%EC%B8%A0%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%EC%9A%A9%EC%82%B0',
+    desc: '용산 한강로 공연장.',
+    bookable: false
+  },
+
+  /* ───────── 강남구 ───────── */
+  {
+    name: '마이라이브홀',
+    gu: '강남구', dong: '신사동',
+    address: '서울특별시 강남구 신사동',
+    category: ['라이브홀'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EB%A7%88%EC%9D%B4%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EC%8B%A0%EC%82%AC%EB%8F%99',
+    desc: '강남 신사동 라이브홀.',
+    bookable: false
+  },
+  {
+    name: '서울스트리밍스테이션',
+    gu: '강남구', dong: '역삼동',
+    address: '서울특별시 강남구 역삼동',
+    hours: '~24:00',
+    category: ['공연장'],
+    features: ['네이버페이'],
+    map: 'https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%EC%8A%A4%ED%8A%B8%EB%A6%AC%EB%B0%8D%EC%8A%A4%ED%85%8C%EC%9D%B4%EC%85%98%20%EC%97%AD%EC%82%BC',
+    desc: '강남 역삼동 공연장.',
+    bookable: true
+  },
+
+  /* ───────── 성동구 ───────── */
+  {
+    name: '라이브클럽 뮤직스페이스',
+    gu: '성동구', dong: '성수동2가',
+    address: '서울특별시 성동구 성수동2가',
+    hours: '~22:00',
+    category: ['클럽', '라이브홀'],
+    features: [],
+    map: 'https://map.naver.com/p/search/%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%81%B4%EB%9F%BD%20%EB%AE%A4%EC%A7%81%EC%8A%A4%ED%8E%98%EC%9D%B4%EC%8A%A4%20%EC%84%B1%EC%88%98',
+    desc: '성수동 라이브클럽.',
+    bookable: false
+  },
+
+  /* ───────── 광진구 ───────── */
+  {
+    name: '예스24라이브홀',
+    gu: '광진구', dong: '광장동',
+    address: '서울특별시 광진구 광장동',
+    category: ['라이브홀'],
+    features: ['대형 공연장'],
+    map: 'https://map.naver.com/p/search/%EC%98%88%EC%8A%A424%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80',
+    site: 'https://www.yes24livehall.com/',
+    desc: '광진구 대형 라이브홀. 중대형 콘서트 및 공연 개최.',
+    bookable: false
+  },
+
+  /* ───────── 종로구 ───────── */
+  {
+    name: '대학로 라이브 썸데이즈홀',
+    gu: '종로구', dong: '동숭동',
+    address: '서울특별시 종로구 동숭동',
+    category: ['공연장', '라이브홀'],
+    features: ['대학로'],
+    map: 'https://map.naver.com/p/search/%EB%8C%80%ED%95%99%EB%A1%9C%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%EC%8D%B8%EB%8D%B0%EC%9D%B4%EC%A6%88%ED%99%80',
+    desc: '대학로 동숭동 공연장.',
+    bookable: false
+  },
+
+  /* ───────── 송파구 ───────── */
+  {
+    name: '올림픽공원 올림픽홀',
+    gu: '송파구', dong: '방이동',
+    address: '서울특별시 송파구 방이동 올림픽공원',
+    category: ['라이브홀'],
+    features: ['대형 공연장', '올림픽공원'],
+    map: 'https://map.naver.com/p/search/%EC%98%AC%EB%A6%BC%ED%94%BD%EA%B3%B5%EC%9B%90%20%EC%98%AC%EB%A6%BC%ED%94%BD%ED%99%80',
+    desc: '올림픽공원 내 대형 공연장.',
+    bookable: false
+  },
+  {
+    name: '올림픽홀 뮤즈라이브',
+    gu: '송파구', dong: '방이동',
+    address: '서울특별시 송파구 방이동 올림픽공원',
+    category: ['공연장'],
+    features: ['올림픽공원'],
+    map: 'https://map.naver.com/p/search/%EC%98%AC%EB%A6%BC%ED%94%BD%ED%99%80%20%EB%AE%A4%EC%A6%88%EB%9D%BC%EC%9D%B4%EB%B8%8C',
+    desc: '올림픽공원 내 공연장.',
+    bookable: false
+  },
+  {
+    name: '밴드메이트라이브홀',
+    gu: '송파구', dong: '방이동',
+    address: '서울특별시 송파구 방이동',
+    hours: '24시간 연중무휴',
+    category: ['라이브홀'],
+    features: ['24시간 운영', '장소 대여'],
+    map: 'https://map.naver.com/p/search/%EB%B0%B4%EB%93%9C%EB%A9%94%EC%9D%B4%ED%8A%B8%EB%9D%BC%EC%9D%B4%EB%B8%8C%ED%99%80%20%EC%86%A1%ED%8C%8C',
+    desc: '송파구 방이동 라이브홀. 24시간 연중무휴, 장소 대여 가능.',
+    bookable: false
+  },
+
+];
+
+/* ── 렌더 엔진 ── */
+let filteredVenues = [...VENUES];
+let activeGu = '';
+let activeCat = '';
+
+function init() {
+  const allGu = [...new Set(VENUES.map(s => s.gu))];
+  document.getElementById('totalCount').textContent = VENUES.length;
+  document.getElementById('guCount').textContent    = allGu.length;
+  document.getElementById('bookCount').textContent  = VENUES.filter(s => s.bookable).length;
+
+  const guSel = document.getElementById('guSelect');
+  [...allGu].sort().forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g; opt.textContent = g;
+    guSel.appendChild(opt);
+  });
+
+  buildGuTabs();
+  renderVenues();
+  bindEvents();
+}
+
+function buildGuTabs() {
+  const tabs = document.getElementById('guTabs');
+  tabs.innerHTML = '';
+  if (VENUES.length === 0) return;
+  const allBtn = document.createElement('button');
+  allBtn.className = 'gu-tab' + (activeGu === '' ? ' active' : '');
+  allBtn.innerHTML = `전체 <span class="cnt">${VENUES.length}</span>`;
+  allBtn.onclick = () => { activeGu = ''; syncGuSelect(); buildGuTabs(); applyFilters(); };
+  tabs.appendChild(allBtn);
+
+  [...new Set(VENUES.map(s => s.gu))].sort().forEach(g => {
+    const cnt = VENUES.filter(s => s.gu === g).length;
+    const btn = document.createElement('button');
+    btn.className = 'gu-tab' + (activeGu === g ? ' active' : '');
+    btn.innerHTML = `${g} <span class="cnt">${cnt}</span>`;
+    btn.onclick = () => { activeGu = g; syncGuSelect(); buildGuTabs(); applyFilters(); };
+    tabs.appendChild(btn);
+  });
+}
+
+function syncGuSelect() {
+  document.getElementById('guSelect').value = activeGu;
+}
+
+function applyFilters() {
+  const q   = document.getElementById('searchInput').value.trim().toLowerCase();
+  const gu  = document.getElementById('guSelect').value;
+  const cat = document.getElementById('catSelect').value;
+
+  filteredVenues = VENUES.filter(s => {
+    if (gu && s.gu !== gu) return false;
+    if (cat && !s.category.some(c => c.includes(cat))) return false;
+    if (q) {
+      const hay = [s.name, s.gu, s.dong, s.address, s.desc,
+                   ...s.features, ...s.category].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  renderVenues();
+}
+
+function renderVenues() {
+  const list = document.getElementById('venueList');
+  const cnt  = document.getElementById('resultCount');
+  cnt.innerHTML = `<strong>${filteredVenues.length}</strong>개 공연장·라이브홀`;
+
+  if (filteredVenues.length === 0) {
+    // 데이터가 없으면 결과 카운트만 숨김
+    cnt.textContent = '';
+    return;
+  }
+
+  const byGu = {};
+  filteredVenues.forEach(s => {
+    if (!byGu[s.gu]) byGu[s.gu] = [];
+    byGu[s.gu].push(s);
+  });
+
+  list.innerHTML = Object.entries(byGu).map(([gu, venues]) => `
+    <div class="gu-section">
+      <div class="gu-section-header">
+        <span class="gu-section-title">${gu}</span>
+        <span class="gu-section-badge">${venues.length}개</span>
+      </div>
+      <div class="cards-grid">${venues.map(s => cardHTML(s)).join('')}</div>
+    </div>`).join('');
+
+  /* 카드 렌더 후 평가 섹션 갱신 */
+  if (typeof refreshAllCardRatings === 'function') {
+    const agg = aggregateRatings(window._allRatings || []);
+    const aggMap = {};
+    agg.forEach(a => aggMap[a.place_id] = a);
+    refreshAllCardRatings('venue', aggMap);
+  }
+}
+
+function cardHTML(s) {
+  const catTags     = s.category.map(c => `<span class="tag tag--cat">${c}</span>`).join('');
+  const featureTags = s.features.map(f => `<span class="tag tag--feature">${f}</span>`).join('');
+  const capacityTag = s.capacity ? `<span class="tag tag--capacity">👥 ${s.capacity}</span>` : '';
+
+  const mapBtn = s.map
+    ? `<a class="card-btn card-btn--map" href="${s.map}" target="_blank" rel="noopener noreferrer" data-guard="1"><i class="fas fa-map-marker-alt"></i> 지도</a>`
+    : '';
+  const siteBtn = s.site
+    ? `<a class="card-btn card-btn--site" href="${s.site}" target="_blank" rel="noopener noreferrer" data-guard="1"><i class="fas fa-globe"></i> 공식 사이트</a>`
+    : '';
+  const bookBtn = s.book
+    ? `<a class="card-btn card-btn--book" href="${s.book}" target="_blank" rel="noopener noreferrer" data-guard="1"><i class="fas fa-calendar-check"></i> 예약</a>`
+    : '';
+
+  return `
+  <div class="card">
+    <div>
+      <div class="card-name">${s.name}</div>
+      <div class="card-tags">
+        <span class="tag tag--gu">${s.gu}</span>
+        <span class="tag tag--dong">${s.dong}</span>
+        ${catTags}
+        ${capacityTag}
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-row"><i class="fas fa-map-marker-alt card-row-icon"></i><span class="card-row-text">${s.address}</span></div>
+      ${s.tel ? `<div class="card-row"><i class="fas fa-phone card-row-icon"></i><span class="card-row-text"><strong><a href="tel:${s.tel.replace(/-/g,'')}">${s.tel}</a></strong></span></div>` : ''}
+      ${s.hours ? `<div class="card-row"><i class="fas fa-clock card-row-icon"></i><span class="card-row-text">${s.hours}</span></div>` : ''}
+      <div class="card-row"><i class="fas fa-comment-alt card-row-icon"></i><span class="card-row-text">${s.desc}</span></div>
+    </div>
+    ${featureTags.length ? `<div class="card-features">${featureTags}</div>` : ''}
+    <div class="card-footer">
+      <div class="card-footer-label"><i class="fas fa-info-circle" style="color:#b45309;font-size:.7rem;"></i> 정보 바로가기</div>
+      <div class="card-footer-btns">${mapBtn}${siteBtn}${bookBtn}</div>
+    </div>
+    <div class="card-rating-area"></div>
+    <div style="margin-top:8px;text-align:right;">
+      <button class="rate-btn" style="background:#fffbeb;border-color:#fde68a;color:#b45309;" onclick="openRatingModal('venue','${s.name.replace(/'/g,"\\'")}')"><i class="fas fa-star"></i> 평가하기</button>
+    </div>
+  </div>`;
+}
+
+function bindEvents() {
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('guSelect').addEventListener('change', function () {
+    activeGu = this.value;
+    buildGuTabs();
+    applyFilters();
+  });
+  document.getElementById('catSelect').addEventListener('change', applyFilters);
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('guSelect').value    = '';
+    document.getElementById('catSelect').value   = '';
+    activeGu = '';
+    buildGuTabs();
+    applyFilters();
+  });
+}
+
+// 즉시 실행
+init();
+</script>
+
+<!-- 홈 FAB 버튼 -->
+<a href="index.html" id="gw-home-fab" class="home-fab" title="홈으로">
+    <i class="fas fa-home"></i>
+    <span class="home-fab-tooltip">홈으로</span>
+</a>
+<script>
+(function(){
+  var btn = document.getElementById('hamburgerBtn');
+  var menu = document.getElementById('mobileMenu');
+  if (!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    btn.classList.toggle('is-open');
+    menu.classList.toggle('is-open');
+  });
+  document.addEventListener('click', function(e){
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+      btn.classList.remove('is-open');
+      menu.classList.remove('is-open');
+    }
+  });
+})();
+</script>
+<!-- Auth -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/auth-header.js"></script>
+<script src="js/rating.js"></script>
+<script>
+document.addEventListener('click', async function(e) {
+  const target = e.target.closest('[data-guard]');
+  if (!target) return;
+  if (await requireLogin('venue.html')) { e.preventDefault(); e.stopImmediatePropagation(); }
+}, true);
+// ── 평가 시스템 ──
+window._allRatings = [];
+window._hofLoading = false;
+async function loadHallOfFame() {
+  if (window._hofLoading) return;
+  window._hofLoading = true;
+  try {
+    window._allRatings = await fetchRatings('venue');
+    const agg = aggregateRatings(window._allRatings);
+    const aggMap = {};
+    agg.forEach(a => aggMap[a.place_id] = a);
+    const hof = document.getElementById('hofContainer');
+    if (hof) hof.innerHTML = buildHallOfFame('venue', agg);
+    refreshAllCardRatings('venue', aggMap);
+  } catch(e) { console.warn('rating load failed', e); }
+  finally { window._hofLoading = false; }
+}
+window.reloadRatingBadges = debounce(loadHallOfFame, 600);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadHallOfFame, { once: true });
+} else {
+  loadHallOfFame();
+}
+</script>
+</body>
+</html>

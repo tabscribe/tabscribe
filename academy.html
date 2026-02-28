@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e85d04">
+  <meta name="google-site-verification" content="y_LIOep_Kgw8SPVqt4XB5oCKlfscobw2V2fkQV2J6HM" />
+  <meta name="naver-site-verification" content="72f154aec62c295b28b8f27b077b8c961e862892" />
+  <title>음악학원 찾기 — 코드덕쿠</title>
+  <meta name="description" content="기타·보컬·드럼·피아노 실용음악학원을 찾아보세요. 코드덕쿠가 검증한 실제 운영 학원 정보를 제공합니다.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://codeducku.vercel.app/academy.html">
+  <link rel="icon" href="images/og-thumbnail.png">
+  <link rel="apple-touch-icon" href="images/og-thumbnail.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── 페이지 변수 ── */
+    :root {
+      --accent:    #7c3aed;
+      --accent-lt: #f5f3ff;
+      --accent-bd: #ddd6fe;
+      --blue:  #1a56db; --blue-lt: #eff6ff; --blue-bd: #bfdbfe;
+      --green: #057a55; --green-lt: #f0fdf4; --green-bd: #bbf7d0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Noto Sans KR','Inter',sans-serif;background:#f4f5f7;color:#1e293b;min-height:100vh;}
+
+    /* ── 헤더 (style.css 공통 헤더와 연동) ── */
+    .header-nav{margin-left:auto;display:flex;gap:8px;flex-shrink:0;}
+    .nav-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:20px;font-size:.82rem;font-weight:700;text-decoration:none;transition:all .2s;white-space:nowrap;border:1.5px solid transparent;}
+    .nav-btn.active{background:var(--accent-lt);border-color:var(--accent-bd);color:var(--accent);}
+    .nav-btn:not(.active):hover{background:#f1f5f9;}
+    .logo-badge{font-size:.72rem;font-weight:700;background:var(--accent-lt);color:var(--accent);border:1px solid var(--accent-bd);border-radius:20px;padding:3px 10px;white-space:nowrap;}
+    .hamburger-btn{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;background:none;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;padding:8px;}
+    .hamburger-btn span{display:block;width:20px;height:2px;background:#334155;border-radius:2px;transition:all .25s;}
+    .hamburger-btn.is-open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+    .hamburger-btn.is-open span:nth-child(2){opacity:0;}
+    .hamburger-btn.is-open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+    .mobile-menu{display:none;flex-direction:column;background:#fff;border-top:1px solid #e2e8f0;padding:8px 16px 12px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+    .mobile-menu.is-open{display:flex;}
+    .mobile-menu-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-size:.88rem;font-weight:600;color:#334155;text-decoration:none;transition:background .15s;border-bottom:1px solid #f1f5f9;background:none;border-left:none;border-right:none;border-top:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;}
+    .mobile-menu-item:last-child{border-bottom:none;}
+    .mobile-menu-item:hover{background:#f8fafc;}
+    @media(max-width:900px){.header-nav{display:none;}.hamburger-btn{display:flex;}.header-auth-btns{display:none;}}
+
+    /* ── 히어로 ── */
+    .hero{background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 50%,#ddd6fe 100%);padding:8px 20px 6px;text-align:center;}
+    .hero-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(124,58,237,.12);color:var(--accent);border:1px solid var(--accent-bd);border-radius:20px;padding:2px 9px;font-size:.68rem;font-weight:700;margin-bottom:4px;}
+    .hero h1{font-size:clamp(1rem,2.5vw,1.35rem);font-weight:900;color:#1e1b4b;margin-bottom:3px;letter-spacing:-.5px;}
+    .hero h1 span{color:var(--accent);}
+    .hero-sub{font-size:.76rem;color:#4c1d95;max-width:640px;margin:0 auto 4px;line-height:1.5;}
+    .hero-notice{font-size:.67rem;color:#6d28d9;background:rgba(109,40,217,.08);border:1px solid #c4b5fd;border-radius:8px;padding:2px 10px;display:inline-block;margin-bottom:6px;}
+    .hero-stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:2px;}
+    .hero-stat{text-align:center;background:rgba(255,255,255,.6);border-radius:8px;padding:3px 12px;}
+    .hero-stat-num{font-size:1rem;font-weight:900;color:var(--accent);}
+    .hero-stat-label{font-size:.65rem;color:#6d28d9;font-weight:600;}
+
+    /* ── 레이아웃 ── */
+    .page-layout{max-width:1200px;margin:0 auto;padding:28px 20px 60px;display:grid;grid-template-columns:220px 1fr;gap:24px;}
+    @media(max-width:900px){.page-layout{grid-template-columns:1fr;}.sidebar{display:none;}}
+
+    /* ── 사이드바 ── */
+    .sidebar{position:sticky;top:80px;align-self:flex-start;}
+    .filter-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 16px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+    .filter-card h3{font-size:.75rem;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
+    .filter-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;border-radius:9px;font-size:.87rem;font-weight:500;color:#475569;background:none;border:none;cursor:pointer;text-align:left;transition:all .15s;font-family:inherit;}
+    .filter-btn:hover{background:#f8fafc;color:#1e293b;}
+    .filter-btn.active{background:var(--accent-lt);color:var(--accent);font-weight:700;}
+    .filter-btn .count{margin-left:auto;font-size:.72rem;font-weight:700;background:#e2e8f0;color:#64748b;padding:2px 7px;border-radius:20px;}
+    .filter-btn.active .count{background:var(--accent-bd);color:var(--accent);}
+
+    /* ── 메인 콘텐츠 ── */
+    .main-content{}
+    .search-bar{display:flex;gap:8px;margin-bottom:20px;}
+    .search-bar input{flex:1;padding:11px 16px;border:1.5px solid #e2e8f0;border-radius:11px;font-size:.92rem;font-family:inherit;outline:none;background:#fff;color:#1e293b;transition:border-color .18s;}
+    .search-bar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,.1);}
+    .search-bar button{padding:11px 18px;background:var(--accent);color:#fff;border:none;border-radius:11px;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .18s;font-family:inherit;}
+    .search-bar button:hover{background:#6d28d9;}
+    .result-info{font-size:.85rem;color:#64748b;margin-bottom:14px;font-weight:500;}
+    .result-info strong{color:var(--accent);}
+
+    /* ── 카드 그리드 ── */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+    .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.05);transition:transform .18s,box-shadow .18s;position:relative;}
+    .card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.1);border-color:#c4b5fd;}
+    .card-badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+    .badge-guitar{background:#ede9fe;color:#7c3aed;}
+    .badge-vocal{background:#fce7f3;color:#be185d;}
+    .badge-drum{background:#fef3c7;color:#d97706;}
+    .badge-piano{background:#dbeafe;color:#1d4ed8;}
+    .badge-bass{background:#d1fae5;color:#059669;}
+    .badge-full{background:#f0fdf4;color:#15803d;}
+    .badge-etc{background:#f1f5f9;color:#475569;}
+    .card-name{font-size:1.05rem;font-weight:800;color:#1e293b;margin-bottom:6px;letter-spacing:-.3px;}
+    .card-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;font-size:.83rem;color:#475569;line-height:1.5;}
+    .card-row-icon{color:#94a3b8;width:14px;flex-shrink:0;margin-top:2px;}
+    .card-row-text a{color:#1a56db;text-decoration:none;}
+    .card-row-text a:hover{text-decoration:underline;}
+    .card-tags{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0;}
+    .card-tag{font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:20px;background:#f1f5f9;color:#475569;}
+    .card-tag.highlight{background:var(--accent-lt);color:var(--accent);}
+    /* ── 카드 버튼 섹션 (정보 제공 영역) ── */
+    .card-btns-wrap{
+      margin-top:14px;
+      background:linear-gradient(135deg,#f8fafc,#f1f5f9);
+      border:1.5px solid #e2e8f0;
+      border-radius:12px;
+      padding:10px 10px 8px;
+      position:relative;
+    }
+    .card-btns-label{
+      font-size:.65rem;
+      font-weight:800;
+      color:#94a3b8;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      margin-bottom:7px;
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
+    .card-btns-label::before{
+      content:'';
+      display:inline-block;
+      width:6px;height:6px;
+      background:#7c3aed;
+      border-radius:50%;
+      flex-shrink:0;
+    }
+    .card-btns{display:flex;gap:8px;}
+    .card-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;transition:all .16s;border:1.5px solid transparent;font-family:inherit;cursor:pointer;}
+    .card-btn--map{background:var(--blue-lt);border-color:var(--blue-bd);color:var(--blue);}
+    .card-btn--map:hover{background:#dbeafe;transform:translateY(-1px);}
+    .card-btn--site{background:var(--accent-lt);border-color:var(--accent-bd);color:var(--accent);}
+    .card-btn--site:hover{background:#ede9fe;transform:translateY(-1px);}
+    .card-btn--call{background:var(--green-lt);border-color:var(--green-bd);color:var(--green);}
+    .card-btn--call:hover{background:#dcfce7;transform:translateY(-1px);}
+
+    /* ── 빈 상태 ── */
+    .empty-state{text-align:center;padding:60px 20px;color:#94a3b8;}
+    .empty-state .empty-icon{font-size:3rem;margin-bottom:14px;}
+    .empty-state p{font-size:.95rem;line-height:1.7;}
+
+    /* ── 업데이트 예정 배너 ── */
+    .coming-soon-banner{background:linear-gradient(135deg,#ede9fe,#f5f3ff);border:1.5px solid #c4b5fd;border-radius:14px;padding:32px;text-align:center;margin-bottom:24px;}
+    .coming-soon-banner .cs-icon{font-size:2.5rem;margin-bottom:12px;}
+    .coming-soon-banner h3{font-size:1.2rem;font-weight:900;color:#4c1d95;margin-bottom:8px;}
+    .coming-soon-banner p{font-size:.88rem;color:#6d28d9;line-height:1.7;}
+    .coming-soon-banner .cs-tag{display:inline-block;margin-top:14px;background:var(--accent);color:#fff;font-size:.8rem;font-weight:700;padding:6px 16px;border-radius:20px;}
+
+    /* ── FAB 홈 버튼 ── */
+    .home-fab{position:fixed;bottom:26px;left:26px;width:48px;height:48px;background:#7c3aed;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;box-shadow:0 4px 16px rgba(124,58,237,.38);z-index:800;transition:background .18s,transform .18s;}
+    .home-fab:hover{background:#6d28d9;transform:scale(1.1);}
+
+    /* ── 네비 정보 구역 ── */
+    .nav-info-group{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 6px;background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:1.5px solid #6ee7b7;border-radius:20px;}
+    .nav-info-group::before{content:'📍 정보';font-size:.62rem;font-weight:800;color:#059669;background:#d1fae5;border:1px solid #6ee7b7;border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;}
+    .nav-info-group .nav-btn{border-color:transparent;background:transparent;}
+    .nav-info-group .nav-btn:hover{background:rgba(255,255,255,.8);border-color:#6ee7b7;}
+    .nav-info-group .nav-btn.active{background:rgba(255,255,255,.9);}
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo-link" aria-label="코드덕쿠 홈으로">
+      <i class="fas fa-guitar" style="color:#e85d04;font-size:1.3rem;"></i>
+      <div class="logo-textbox">
+        <span class="logo-text">Code<span class="accent">ducku</span></span>
+        <span class="logo-ko">코드덕쿠</span>
+      </div>
+    </a>
+    <span class="logo-badge">음악학원 찾기</span>
+    <nav class="header-nav">
+      <div class="nav-info-group">
+        <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> <span>합주실 찾기</span></a>
+        <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> <span>리페어샵 찾기</span></a>
+        <a href="instrument.html" class="nav-btn"><i class="fas fa-guitar"></i> <span>악기샵 찾기</span></a>
+        <a href="academy.html" class="nav-btn active"><i class="fas fa-graduation-cap"></i> <span>음악학원 찾기</span></a>
+        <a href="venue.html" class="nav-btn"><i class="fas fa-theater-masks"></i> <span>공연장 찾기</span></a>
+      </div>
+      <a href="community.html" class="nav-btn"><i class="fas fa-users"></i> <span>커뮤니티</span></a>
+    </nav>
+    <div class="header-auth-btns">
+      <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
+      <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none"><i class="fas fa-user-circle"></i><span id="headerNickname"></span></a>
+      <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+    </div>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="mobile-menu-item"><i class="fas fa-home" style="color:#e85d04"></i> 홈 (타브 생성)</a>
+    <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실 찾기</a>
+    <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵 찾기</a>
+    <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵 찾기</a>
+    <a href="academy.html" class="mobile-menu-item"><i class="fas fa-graduation-cap" style="color:#7c3aed"></i> 음악학원 찾기</a>
+    <a href="venue.html" class="mobile-menu-item"><i class="fas fa-theater-masks" style="color:#b45309"></i> 공연장 찾기</a>
+    <a href="community.html" class="mobile-menu-item"><i class="fas fa-users" style="color:#ea580c"></i> 커뮤니티</a>
+    <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
+      <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
+      <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-badge"><i class="fas fa-graduation-cap"></i> 음악학원 정보</div>
+  <h1>🎓 <span>음악학원</span> 찾기</h1>
+  <p class="hero-sub">기타·보컬·드럼·피아노·베이스 실용음악학원을 찾아보세요.<br>네이버 등록 기준 실제 운영 학원 정보를 수록합니다.</p>
+  <p class="hero-notice"><i class="fas fa-exclamation-triangle"></i> 수업료·모집 현황은 변동될 수 있으니 방문 전 반드시 전화로 확인하세요.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num" id="totalCount">0</div><div class="hero-stat-label">등록 학원</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" id="districtCount">0</div><div class="hero-stat-label">지역 수</div></div>
+    <div class="hero-stat"><div class="hero-stat-num" id="typeCount">0</div><div class="hero-stat-label">전공 종류</div></div>
+  </div>
+</section>
+
+<!-- 본문 레이아웃 -->
+<div class="page-layout">
+
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="filter-card">
+      <h3>전공 과목</h3>
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">
+        <i class="fas fa-th" style="color:#7c3aed"></i> 전체
+        <span class="count" id="cnt-all">0</span>
+      </button>
+      <button class="filter-btn" data-filter="guitar" onclick="setFilter('guitar',this)">
+        <i class="fas fa-guitar" style="color:#7c3aed"></i> 기타
+        <span class="count" id="cnt-guitar">0</span>
+      </button>
+      <button class="filter-btn" data-filter="vocal" onclick="setFilter('vocal',this)">
+        <i class="fas fa-microphone" style="color:#be185d"></i> 보컬
+        <span class="count" id="cnt-vocal">0</span>
+      </button>
+      <button class="filter-btn" data-filter="drum" onclick="setFilter('drum',this)">
+        <i class="fas fa-drum" style="color:#d97706"></i> 드럼
+        <span class="count" id="cnt-drum">0</span>
+      </button>
+      <button class="filter-btn" data-filter="piano" onclick="setFilter('piano',this)">
+        <i class="fas fa-music" style="color:#1d4ed8"></i> 피아노/키보드
+        <span class="count" id="cnt-piano">0</span>
+      </button>
+      <button class="filter-btn" data-filter="bass" onclick="setFilter('bass',this)">
+        <i class="fas fa-guitar" style="color:#059669"></i> 베이스
+        <span class="count" id="cnt-bass">0</span>
+      </button>
+      <button class="filter-btn" data-filter="full" onclick="setFilter('full',this)">
+        <i class="fas fa-star" style="color:#15803d"></i> 종합 (전 과목)
+        <span class="count" id="cnt-full">0</span>
+      </button>
+    </div>
+    <div class="filter-card">
+      <h3>지역</h3>
+      <button class="filter-btn active" data-region="all" onclick="setRegion('all',this)">
+        <i class="fas fa-map" style="color:#64748b"></i> 전체 지역
+      </button>
+      <button class="filter-btn" data-region="서울" onclick="setRegion('서울',this)">
+        <i class="fas fa-map-marker-alt" style="color:#e85d04"></i> 서울
+      </button>
+      <button class="filter-btn" data-region="경기" onclick="setRegion('경기',this)">
+        <i class="fas fa-map-marker-alt" style="color:#0369a1"></i> 경기
+      </button>
+      <button class="filter-btn" data-region="인천" onclick="setRegion('인천',this)">
+        <i class="fas fa-map-marker-alt" style="color:#7c3aed"></i> 인천
+      </button>
+    </div>
+  </aside>
+
+  <!-- 메인 -->
+  <main class="main-content">
+
+    <!-- 명예의 전당 (검색 위에 표시) -->
+    <div id="hofContainer"><div style="background:linear-gradient(160deg,#0f0c29,#1a1a4e,#24243e);border-radius:18px;padding:18px 16px;margin-bottom:20px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">🍋</div><div style="font-size:.85rem;color:#a5b4fc;font-weight:700;">쿠슐랭 가이드 불러오는 중...</div></div></div>
+
+    <!-- 검색 -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="학원 이름, 지역, 과목으로 검색...">
+      <button onclick="doSearch()"><i class="fas fa-search"></i></button>
+    </div>
+
+    <div class="result-info" id="resultInfo">전체 <strong id="resultCount">0</strong>개 학원</div>
+
+    <!-- 카드 목록 -->
+    <div class="card-grid" id="cardGrid">
+      <!-- JS로 렌더링 -->
+    </div>
+
+  </main>
+</div>
+
+<!-- FAB -->
+<a href="index.html" class="home-fab" title="홈으로"><i class="fas fa-home"></i></a>
+
+<!-- Auth -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/auth-header.js"></script>
+<script src="js/rating.js"></script>
+
+<script>
+/* ────────────────────────────────
+   실용음악학원 데이터 (업체 정보 추가 예정)
+──────────────────────────────── */
+const ACADEMIES = [
+
+  /* ──────────── 마포구 ──────────── */
+  {
+    name: 'SMS서울실용음악학원 신촌',
+    type: ['vocal', 'full'],
+    region: '서울', district: '마포구',
+    address: '서울 마포구 노고산동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/SMS%EC%84%9C%EC%9A%B8%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%8B%A0%EC%B4%8C',
+    tags: ['보컬', '발성', '취미반', '성인반', '휠체어 출입 가능'],
+    desc: '신촌 보컬·발성 전문 실용음악학원'
+  },
+  {
+    name: 'KS 실용음악 아카데미',
+    type: ['full'],
+    region: '서울', district: '마포구',
+    address: '서울 마포구 신공덕동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/KS%20%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%20%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8%20%EB%A7%88%ED%8F%AC',
+    tags: ['실용음악', '전 과목'],
+    desc: '마포구 신공덕동 실용음악 전문 아카데미'
+  },
+  {
+    name: '꾼 홍대실용음악학원',
+    type: ['full'],
+    region: '서울', district: '마포구',
+    address: '서울 마포구 당인동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EA%BE%BC%20%ED%99%8D%EB%8C%80%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90',
+    tags: ['실용음악', '취미반', '성인반'],
+    desc: '홍대 인근 실용음악 전문 학원'
+  },
+  {
+    name: '에녹실용음악학원',
+    type: ['full'],
+    region: '서울', district: '마포구',
+    address: '서울 마포구 상암동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%97%90%EB%85%B9%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%83%81%EC%95%94',
+    tags: ['실용음악', '취미반'],
+    desc: '상암동 실용음악학원'
+  },
+
+  /* ──────────── 서대문구 ──────────── */
+  {
+    name: '인생뮤직학원 신촌점',
+    type: ['full'],
+    region: '서울', district: '서대문구',
+    address: '서울 서대문구 창천동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%9D%B8%EC%83%9D%EB%AE%A4%EC%A7%81%ED%95%99%EC%9B%90%20%EC%8B%A0%EC%B4%8C%EC%A0%90',
+    tags: ['실용음악', '취미반', '성인반', '휠체어 출입 가능'],
+    desc: '신촌 실용음악 전문 학원'
+  },
+  {
+    name: '퀸실용음악학원 (서대문)',
+    type: ['full'],
+    region: '서울', district: '서대문구',
+    address: '서울 서대문구 대현동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%ED%80%B8%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EB%8C%80%ED%98%84%EB%8F%99',
+    tags: ['실용음악', '네이버페이'],
+    desc: '서대문구 대현동 실용음악학원'
+  },
+  {
+    name: '피아노리브레 신촌센터',
+    type: ['piano', 'vocal'],
+    region: '서울', district: '서대문구',
+    address: '서울 서대문구 창천동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%ED%94%BC%EC%95%84%EB%85%B8%EB%A6%AC%EB%B8%8C%EB%A0%88%20%EC%8B%A0%EC%B4%8C',
+    tags: ['피아노', '보컬', '네이버페이'],
+    desc: '신촌 피아노·보컬 전문'
+  },
+
+  /* ──────────── 용산구 ──────────── */
+  {
+    name: '더베이스레슨학원 용산점',
+    type: ['bass', 'guitar'],
+    region: '서울', district: '용산구',
+    address: '서울 용산구 갈월동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%8D%94%EB%B2%A0%EC%9D%B4%EC%8A%A4%EB%A0%88%EC%8A%A8%ED%95%99%EC%9B%90%20%EC%9A%A9%EC%82%B0',
+    tags: ['베이스', '통기타', '취미반'],
+    desc: '용산 갈월동 베이스·기타 전문 레슨'
+  },
+  {
+    name: '더베이스레슨 숙대점',
+    type: ['bass', 'guitar'],
+    region: '서울', district: '용산구',
+    address: '서울 용산구 청파동3가',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%8D%94%EB%B2%A0%EC%9D%B4%EC%8A%A4%EB%A0%88%EC%8A%A8%20%EC%88%99%EB%8C%80%EC%A0%90',
+    tags: ['베이스', '통기타', '취미반'],
+    desc: '숙대 인근 베이스·기타 전문 레슨'
+  },
+  {
+    name: '윤원준기타교실 음악학원',
+    type: ['guitar'],
+    region: '서울', district: '용산구',
+    address: '서울 용산구 갈월동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%9C%A4%EC%9B%90%EC%A4%80%EA%B8%B0%ED%83%80%EA%B5%90%EC%8B%A4',
+    tags: ['통기타', '취미반', '쿠폰 제공'],
+    desc: '갈월동 기타 전문 음악학원'
+  },
+  {
+    name: '에이플랫뮤직스튜디오',
+    type: ['piano'],
+    region: '서울', district: '용산구',
+    address: '서울 용산구 원효로1가',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%97%90%EC%9D%B4%ED%94%8C%EB%9E%AB%EB%AE%A4%EC%A7%81%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%20%EC%9A%A9%EC%82%B0',
+    tags: ['피아노', '취미반'],
+    desc: '원효로 피아노 전문 스튜디오'
+  },
+
+  /* ──────────── 강서구 ──────────── */
+  {
+    name: '펄스실용음악학원',
+    type: ['full'],
+    region: '서울', district: '강서구',
+    address: '서울 강서구 염창동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%ED%8E%84%EC%8A%A4%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%97%BC%EC%B0%BD',
+    tags: ['실용음악', '네이버페이', '전 과목'],
+    desc: '강서구 염창동 실용음악 전문 학원'
+  },
+  {
+    name: '네오뮤직실용음악학원 강서본원',
+    type: ['full'],
+    region: '서울', district: '강서구',
+    address: '서울 강서구 가양동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%84%A4%EC%98%A4%EB%AE%A4%EC%A7%81%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EA%B0%95%EC%84%9C',
+    tags: ['실용음악', '취미반'],
+    desc: '강서구 가양동 실용음악 전문 학원'
+  },
+  {
+    name: '디에이블 뮤직 & 사운드 실용음악스튜디오',
+    type: ['vocal', 'full'],
+    region: '서울', district: '강서구',
+    address: '서울 강서구 마곡동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%94%94%EC%97%90%EC%9D%B4%EB%B8%94%20%EB%AE%A4%EC%A7%81%20%EB%A7%88%EA%B3%A1',
+    tags: ['보컬', '발성', '실용음악'],
+    desc: '마곡동 보컬·발성 전문 스튜디오'
+  },
+
+  /* ──────────── 양천구 ──────────── */
+  {
+    name: 'SNS실용음악학원',
+    type: ['full'],
+    region: '서울', district: '양천구',
+    address: '서울 양천구 목동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/SNS%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EB%AA%A9%EB%8F%99',
+    tags: ['실용음악', '취미반'],
+    desc: '목동 실용음악학원'
+  },
+
+  /* ──────────── 구로구 ──────────── */
+  {
+    name: '오늘은뮤직 구로점',
+    type: ['full'],
+    region: '서울', district: '구로구',
+    address: '서울 구로구 구로동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%98%A4%EB%8A%98%EC%9D%80%EB%AE%A4%EC%A7%81%20%EA%B5%AC%EB%A1%9C%EC%A0%90',
+    tags: ['24시간 운영', '실용음악'],
+    desc: '구로동 24시간 운영 실용음악학원'
+  },
+
+  /* ──────────── 은평구 ──────────── */
+  {
+    name: '은평구 연신내 듀벅실용음악학원',
+    type: ['full'],
+    region: '서울', district: '은평구',
+    address: '서울 은평구 대조동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%93%80%EB%B2%85%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%97%B0%EC%8B%A0%EB%82%B4',
+    tags: ['실용음악', '취미반'],
+    desc: '연신내 실용음악학원'
+  },
+
+  /* ──────────── 동작구 ──────────── */
+  {
+    name: '더뮤직아카데미',
+    type: ['full'],
+    region: '서울', district: '동작구',
+    address: '서울 동작구 사당동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%8D%94%EB%AE%A4%EC%A7%81%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8%20%EC%82%AC%EB%8B%B9',
+    tags: ['실용음악', '취미반'],
+    desc: '사당동 실용음악 아카데미'
+  },
+
+  /* ──────────── 서초구 ──────────── */
+  {
+    name: '팍스뮤직 음악학원 서초본원',
+    type: ['full'],
+    region: '서울', district: '서초구',
+    address: '서울 서초구 서초동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%ED%8C%8D%EC%8A%A4%EB%AE%A4%EC%A7%81%20%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%84%9C%EC%B4%88',
+    tags: ['실용음악', '전 과목'],
+    desc: '서초동 실용음악 전문 학원'
+  },
+
+  /* ──────────── 강남구 ──────────── */
+  {
+    name: '어썸기타학원 선릉점',
+    type: ['guitar'],
+    region: '서울', district: '강남구',
+    address: '서울 강남구 대치동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%96%B4%EC%8D%B0%EA%B8%B0%ED%83%80%ED%95%99%EC%9B%90%20%EC%84%A0%EB%A6%89%EC%A0%90',
+    tags: ['통기타', '취미반'],
+    desc: '선릉 기타 전문 학원'
+  },
+
+  /* ──────────── 성북구 ──────────── */
+  {
+    name: '3코드실용음악학원',
+    type: ['full'],
+    region: '서울', district: '성북구',
+    address: '서울 성북구 동선동1가',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/3%EC%BD%94%EB%93%9C%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EB%8F%99%EC%84%A0',
+    tags: ['실용음악', '취미반'],
+    desc: '성북구 동선동 실용음악학원'
+  },
+  {
+    name: '공쌤뮤직실용음악학원',
+    type: ['full'],
+    region: '서울', district: '성북구',
+    address: '서울 성북구 길음동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EA%B3%B5%EC%8C%A4%EB%AE%A4%EC%A7%81%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90',
+    tags: ['실용음악'],
+    desc: '성북구 길음동 실용음악학원'
+  },
+  {
+    name: '가온다 음악원',
+    type: ['full'],
+    region: '서울', district: '성북구',
+    address: '서울 성북구 삼선동2가',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EA%B0%80%EC%98%A8%EB%8B%A4%20%EC%9D%8C%EC%95%85%EC%9B%90%20%EC%82%BC%EC%84%A0',
+    tags: ['실용음악', '취미반'],
+    desc: '성북구 삼선동 음악원'
+  },
+  {
+    name: '더옐실용음악학원',
+    type: ['full'],
+    region: '서울', district: '성북구',
+    address: '서울 성북구 하월곡동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%8D%94%EC%98%90%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90',
+    tags: ['실용음악'],
+    desc: '성북구 하월곡동 실용음악학원'
+  },
+
+  /* ──────────── 강북구 ──────────── */
+  {
+    name: '퀸실용음악학원 (강북)',
+    type: ['full'],
+    region: '서울', district: '강북구',
+    address: '서울 강북구 미아동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%ED%80%B8%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EB%AF%B8%EC%95%84%EB%8F%99',
+    tags: ['실용음악', '취미반'],
+    desc: '강북구 미아동 실용음악학원'
+  },
+  {
+    name: '무스뮤직실용음악학원 수유',
+    type: ['drum'],
+    region: '서울', district: '강북구',
+    address: '서울 강북구 수유동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%AC%B4%EC%8A%A4%EB%AE%A4%EC%A7%81%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%88%98%EC%9C%A0',
+    tags: ['드럼', '취미반'],
+    desc: '수유동 드럼 전문 음악학원'
+  },
+
+  /* ──────────── 종로구 ──────────── */
+  {
+    name: '인생뮤직학원 종로대학로점',
+    type: ['full'],
+    region: '서울', district: '종로구',
+    address: '서울 종로구 동숭동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%9D%B8%EC%83%9D%EB%AE%A4%EC%A7%81%ED%95%99%EC%9B%90%20%EC%A2%85%EB%A1%9C%EB%8C%80%ED%95%99%EB%A1%9C%EC%A0%90',
+    tags: ['실용음악', '취미반', '휠체어 출입 가능'],
+    desc: '대학로 실용음악 전문 학원'
+  },
+
+  /* ──────────── 동대문구 ──────────── */
+  {
+    name: '리듬사운드',
+    type: ['full'],
+    region: '서울', district: '동대문구',
+    address: '서울 동대문구 청량리동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%A6%AC%EB%93%AC%EC%82%AC%EC%9A%B4%EB%93%9C%20%EC%B2%AD%EB%9F%89%EB%A6%AC',
+    tags: ['실용음악'],
+    desc: '청량리 실용음악 학원'
+  },
+  {
+    name: '아르떼 기타학원',
+    type: ['guitar'],
+    region: '서울', district: '동대문구',
+    address: '서울 동대문구 전농동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%95%84%EB%A5%B4%EB%96%BC%20%EA%B8%B0%ED%83%80%ED%95%99%EC%9B%90%20%EC%A0%84%EB%86%8D',
+    tags: ['통기타', '클래식기타', '토요일 휴무'],
+    desc: '전농동 통기타·클래식기타 전문 학원'
+  },
+
+  /* ──────────── 중랑구 ──────────── */
+  {
+    name: 'TMA실용음악학원 중랑캠퍼스',
+    type: ['full'],
+    region: '서울', district: '중랑구',
+    address: '서울 중랑구 중화동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/TMA%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%A4%91%EB%9E%91',
+    tags: ['실용음악', '취미반'],
+    desc: '중랑구 중화동 실용음악학원'
+  },
+  {
+    name: '투뮤직 스튜디오',
+    type: ['full'],
+    region: '서울', district: '중랑구',
+    address: '서울 중랑구 상봉동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%ED%88%AC%EB%AE%A4%EC%A7%81%20%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%20%EC%83%81%EB%B4%89',
+    tags: ['음악교육'],
+    desc: '상봉동 음악 스튜디오'
+  },
+
+  /* ──────────── 노원구 ──────────── */
+  {
+    name: '어뮤즈뮤직플레이스',
+    type: ['full'],
+    region: '서울', district: '노원구',
+    address: '서울 노원구 상계동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%96%B4%EB%AE%A4%EC%A6%88%EB%AE%A4%EC%A7%81%ED%94%8C%EB%A0%88%EC%9D%B4%EC%8A%A4%20%EC%83%81%EA%B3%84',
+    tags: ['실용음악', '취미반'],
+    desc: '상계동 실용음악학원'
+  },
+
+  /* ──────────── 광진구 ──────────── */
+  {
+    name: '보컬플래닛 별관',
+    type: ['vocal'],
+    region: '서울', district: '광진구',
+    address: '서울 광진구 능동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%B3%B4%EC%BB%AC%ED%94%8C%EB%9E%98%EB%8B%9B%20%EB%B3%84%EA%B4%80%20%EB%8A%A5%EB%8F%99',
+    tags: ['보컬', '통기타', '취미반'],
+    desc: '능동 보컬 전문 학원'
+  },
+  {
+    name: '뮤직스튜디오 시운랩',
+    type: ['vocal'],
+    region: '서울', district: '광진구',
+    address: '서울 광진구 구의동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%AE%A4%EC%A7%81%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%20%EC%8B%9C%EC%9A%B4%EB%9E%A9%20%EA%B5%AC%EC%9D%98',
+    tags: ['보컬', '발성'],
+    desc: '구의동 보컬·발성 전문 스튜디오'
+  },
+
+  /* ──────────── 강동구 ──────────── */
+  {
+    name: '림실용음악학원',
+    type: ['full'],
+    region: '서울', district: '강동구',
+    address: '서울 강동구 천호동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%A6%BC%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%B2%9C%ED%98%B8',
+    tags: ['실용음악'],
+    desc: '천호동 실용음악학원'
+  },
+  {
+    name: '비트뮤직아카데미',
+    type: ['drum'],
+    region: '서울', district: '강동구',
+    address: '서울 강동구 암사동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%B9%84%ED%8A%B8%EB%AE%A4%EC%A7%81%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8%20%EC%95%94%EC%82%AC',
+    tags: ['드럼', '취미반'],
+    desc: '암사동 드럼 전문 아카데미'
+  },
+  {
+    name: '루크아카데미',
+    type: ['drum'],
+    region: '서울', district: '강동구',
+    address: '서울 강동구 천호동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%A3%A8%ED%81%AC%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8%20%EC%B2%9C%ED%98%B8',
+    tags: ['드럼', '취미반'],
+    desc: '천호동 드럼 전문 아카데미'
+  },
+
+  /* ──────────── 송파구 ──────────── */
+  {
+    name: '유스실용음악학원',
+    type: ['full'],
+    region: '서울', district: '송파구',
+    address: '서울 송파구 잠실동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%9C%A0%EC%8A%A4%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EC%9E%A0%EC%8B%A4',
+    tags: ['피아노', '보컬', '드럼', '베이스', '기타', '미디'],
+    desc: '잠실 종합 실용음악학원'
+  },
+  {
+    name: '어썸기타학원 잠실점',
+    type: ['guitar'],
+    region: '서울', district: '송파구',
+    address: '서울 송파구 방이동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%96%B4%EC%8D%B0%EA%B8%B0%ED%83%80%ED%95%99%EC%9B%90%20%EC%9E%A0%EC%8B%A4%EC%A0%90',
+    tags: ['통기타', '취미반'],
+    desc: '잠실 기타 전문 학원'
+  },
+  {
+    name: '웨이브실용음악학원 가락점',
+    type: ['full'],
+    region: '서울', district: '송파구',
+    address: '서울 송파구 가락동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%9B%A8%EC%9D%B4%EB%B8%8C%EC%8B%A4%EC%9A%A9%EC%9D%8C%EC%95%85%ED%95%99%EC%9B%90%20%EA%B0%80%EB%9D%BD',
+    tags: ['실용음악', '취미반'],
+    desc: '가락동 실용음악학원'
+  },
+  {
+    name: '엘스기타학원 엘스드럼학원 위례',
+    type: ['guitar', 'drum'],
+    region: '서울', district: '송파구',
+    address: '서울 송파구 장지동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EC%97%98%EC%8A%A4%EA%B8%B0%ED%83%80%ED%95%99%EC%9B%90%20%EC%9C%84%EB%A1%80',
+    tags: ['기타', '드럼', '취미반'],
+    desc: '위례 기타·드럼 전문 학원'
+  },
+  {
+    name: '밴드메이트',
+    type: ['full'],
+    region: '서울', district: '송파구',
+    address: '서울 송파구 송파동',
+    tel: '정보 없음',
+    map: 'https://map.naver.com/p/search/%EB%B0%B4%EB%93%9C%EB%A9%94%EC%9D%B4%ED%8A%B8%20%EC%86%A1%ED%8C%8C%EB%8F%99',
+    tags: ['실용음악', '취미반'],
+    desc: '송파동 실용음악학원'
+  },
+
+];
+
+const TYPE_LABEL = { guitar:'기타', vocal:'보컬', drum:'드럼', piano:'피아노/키보드', bass:'베이스', full:'종합' };
+const TYPE_BADGE = { guitar:'badge-guitar', vocal:'badge-vocal', drum:'badge-drum', piano:'badge-piano', bass:'badge-bass', full:'badge-full' };
+
+let state = { filter: 'all', region: 'all', search: '' };
+
+function init() {
+  updateStats();
+  render();
+}
+
+function updateStats() {
+  document.getElementById('totalCount').textContent    = ACADEMIES.length;
+  document.getElementById('districtCount').textContent = [...new Set(ACADEMIES.map(a => a.district || a.region))].length;
+  document.getElementById('typeCount').textContent     = [...new Set(ACADEMIES.flatMap(a => a.type))].length || 6;
+
+  // 사이드바 카운트
+  const filters = ['all','guitar','vocal','drum','piano','bass','full'];
+  filters.forEach(f => {
+    const el = document.getElementById('cnt-' + f);
+    if (!el) return;
+    el.textContent = f === 'all'
+      ? ACADEMIES.length
+      : ACADEMIES.filter(a => a.type.includes(f)).length;
+  });
+}
+
+function getFiltered() {
+  return ACADEMIES.filter(a => {
+    const matchFilter = state.filter === 'all' || a.type.includes(state.filter);
+    const matchRegion = state.region === 'all' || a.region === state.region;
+    const q = state.search.toLowerCase();
+    const matchSearch = !q || a.name.toLowerCase().includes(q)
+      || a.address.toLowerCase().includes(q)
+      || (a.desc||'').toLowerCase().includes(q)
+      || a.type.some(t => (TYPE_LABEL[t]||'').includes(q));
+    return matchFilter && matchRegion && matchSearch;
+  });
+}
+
+function render() {
+  const list = getFiltered();
+  const grid = document.getElementById('cardGrid');
+  document.getElementById('resultCount').textContent = list.length;
+
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-icon">🎓</div>
+        <p>${state.search ? `"${state.search}"에 대한 결과가 없어요.` : '등록된 학원 정보가 없습니다.<br>곧 업데이트될 예정이에요!'}</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(a => {
+    const badges = a.type.map(t =>
+      `<span class="card-badge ${TYPE_BADGE[t]||'badge-etc'}"><i class="fas fa-graduation-cap"></i> ${TYPE_LABEL[t]||t}</span>`
+    ).join('');
+    const tags = (a.tags||[]).map(t => `<span class="card-tag">${t}</span>`).join('');
+    const mapBtn  = a.map  ? `<a class="card-btn card-btn--map"  href="${a.map}"  target="_blank" rel="noopener" data-guard="1"><i class="fas fa-map-marker-alt"></i> 지도</a>` : '';
+    const siteBtn = a.site ? `<a class="card-btn card-btn--site" href="${a.site}" target="_blank" rel="noopener" data-guard="1"><i class="fas fa-globe"></i> 홈페이지</a>` : '';
+    const callBtn = a.tel && a.tel !== '정보 없음'
+      ? `<a class="card-btn card-btn--call" href="tel:${a.tel.replace(/-/g,'')}" data-guard="1"><i class="fas fa-phone"></i> 전화</a>` : '';
+    return `
+      <div class="card">
+        <div>${badges}</div>
+        <div class="card-name">${a.name}</div>
+        ${a.desc ? `<div style="font-size:.82rem;color:#64748b;margin-bottom:6px;">${a.desc}</div>` : ''}
+        <div class="card-row"><i class="fas fa-map-marker-alt card-row-icon"></i><span class="card-row-text">${a.address}</span></div>
+        <div class="card-row"><i class="fas fa-phone card-row-icon"></i><span class="card-row-text"><strong>${a.tel}</strong></span></div>
+        ${tags ? `<div class="card-tags">${tags}</div>` : ''}
+        <div class="card-btns-wrap">
+          <div class="card-btns-label"><i class="fas fa-info-circle" style="color:#7c3aed;font-size:.7rem;"></i> 정보 바로가기</div>
+          <div class="card-btns">${mapBtn}${siteBtn}${callBtn}</div>
+        </div>
+        <div class="card-rating-area"></div>
+        <div style="margin-top:8px;text-align:right;">
+          <button class="rate-btn" style="background:#f5f3ff;border-color:#ddd6fe;color:#7c3aed;" onclick="openRatingModal('academy','${a.name.replace(/'/g,"\\'")}')"><i class="fas fa-star"></i> 평가하기</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function setFilter(f, btn) {
+  state.filter = f;
+  document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+  applyRatingToCards();
+}
+
+function setRegion(r, btn) {
+  state.region = r;
+  document.querySelectorAll('[data-region]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+  applyRatingToCards();
+}
+
+function doSearch() {
+  state.search = document.getElementById('searchInput').value.trim();
+  render();
+  applyRatingToCards();
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+// 로그인 가드
+document.addEventListener('click', async function(e) {
+  const target = e.target.closest('[data-guard]');
+  if (!target) return;
+  if (await requireLogin('academy.html')) { e.preventDefault(); e.stopImmediatePropagation(); }
+}, true);
+
+// ── 평가 시스템 ──
+window._allRatings = [];
+let _aggMap = {};
+window._hofLoading = false;
+
+function applyRatingToCards() {
+  refreshAllCardRatings('academy', _aggMap);
+}
+
+async function loadHallOfFame() {
+  if (window._hofLoading) return;
+  window._hofLoading = true;
+  try {
+    window._allRatings = await fetchRatings('academy');
+    const agg = aggregateRatings(window._allRatings);
+    _aggMap = {};
+    agg.forEach(a => _aggMap[a.place_id] = a);
+    const hof = document.getElementById('hofContainer');
+    if (hof) hof.innerHTML = buildHallOfFame('academy', agg);
+    refreshAllCardRatings('academy', _aggMap);
+  } catch(e) { console.warn('rating load failed', e); }
+  finally { window._hofLoading = false; }
+}
+window.reloadRatingBadges = debounce(loadHallOfFame, 600);
+
+// 햄버거 메뉴
+(function(){
+  const btn = document.getElementById('hamburgerBtn');
+  const menu = document.getElementById('mobileMenu');
+  btn.addEventListener('click', () => { btn.classList.toggle('is-open'); menu.classList.toggle('is-open'); });
+  document.addEventListener('click', e => {
+    if (!btn.contains(e.target) && !menu.contains(e.target)) { btn.classList.remove('is-open'); menu.classList.remove('is-open'); }
+  });
+})();
+
+init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadHallOfFame);
+} else {
+  loadHallOfFame();
+}
+</script>
+</body>
+</html>
