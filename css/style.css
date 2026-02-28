@@ -4610,6 +4610,66 @@ body {
 .nav-btn--accent { background:#fff8f4; border:1.5px solid #fcd9c0; color:#e85d04; }
 .nav-btn--accent:hover { background:#fff0e6; }
 
+/* ── 헤더 Auth 버튼 (공통) ── */
+.header-auth-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+}
+.nav-btn--login {
+    background: #fff7f0 !important;
+    color: #e85d04 !important;
+    border: 1.5px solid #fdba74 !important;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background .18s;
+    white-space: nowrap;
+}
+.nav-btn--login:hover { background: #ffe8d0 !important; }
+.nav-btn--logout {
+    background: #f3f4f6 !important;
+    color: #6b7280 !important;
+    border: 1.5px solid #e5e7eb !important;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: inherit;
+    transition: background .18s;
+    white-space: nowrap;
+}
+.nav-btn--logout:hover { background: #e5e7eb !important; color: #374151 !important; }
+.header-profile-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #e85d04;
+    padding: 7px 12px;
+    background: #fff7f0;
+    border-radius: 20px;
+    border: 1.5px solid #fdba74;
+    text-decoration: none;
+    transition: background .18s;
+    white-space: nowrap;
+}
+.header-profile-btn:hover { background: #ffe8d0; }
+@media (max-width: 900px) {
+    .header-auth-btns { display: none; }
+}
+
 /* 햄버거 버튼 — 기본 숨김 */
 .hamburger-btn {
     display: none;
