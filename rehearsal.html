@@ -751,9 +751,6 @@ function cardHTML(r) {
       <div class="card-footer-btns">${mapBtn}${bookBtn}</div>
     </div>
     <div class="card-rating-area" id="rating_${r.name.replace(/\s+/g,'_').slice(0,20)}"></div>
-    <div style="margin-top:8px;text-align:right;">
-      <button class="rate-btn" style="background:#fff7ed;border-color:#fed7aa;color:#d97706;" onclick="openRatingModal('rehearsal','${r.name.replace(/'/g,"\\'")}')"><i class="fas fa-star"></i> 평가하기</button>
-    </div>
   </div>`;
 }
 
