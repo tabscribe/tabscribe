@@ -148,6 +148,51 @@ images/
 
 ---
 
+## 🔍 검색엔진 등록 가이드
+
+### 준비된 파일
+| 파일 | 역할 |
+|---|---|
+| `robots.txt` | 검색엔진 크롤링 허용 설정 |
+| `sitemap.xml` | 사이트맵 (전체 페이지 URL 목록) |
+
+### 구글 Search Console 등록 절차
+
+1. **https://search.google.com/search-console** 접속
+2. "속성 추가" → **URL 접두사** 선택 → `https://tabscribe.vercel.app` 입력
+3. 소유권 확인 방법 선택:
+   - **HTML 태그** 방식 권장: Google이 제공하는 `<meta name="google-site-verification" content="xxxxx">` 코드 복사
+4. 복사한 코드를 **모든 HTML 파일**의 `<head>` 안 아래 주석 위치에 삽입:
+   ```html
+   <!-- 아래 주석을 실제 코드로 교체 -->
+   <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE"> -->
+   ```
+   → 주석 제거 후 코드 삽입
+5. GitHub에 커밋·푸시 후 Vercel 배포 완료되면 → Search Console에서 "확인" 클릭
+6. 등록 완료 후 좌측 메뉴 **Sitemaps** → `sitemap.xml` 입력하여 제출
+
+### 네이버 Search Advisor 등록 절차
+
+1. **https://searchadvisor.naver.com** 접속 (네이버 계정 로그인)
+2. "사이트 등록" → `https://tabscribe.vercel.app` 입력
+3. 소유권 확인 방법 선택:
+   - **HTML 태그** 방식 권장: Naver가 제공하는 `<meta name="naver-site-verification" content="xxxxx">` 코드 복사
+4. 복사한 코드를 모든 HTML 파일 `<head>` 안 주석 위치에 삽입:
+   ```html
+   <!-- <meta name="naver-site-verification" content="YOUR_NAVER_VERIFICATION_CODE"> -->
+   ```
+5. GitHub 커밋·푸시 → 배포 완료 후 → Search Advisor에서 "소유확인" 클릭
+6. 확인 후 **웹마스터도구 → 요청 → 사이트맵 제출**:
+   - `https://tabscribe.vercel.app/sitemap.xml`
+
+### 인증 후 확인사항
+- 구글: 색인 생성까지 **1~2주** 소요
+- 네이버: 색인 생성까지 **2~4주** 소요
+- robots.txt 접근 확인: `https://tabscribe.vercel.app/robots.txt`
+- sitemap.xml 접근 확인: `https://tabscribe.vercel.app/sitemap.xml`
+
+---
+
 ## 🔜 미구현 / 다음 개발 권장사항
 
 1. **멀티트랙 분리** (보컬+드럼 분리) — 서버사이드 처리 필요
