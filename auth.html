@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e85d04">
+<title>로그인 / 회원가입 — 코드덕쿠</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="images/og-thumbnail.png" type="image/png">
+<link rel="apple-touch-icon" href="images/og-thumbnail.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --accent:#e85d04;
+  --accent-dark:#c24e03;
+  --bg:#f8fafc;
+  --bg-card:#ffffff;
+  --border:#e2e8f0;
+  --text:#1e293b;
+  --text-sub:#64748b;
+  --text-muted:#94a3b8;
+  --radius:14px;
+  --shadow:0 2px 12px rgba(0,0,0,0.07);
+  --error:#dc2626;
+  --success:#16a34a;
+}
+html{font-family:'Inter','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);}
+body{min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── 헤더 ── */
+.header{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);}
+.logo i{font-size:1.3rem;color:var(--accent);}
+.logo-text{font-size:1.1rem;font-weight:800;}
+.logo-text .accent{color:var(--accent);}
+.logo-ko{font-size:0.68rem;color:var(--text-muted);font-weight:600;letter-spacing:0.03em;}
+
+/* ── 메인 ── */
+.main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 16px;}
+.auth-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  width:100%;
+  max-width:480px;
+  padding:36px 36px 32px;
+}
+
+/* ── 탭 ── */
+.auth-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--border);}
+.auth-tab{flex:1;padding:10px 0;background:none;border:none;font-size:1rem;font-weight:700;color:var(--text-muted);cursor:pointer;transition:all .18s;position:relative;bottom:-2px;}
+.auth-tab.active{color:var(--accent);border-bottom:2.5px solid var(--accent);}
+
+/* ── 폼 ── */
+.form-section{display:none;}
+.form-section.active{display:block;}
+.form-title{font-size:1.3rem;font-weight:800;margin-bottom:6px;}
+.form-desc{font-size:0.85rem;color:var(--text-sub);margin-bottom:24px;line-height:1.6;}
+
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:0.83rem;font-weight:600;color:var(--text);margin-bottom:6px;}
+.form-label .required{color:var(--accent);margin-left:2px;}
+.form-label .optional{color:var(--text-muted);font-weight:400;font-size:0.78rem;margin-left:4px;}
+.form-input{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  font-size:0.93rem;
+  color:var(--text);
+  background:#fff;
+  outline:none;
+  transition:border-color .18s;
+}
+.form-input:focus{border-color:var(--accent);}
+.form-input.error{border-color:var(--error);}
+
+/* ── 성별 선택 ── */
+.gender-group{display:flex;gap:10px;}
+.gender-btn{
+  flex:1;padding:10px 0;
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  background:#fff;
+  font-size:0.9rem;font-weight:600;
+  color:var(--text-sub);
+  cursor:pointer;
+  transition:all .18s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.gender-btn:hover{border-color:var(--accent);color:var(--accent);}
+.gender-btn.selected{border-color:var(--accent);background:#fff7f0;color:var(--accent);}
+
+/* ── 파트 선택 ── */
+.part-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.part-btn{
+  padding:9px 6px;
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  background:#fff;
+  font-size:0.82rem;font-weight:600;
+  color:var(--text-sub);
+  cursor:pointer;
+  transition:all .18s;
+  text-align:center;
+  line-height:1.4;
+}
+.part-btn:hover{border-color:var(--accent);color:var(--accent);}
+.part-btn.selected{border-color:var(--accent);background:#fff7f0;color:var(--accent);}
+.part-btn .part-icon{display:block;font-size:1.2rem;margin-bottom:3px;}
+
+/* ── 경력 선택 ── */
+.career-select{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  font-size:0.93rem;
+  color:var(--text);
+  background:#fff;
+  outline:none;
+  cursor:pointer;
+  transition:border-color .18s;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:36px;
+}
+.career-select:focus{border-color:var(--accent);}
+
+/* ── 버튼 ── */
+.submit-btn{
+  width:100%;padding:13px;
+  background:var(--accent);
+  color:#fff;
+  border:none;border-radius:10px;
+  font-size:1rem;font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  margin-top:8px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.submit-btn:hover{background:var(--accent-dark);transform:translateY(-1px);}
+.submit-btn:disabled{background:#cbd5e1;cursor:not-allowed;transform:none;}
+
+/* ── 메시지 ── */
+.msg-box{
+  padding:12px 14px;
+  border-radius:10px;
+  font-size:0.85rem;
+  font-weight:600;
+  margin-bottom:16px;
+  display:none;
+  align-items:flex-start;
+  gap:8px;
+  line-height:1.5;
+}
+.msg-box.error{background:#fef2f2;border:1px solid #fecaca;color:var(--error);display:flex;}
+.msg-box.success{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--success);display:flex;}
+
+/* ── 구분선 ── */
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-muted);font-size:0.8rem;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── 링크 ── */
+.auth-link{text-align:center;font-size:0.84rem;color:var(--text-sub);margin-top:16px;}
+.auth-link a{color:var(--accent);font-weight:700;text-decoration:none;}
+.auth-link a:hover{text-decoration:underline;}
+
+/* ── 비밀번호 토글 ── */
+.input-wrap{position:relative;}
+.input-wrap .form-input{padding-right:42px;}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.9rem;padding:4px;}
+
+/* ── 인증 완료 화면 ── */
+.verify-screen{text-align:center;padding:20px 0;}
+.verify-icon{font-size:3.5rem;margin-bottom:16px;}
+.verify-title{font-size:1.2rem;font-weight:800;margin-bottom:8px;}
+.verify-desc{font-size:0.88rem;color:var(--text-sub);line-height:1.7;}
+.verify-email{display:inline-block;background:#fff7f0;color:var(--accent);font-weight:700;padding:4px 12px;border-radius:8px;margin:8px 0;}
+
+/* ── 스텝 인디케이터 ── */
+.step-indicator{display:flex;align-items:center;gap:0;margin-bottom:24px;}
+.step{display:flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:600;color:var(--text-muted);}
+.step.active{color:var(--accent);}
+.step.done{color:var(--success);}
+.step-num{width:24px;height:24px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;flex-shrink:0;}
+.step.done .step-num{background:var(--success);border-color:var(--success);color:#fff;}
+.step.active .step-num{background:var(--accent);border-color:var(--accent);color:#fff;}
+.step-line{flex:1;height:2px;background:var(--border);margin:0 6px;}
+.step-line.done{background:var(--success);}
+
+/* ── 반응형 ── */
+@media(max-width:520px){
+  .auth-card{padding:24px 18px 20px;}
+  .part-grid{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header class="header">
+  <a href="index.html" class="logo">
+    <i class="fas fa-guitar"></i>
+    <div>
+      <div class="logo-text">Code<span class="accent">ducku</span></div>
+      <div class="logo-ko">코드덕쿠</div>
+    </div>
+  </a>
+</header>
+
+<!-- 메인 -->
+<main class="main">
+  <div class="auth-card">
+
+    <!-- 탭 -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">로그인</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">회원가입</button>
+    </div>
+
+    <!-- ───── 로그인 폼 ───── -->
+    <div class="form-section active" id="loginSection">
+      <div class="msg-box" id="loginMsg"></div>
+      <div class="form-group">
+        <label class="form-label">이메일<span class="required">*</span></label>
+        <input class="form-input" type="email" id="loginEmail" placeholder="이메일 주소 입력" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">비밀번호<span class="required">*</span></label>
+        <div class="input-wrap">
+          <input class="form-input" type="password" id="loginPw" placeholder="비밀번호 입력" autocomplete="current-password">
+          <button class="pw-toggle" onclick="togglePw('loginPw',this)" type="button"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <button class="submit-btn" id="loginBtn" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> 로그인
+      </button>
+      <div class="auth-link" style="margin-top:12px;">
+        <a href="#" onclick="showForgotPw(event)">비밀번호를 잊으셨나요?</a>
+      </div>
+    </div>
+
+    <!-- ───── 회원가입 폼 ───── -->
+    <div class="form-section" id="signupSection">
+
+      <!-- 스텝 인디케이터 -->
+      <div class="step-indicator" id="stepIndicator">
+        <div class="step active" id="step1El">
+          <div class="step-num">1</div>
+          <span>계정 정보</span>
+        </div>
+        <div class="step-line" id="stepLine1"></div>
+        <div class="step" id="step2El">
+          <div class="step-num">2</div>
+          <span>프로필 설정</span>
+        </div>
+        <div class="step-line" id="stepLine2"></div>
+        <div class="step" id="step3El">
+          <div class="step-num">3</div>
+          <span>이메일 인증</span>
+        </div>
+      </div>
+
+      <div class="msg-box" id="signupMsg"></div>
+
+      <!-- STEP 1: 계정 정보 -->
+      <div id="signupStep1">
+        <div class="form-title">계정 정보 입력</div>
+        <div class="form-desc">로그인에 사용할 이메일과 비밀번호를 설정하세요.</div>
+        <div class="form-group">
+          <label class="form-label">이메일<span class="required">*</span></label>
+          <input class="form-input" type="email" id="signupEmail" placeholder="이메일 주소 입력" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호<span class="required">*</span></label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signupPw" placeholder="8자 이상 입력" autocomplete="new-password">
+            <button class="pw-toggle" onclick="togglePw('signupPw',this)" type="button"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호 확인<span class="required">*</span></label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="signupPwConfirm" placeholder="비밀번호 재입력" autocomplete="new-password">
+            <button class="pw-toggle" onclick="togglePw('signupPwConfirm',this)" type="button"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">닉네임<span class="required">*</span></label>
+          <input class="form-input" type="text" id="signupNick" placeholder="2~12자 (한글, 영문, 숫자)" maxlength="12">
+        </div>
+        <button class="submit-btn" onclick="goStep2()">
+          다음 <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- STEP 2: 프로필 -->
+      <div id="signupStep2" style="display:none;">
+        <div class="form-title">음악 프로필 설정</div>
+        <div class="form-desc">커뮤니티에서 사용할 음악 프로필을 설정하세요.</div>
+
+        <!-- 성별 -->
+        <div class="form-group">
+          <label class="form-label">성별<span class="required">*</span></label>
+          <div class="gender-group">
+            <button class="gender-btn" data-val="male" onclick="selectGender(this)">
+              <i class="fas fa-mars"></i> 남성
+            </button>
+            <button class="gender-btn" data-val="female" onclick="selectGender(this)">
+              <i class="fas fa-venus"></i> 여성
+            </button>
+            <button class="gender-btn" data-val="other" onclick="selectGender(this)">
+              <i class="fas fa-genderless"></i> 기타
+            </button>
+          </div>
+        </div>
+
+        <!-- 파트 (중복 선택) -->
+        <div class="form-group">
+          <label class="form-label">파트<span class="required">*</span> <span style="font-size:0.78rem;font-weight:400;color:var(--text-muted);">중복 선택 가능</span></label>
+          <div class="part-grid">
+            <button class="part-btn" data-val="vocal" onclick="togglePart(this)">
+              <span class="part-icon">🎤</span>보컬
+            </button>
+            <button class="part-btn" data-val="guitar_electric" onclick="togglePart(this)">
+              <span class="part-icon">🎸</span>일렉기타
+            </button>
+            <button class="part-btn" data-val="guitar_acoustic" onclick="togglePart(this)">
+              <span class="part-icon">🪕</span>어쿠스틱
+            </button>
+            <button class="part-btn" data-val="bass" onclick="togglePart(this)">
+              <span class="part-icon">🎵</span>베이스
+            </button>
+            <button class="part-btn" data-val="drum" onclick="togglePart(this)">
+              <span class="part-icon">🥁</span>드럼
+            </button>
+            <button class="part-btn" data-val="keyboard" onclick="togglePart(this)">
+              <span class="part-icon">🎹</span>키보드
+            </button>
+            <button class="part-btn" data-val="dj" onclick="togglePart(this)">
+              <span class="part-icon">🎧</span>DJ
+            </button>
+            <button class="part-btn" data-val="brass" onclick="togglePart(this)">
+              <span class="part-icon">🎺</span>관악기
+            </button>
+            <button class="part-btn" data-val="etc" onclick="togglePart(this)">
+              <span class="part-icon">🎼</span>기타
+            </button>
+          </div>
+        </div>
+
+        <!-- 음악 경력 -->
+        <div class="form-group">
+          <label class="form-label">음악 경력 <span class="optional">(선택)</span></label>
+          <select class="career-select" id="signupCareer">
+            <option value="">경력 선택 안함</option>
+            <option value="beginner">입문 (1년 미만)</option>
+            <option value="1to3">초급 (1~3년)</option>
+            <option value="3to5">중급 (3~5년)</option>
+            <option value="5to10">고급 (5~10년)</option>
+            <option value="10plus">전문가 (10년 이상)</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button class="submit-btn" style="background:#f1f5f9;color:var(--text);flex:0 0 auto;width:auto;padding:13px 20px;" onclick="goStep1()">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <button class="submit-btn" id="signupSubmitBtn" onclick="doSignup()" style="flex:1;">
+            <i class="fas fa-envelope"></i> 인증 메일 발송
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: 이메일 인증 대기 -->
+      <div id="signupStep3" style="display:none;">
+        <div class="verify-screen">
+          <div class="verify-icon">📧</div>
+          <div class="verify-title">인증 메일을 보냈습니다!</div>
+          <div class="verify-desc">
+            아래 이메일로 인증 링크를 발송했어요.<br>
+            <span class="verify-email" id="verifyEmailDisplay"></span><br>
+            메일함을 확인하고 링크를 클릭하면<br>
+            <strong>가입이 완료</strong>됩니다 🎸
+          </div>
+          <div style="margin-top:20px;font-size:0.82rem;color:var(--text-muted);">
+            메일이 안 보이면 스팸함을 확인하거나<br>
+            <a href="#" onclick="resendEmail(event)" style="color:var(--accent);font-weight:700;">인증 메일 재발송</a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /signupSection -->
+
+  </div><!-- /auth-card -->
+</main>
+
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://aubagaamktdmtvfabcbd.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YmFnYWFta3RkbXR2ZmFiY2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxOTc5NDksImV4cCI6MjA4Nzc3Mzk0OX0.XoKiaw8nCJc1Hq9OjiURrGi_ZA-6sU4xhqqpDGcC2IM';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 이미 로그인 상태면 커뮤니티로 이동
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) window.location.href = 'community.html';
+});
+
+// 이메일 인증 후 돌아왔을 때 처리
+const hashParams = new URLSearchParams(window.location.hash.replace('#','?').slice(1));
+if (hashParams.get('type') === 'signup' || hashParams.get('access_token')) {
+  showMsg('loginMsg','success','✅ 이메일 인증 완료! 로그인해주세요.');
+  switchTab('login');
+}
+
+/* ── 상태 ── */
+let selectedGender = '';
+let selectedParts  = new Set();
+
+/* ── 탭 전환 ── */
+function switchTab(tab) {
+  document.getElementById('loginSection').classList.toggle('active', tab === 'login');
+  document.getElementById('signupSection').classList.toggle('active', tab === 'signup');
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+  clearMsg('loginMsg'); clearMsg('signupMsg');
+}
+
+/* ── 비밀번호 토글 ── */
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  const isHidden = inp.type === 'password';
+  inp.type = isHidden ? 'text' : 'password';
+  btn.innerHTML = isHidden ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+}
+
+/* ── 메시지 ── */
+function showMsg(id, type, text) {
+  const el = document.getElementById(id);
+  el.className = `msg-box ${type}`;
+  el.innerHTML = `<i class="fas fa-${type==='error'?'exclamation-circle':'check-circle'}"></i> ${text}`;
+}
+function clearMsg(id) {
+  const el = document.getElementById(id);
+  el.className = 'msg-box';
+  el.innerHTML = '';
+}
+
+/* ── 성별 선택 ── */
+function selectGender(btn) {
+  document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedGender = btn.dataset.val;
+}
+
+/* ── 파트 토글 ── */
+function togglePart(btn) {
+  btn.classList.toggle('selected');
+  const val = btn.dataset.val;
+  if (selectedParts.has(val)) selectedParts.delete(val);
+  else selectedParts.add(val);
+}
+
+/* ── STEP 이동 ── */
+function goStep1() {
+  document.getElementById('signupStep1').style.display = 'block';
+  document.getElementById('signupStep2').style.display = 'none';
+  // 스텝 인디케이터
+  setStep(1);
+}
+function goStep2() {
+  clearMsg('signupMsg');
+  const email = document.getElementById('signupEmail').value.trim();
+  const pw    = document.getElementById('signupPw').value;
+  const pwc   = document.getElementById('signupPwConfirm').value;
+  const nick  = document.getElementById('signupNick').value.trim();
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return showMsg('signupMsg','error','올바른 이메일 주소를 입력하세요.');
+  }
+  if (pw.length < 8) {
+    return showMsg('signupMsg','error','비밀번호는 8자 이상이어야 합니다.');
+  }
+  if (pw !== pwc) {
+    return showMsg('signupMsg','error','비밀번호가 일치하지 않습니다.');
+  }
+  if (nick.length < 2) {
+    return showMsg('signupMsg','error','닉네임은 2자 이상이어야 합니다.');
+  }
+
+  document.getElementById('signupStep1').style.display = 'none';
+  document.getElementById('signupStep2').style.display = 'block';
+  setStep(2);
+}
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById(`step${i}El`);
+    el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+  });
+  if (document.getElementById('stepLine1'))
+    document.getElementById('stepLine1').className = 'step-line' + (n > 1 ? ' done' : '');
+  if (document.getElementById('stepLine2'))
+    document.getElementById('stepLine2').className = 'step-line' + (n > 2 ? ' done' : '');
+}
+
+/* ── 로그인 ── */
+async function doLogin() {
+  clearMsg('loginMsg');
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw    = document.getElementById('loginPw').value;
+
+  if (!email || !pw) return showMsg('loginMsg','error','이메일과 비밀번호를 입력하세요.');
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로그인 중...';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+
+  if (error) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> 로그인';
+    const msg = error.message.includes('Invalid') ? '이메일 또는 비밀번호가 올바르지 않습니다.' :
+                error.message.includes('confirm') ? '이메일 인증 후 로그인하세요.' :
+                error.message;
+    return showMsg('loginMsg','error', msg);
+  }
+
+  // 로그인 성공
+  const redirect = new URLSearchParams(window.location.search).get('from') || 'community.html';
+  window.location.href = redirect;
+}
+
+/* ── 회원가입 ── */
+async function doSignup() {
+  clearMsg('signupMsg');
+
+  if (!selectedGender) {
+    return showMsg('signupMsg','error','성별을 선택해주세요.');
+  }
+  if (selectedParts.size === 0) {
+    return showMsg('signupMsg','error','파트를 1개 이상 선택해주세요.');
+  }
+
+  const email  = document.getElementById('signupEmail').value.trim();
+  const pw     = document.getElementById('signupPw').value;
+  const nick   = document.getElementById('signupNick').value.trim();
+  const career = document.getElementById('signupCareer').value;
+
+  const btn = document.getElementById('signupSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password: pw,
+    options: {
+      emailRedirectTo: window.location.origin + '/auth.html',
+      data: {
+        nickname: nick,
+        gender:   selectedGender,
+        parts:    Array.from(selectedParts),
+        career:   career || null,
+      }
+    }
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-envelope"></i> 인증 메일 발송';
+
+  if (error) {
+    const msg = error.message.includes('already') ? '이미 가입된 이메일입니다. 로그인해주세요.' : error.message;
+    return showMsg('signupMsg','error', msg);
+  }
+
+  // 성공 → STEP 3
+  document.getElementById('signupStep2').style.display = 'none';
+  document.getElementById('signupStep3').style.display = 'block';
+  document.getElementById('verifyEmailDisplay').textContent = email;
+  setStep(3);
+  window._signupEmail = email;
+  window._signupPw    = pw;
+}
+
+/* ── 인증 메일 재발송 ── */
+async function resendEmail(e) {
+  e.preventDefault();
+  if (!window._signupEmail) return;
+  await sb.auth.resend({ type: 'signup', email: window._signupEmail });
+  alert('인증 메일을 재발송했습니다. 스팸함도 확인해주세요.');
+}
+
+/* ── 비밀번호 찾기 ── */
+async function showForgotPw(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) {
+    return showMsg('loginMsg','error','이메일을 먼저 입력한 후 클릭하세요.');
+  }
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/auth.html'
+  });
+  if (error) return showMsg('loginMsg','error', error.message);
+  showMsg('loginMsg','success','비밀번호 재설정 메일을 발송했습니다.');
+}
+
+/* ── Enter 키 ── */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const loginActive = document.getElementById('loginSection').classList.contains('active');
+  if (loginActive) doLogin();
+});
+</script>
+</body>
+</html>

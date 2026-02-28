@@ -141,17 +141,18 @@
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 14px;
+            padding: 12px 10px;
+            margin-bottom: 10px;
             box-shadow: var(--shadow);
         }
         .sidebar-section h3 {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            padding: 0 6px;
         }
         .sidebar-menu {
             list-style: none;
@@ -159,10 +160,10 @@
         .sidebar-menu li a, .sidebar-menu li button {
             display: flex;
             align-items: center;
-            gap: 9px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-size: 0.88rem;
+            gap: 7px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.83rem;
             font-weight: 500;
             color: var(--text-secondary);
             text-decoration: none;
@@ -217,18 +218,20 @@
         }
 
         /* ── 콘텐츠 영역 ── */
-        .comm-content {}
+        .comm-content { min-width: 0; }
 
         /* 탭 + 필터 바 */
         .tab-filter-bar {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
             flex-wrap: wrap;
         }
         .category-title {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: var(--text-primary);
             display: flex;
@@ -248,10 +251,10 @@
             align-items: center;
         }
         .filter-select {
-            padding: 6px 12px;
+            padding: 7px 14px;
             border: 1.5px solid var(--border);
             border-radius: 8px;
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             color: var(--text-secondary);
             background: var(--bg-card);
             cursor: pointer;
@@ -262,12 +265,12 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 7px 16px;
+            padding: 8px 20px;
             background: var(--accent);
             color: #fff;
             border: none;
             border-radius: 8px;
-            font-size: 0.82rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -278,21 +281,21 @@
         .search-bar {
             display: flex;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .search-bar input {
             flex: 1;
-            padding: 9px 14px;
+            padding: 10px 16px;
             border: 1.5px solid var(--border);
             border-radius: 10px;
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             outline: none;
             color: var(--text-primary);
             background: var(--bg-card);
         }
         .search-bar input:focus { border-color: var(--accent); }
         .search-bar button {
-            padding: 9px 16px;
+            padding: 10px 18px;
             background: var(--accent);
             color: #fff;
             border: none;
@@ -303,20 +306,21 @@
         }
 
         /* 게시글 목록 */
-        .post-list { display: flex; flex-direction: column; gap: 10px; }
+        .post-list { display: flex; flex-direction: column; gap: 8px; }
 
         .post-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 16px 18px;
+            padding: 18px 22px;
             cursor: pointer;
             transition: all 0.18s;
             box-shadow: var(--shadow);
         }
         .post-card:hover {
             border-color: #fdba74;
-            box-shadow: 0 4px 20px rgba(232,93,4,0.10);
+            background: #fffaf7;
+            box-shadow: 0 4px 24px rgba(232,93,4,0.12);
             transform: translateY(-1px);
         }
         .post-card-top {
@@ -340,20 +344,22 @@
 
         .post-title-area { flex: 1; min-width: 0; }
         .post-title {
-            font-size: 0.97rem;
+            font-size: 1.03rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 4px;
+            margin-bottom: 5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.4;
         }
         .post-preview {
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.5;
         }
         .post-price {
             flex-shrink: 0;
@@ -366,12 +372,16 @@
         .post-meta {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
             margin-top: 10px;
-            font-size: 0.78rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
         }
         .post-meta span { display: flex; align-items: center; gap: 4px; }
+        .post-meta .meta-views { color: #2563eb; font-weight: 600; }
+        .post-meta .meta-date { margin-left: auto; color: var(--text-muted); }
         .post-tags {
             margin-top: 8px;
             display: flex;
@@ -389,8 +399,8 @@
         /* 중고장터 카드 그리드 */
         .gear-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
         }
         .gear-card {
             background: var(--bg-card);
@@ -1127,18 +1137,18 @@
         /* ── 커뮤니티 메인 레이아웃 (Grid 3단) ── */
         .comm-main-layout {
             display: grid;
-            grid-template-columns: 172px minmax(0,1fr) 172px;
-            gap: 14px;
-            max-width: 1360px;
+            grid-template-columns: 200px minmax(0,1fr) 200px;
+            gap: 18px;
+            max-width: 1480px;
             margin: 0 auto;
-            padding: 20px 16px 60px;
+            padding: 20px 20px 60px;
             align-items: start;
         }
-        /* 광고 컬럼 ── sticky, 넘침 없이 */
+        /* 광고 컬럼 ── sticky */
         .comm-main-layout > .gw-ad-col {
-            width: 160px;
+            width: 200px;
             min-width: 0;
-            max-width: 160px;
+            max-width: 200px;
             position: sticky;
             top: 76px;
             align-self: flex-start;
@@ -1146,13 +1156,28 @@
             overflow: visible;
             flex-shrink: 0;
         }
+        /* 광고 카드 크기 통일 */
+        .comm-main-layout > .gw-ad-col .gw-ad-card {
+            width: 100% !important;
+            max-width: 200px !important;
+        }
+        .comm-main-layout > .gw-ad-col .gw-ad-card img {
+            width: 100% !important;
+            height: 180px !important;
+            object-fit: cover !important;
+        }
         /* 중앙 콘텐츠 래퍼 ── 절대 넘치지 않게 */
         .comm-center-wrapper {
             min-width: 0;
             overflow: hidden;
         }
         /* 커뮤니티 3단 레이아웃 반응형 */
-        @media (max-width: 1300px) {
+        @media (max-width: 1400px) {
+            .comm-main-layout {
+                grid-template-columns: 180px minmax(0,1fr) 180px;
+            }
+        }
+        @media (max-width: 1100px) {
             .comm-main-layout {
                 grid-template-columns: 160px minmax(0,1fr);
             }
@@ -1166,7 +1191,7 @@
             #commAdLeft.gw-ad-col  { display: none !important; }
             /* 모바일 게시글 카드 */
             .post-card { padding: 14px 14px; }
-            .post-title { font-size: 0.93rem; white-space: normal; }
+            .post-title { font-size: 0.97rem; white-space: normal; }
             .comm-center-wrapper {
                 grid-template-columns: 1fr !important;
             }
@@ -1180,6 +1205,65 @@
         .home-fab:hover{background:#b84e00;transform:scale(1.1);}
         .home-fab-tooltip{position:absolute;left:56px;top:50%;transform:translateY(-50%);background:#1e2433;color:#fff;font-size:.74rem;font-weight:700;padding:4px 11px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;}
         .home-fab:hover .home-fab-tooltip{opacity:1;}
+
+        /* ── 헤더 Auth 버튼 ── */
+        .header-auth-btns {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+        }
+        .nav-btn--login {
+            background: #fff7f0 !important;
+            color: #e85d04 !important;
+            border: 1.5px solid #fdba74 !important;
+            font-weight: 700;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background .18s;
+        }
+        .nav-btn--login:hover { background: #fff0e0 !important; }
+        .nav-btn--logout {
+            background: #f3f4f6 !important;
+            color: #6b7280 !important;
+            border: 1.5px solid #e5e7eb !important;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+            transition: background .18s;
+        }
+        .nav-btn--logout:hover { background: #e5e7eb !important; }
+        .header-profile-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #e85d04;
+            padding: 6px 10px;
+            background: #fff7f0;
+            border-radius: 8px;
+            border: 1.5px solid #fdba74;
+        }
+        @media (max-width: 900px) {
+            .header-auth-btns { display: none; }
+        }
+        .mobile-auth-area {
+            border-top: 1px solid #e5e7eb;
+            margin-top: 4px;
+            padding-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -1201,6 +1285,19 @@
                 <a href="instrument.html" class="nav-btn nav-btn--teal"><i class="fas fa-guitar"></i> 악기샵</a>
                 <a href="score.html" class="nav-btn nav-btn--violet"><i class="fas fa-file-pdf"></i> 악보공유</a>
             </nav>
+            <!-- 로그인/프로필 버튼 -->
+            <div class="header-auth-btns" id="headerAuthArea">
+                <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn">
+                    <i class="fas fa-sign-in-alt"></i> 로그인
+                </a>
+                <span class="header-profile-btn" id="headerProfileBtn" style="display:none">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="headerNickname">닉네임</span>
+                </span>
+                <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="doLogout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
                 <span></span><span></span><span></span>
             </button>
@@ -1212,6 +1309,14 @@
             <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools"></i> 리페어샵</a>
             <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar"></i> 악기샵</a>
             <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf"></i> 악보공유</a>
+            <div class="mobile-auth-area" id="mobileAuthArea">
+                <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn">
+                    <i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입
+                </a>
+                <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none; background:none; border:none; width:100%; text-align:left; cursor:pointer;" onclick="doLogout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
         </div>
     </header>
     </header>
@@ -1247,7 +1352,7 @@
         <div class="gw-ad-col gw-ad-left" id="commAdLeft"></div>
 
         <!-- 사이드바 + 콘텐츠 래퍼 -->
-        <div class="comm-center-wrapper" style="display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;">
+        <div class="comm-center-wrapper" style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:18px;">
         <aside class="comm-sidebar" style="position:sticky;top:20px;align-self:start;">
             <div class="sidebar-section">
                 <h3>전체 메뉴</h3>
@@ -1467,6 +1572,9 @@
         <span class="home-fab-tooltip">홈으로</span>
     </a>
 
+    <!-- Supabase JS v2 (Auth) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/supabase.js"></script>
     <script>
     /* ═══════════════════════════════════════════════════
@@ -1474,6 +1582,51 @@
        - 밴드 구인구직 / 개인레슨 / 중고장터 / 자유게시판
        ═══════════════════════════════════════════════════ */
     const API = 'community_posts'; // Supabase 테이블명
+
+    // ── Auth 초기화 ──
+    let currentUser = null;
+    let currentProfile = null;
+
+    async function initAuth() {
+        const session = await getSession();
+        if (session) {
+            currentUser = session.user;
+            currentProfile = await getProfile(currentUser.id);
+        }
+        updateAuthUI();
+    }
+
+    function updateAuthUI() {
+        const loginBtn   = document.getElementById('headerLoginBtn');
+        const profileBtn = document.getElementById('headerProfileBtn');
+        const logoutBtn  = document.getElementById('headerLogoutBtn');
+        const nickSpan   = document.getElementById('headerNickname');
+        const mobileLogin = document.getElementById('mobileLoginBtn');
+        const mobileLogout = document.getElementById('mobileLogoutBtn');
+
+        if (currentUser) {
+            const nick = currentProfile?.nickname || currentUser.email.split('@')[0];
+            if (loginBtn)   loginBtn.style.display   = 'none';
+            if (profileBtn) { profileBtn.style.display = 'inline-flex'; nickSpan.textContent = nick; }
+            if (logoutBtn)  logoutBtn.style.display  = 'inline-flex';
+            if (mobileLogin)  mobileLogin.style.display  = 'none';
+            if (mobileLogout) mobileLogout.style.display = 'block';
+        } else {
+            if (loginBtn)   loginBtn.style.display   = 'inline-flex';
+            if (profileBtn) profileBtn.style.display = 'none';
+            if (logoutBtn)  logoutBtn.style.display  = 'none';
+            if (mobileLogin)  mobileLogin.style.display  = 'block';
+            if (mobileLogout) mobileLogout.style.display = 'none';
+        }
+    }
+
+    async function doLogout() {
+        await signOut();
+        currentUser = null;
+        currentProfile = null;
+        updateAuthUI();
+        showToast('👋 로그아웃 되었습니다.');
+    }
 
     const CATEGORY_INFO = {
         all:        { label: '전체글 보기',       icon: '🏠', badge: 'badge-talk' },
@@ -1759,10 +1912,10 @@
             <div class="post-meta">
                 <span><i class="fas fa-user"></i> ${escHtml(p.author || '익명')}</span>
                 ${p.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(p.location)}</span>` : ''}
-                <span><i class="fas fa-eye"></i> ${p.views || 0}</span>
+                <span class="meta-views"><i class="fas fa-eye"></i> ${p.views || 0}</span>
                 <span><i class="fas fa-heart"></i> ${p.likes || 0}</span>
                 <span class="comment-cnt"><i class="fas fa-comment"></i> <span class="comment-cnt-val">0</span></span>
-                <span><i class="fas fa-clock"></i> ${fmtDate(p.created_at)}</span>
+                <span class="meta-date"><i class="fas fa-clock"></i> ${fmtDate(p.created_at)}</span>
             </div>
         </div>`;
     }
@@ -1941,10 +2094,22 @@
     }
 
     function openWriteModal() {
+        // 로그인 여부 확인
+        if (!currentUser) {
+            showToast('✋ 글쓰기는 로그인 후 이용할 수 있어요!');
+            setTimeout(() => { location.href = 'login.html?redirect=community.html'; }, 1200);
+            return;
+        }
         // 현재 카테고리 기본값 설정
         if (state.category !== 'all') {
             document.getElementById('formCategory').value = state.category;
             onCategoryChange();
+        }
+        // 닉네임 자동 입력
+        const authorField = document.getElementById('formAuthor');
+        if (authorField && currentProfile?.nickname) {
+            authorField.value = currentProfile.nickname;
+            authorField.readOnly = true;
         }
         document.getElementById('writeModal').classList.add('open');
     }
@@ -2349,6 +2514,9 @@
     </script>
     <script>
     // 햄버거 메뉴
+    // Auth 초기화 (페이지 로드 시)
+    initAuth();
+
     document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('hamburgerBtn');
         const menu = document.getElementById('mobileMenu');

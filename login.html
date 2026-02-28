@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e85d04">
+  <title>로그인 — CodeDuck</title>
+  <meta name="description" content="코드덕쿠 로그인. 뮤지션 커뮤니티에 참여하세요.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" href="images/og-thumbnail.png">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:    #e85d04;
+      --orange-dk: #c24e03;
+      --bg:        #f8f9fa;
+      --bg-card:   #ffffff;
+      --border:    #e5e7eb;
+      --text:      #1a1a2e;
+      --text-sub:  #6b7280;
+      --radius:    14px;
+      --shadow:    0 2px 12px rgba(0,0,0,.08);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── 헤더 ── */
+    .auth-header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+    }
+    .auth-header .logo-link {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+    }
+    .auth-header .logo-icon { font-size: 1.5rem; }
+    .auth-header .logo-text {
+      font-size: 1.2rem; font-weight: 900; color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .auth-header .logo-text span { color: var(--orange); }
+
+    /* ── 메인 ── */
+    .auth-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 36px;
+    }
+
+    .auth-card-title {
+      font-size: 1.55rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+    }
+    .auth-card-sub {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* ── 인증 완료 배너 ── */
+    .verified-banner {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #166534;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── 폼 ── */
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafafa;
+      transition: border-color .18s, box-shadow .18s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(232,93,4,.12);
+      background: #fff;
+    }
+    .form-input.error { border-color: #ef4444; }
+    .form-error {
+      font-size: 0.8rem;
+      color: #ef4444;
+      margin-top: 5px;
+      display: none;
+    }
+    .form-error.show { display: block; }
+
+    /* ── 비밀번호 입력 (눈 아이콘) ── */
+    .pw-wrap {
+      position: relative;
+    }
+    .pw-wrap .form-input { padding-right: 44px; }
+    .pw-toggle {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer;
+      color: var(--text-sub);
+      font-size: 0.9rem;
+      padding: 4px;
+    }
+    .pw-toggle:hover { color: var(--text); }
+
+    /* ── 링크 ── */
+    .form-link-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    .form-link {
+      font-size: 0.82rem;
+      color: var(--orange);
+      text-decoration: none;
+    }
+    .form-link:hover { text-decoration: underline; }
+
+    /* ── 글로벌 에러 ── */
+    .global-error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #dc2626;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .global-error.show { display: block; }
+
+    /* ── 버튼 ── */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 11px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .18s, transform .12s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover { background: var(--orange-dk); transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { background: #fdba74; cursor: not-allowed; transform: none; }
+
+    /* ── 구분선 ── */
+    .form-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* ── 하단 링크 ── */
+    .auth-footer-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.88rem;
+      color: var(--text-sub);
+    }
+    .auth-footer-link a {
+      color: var(--orange);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .auth-footer-link a:hover { text-decoration: underline; }
+
+    /* ── 스피너 ── */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── 비밀번호 재설정 모달 ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    }
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .modal-desc {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .modal-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      margin-bottom: 14px;
+      outline: none;
+    }
+    .modal-input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(232,93,4,.1); }
+    .modal-btns { display: flex; gap: 8px; }
+    .modal-btns .btn-cancel {
+      flex: 1; padding: 11px;
+      background: #f3f4f6; border: none;
+      border-radius: 9px; font-family: inherit;
+      font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; color: var(--text-sub);
+    }
+    .modal-btns .btn-cancel:hover { background: #e5e7eb; }
+    .modal-btns .btn-confirm {
+      flex: 2; padding: 11px;
+      background: var(--orange); border: none;
+      border-radius: 9px; font-family: inherit;
+      font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; color: #fff;
+    }
+    .modal-btns .btn-confirm:hover { background: var(--orange-dk); }
+    .modal-msg {
+      font-size: 0.82rem;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: none;
+    }
+    .modal-msg.success { background: #f0fdf4; color: #166534; display: block; }
+    .modal-msg.error   { background: #fef2f2; color: #dc2626; display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 -->
+  <header class="auth-header">
+    <a href="index.html" class="logo-link" aria-label="코드덕쿠 홈으로">
+      <span class="logo-icon">🦆</span>
+      <span class="logo-text">Code<span>ducku</span></span>
+    </a>
+  </header>
+
+  <!-- 메인 -->
+  <main class="auth-main">
+    <div class="auth-card">
+
+      <!-- 타이틀 -->
+      <h1 class="auth-card-title">🦆 로그인</h1>
+      <p class="auth-card-sub">반가워요! 이메일로 로그인하세요.</p>
+
+      <!-- 이메일 인증 완료 배너 -->
+      <div class="verified-banner" id="verifiedBanner" style="display:none">
+        ✅ 이메일 인증이 완료됐어요! 이제 로그인하세요.
+      </div>
+
+      <!-- 글로벌 에러 -->
+      <div class="global-error" id="globalError"></div>
+
+      <!-- 폼 -->
+      <form id="loginForm" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="email">이메일</label>
+          <input type="email" id="email" class="form-input"
+                 placeholder="example@email.com" autocomplete="email" required>
+          <div class="form-error" id="emailError">올바른 이메일 주소를 입력해주세요.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">비밀번호</label>
+          <div class="pw-wrap">
+            <input type="password" id="password" class="form-input"
+                   placeholder="비밀번호를 입력해주세요" autocomplete="current-password" required>
+            <button type="button" class="pw-toggle" id="pwToggle" aria-label="비밀번호 표시">
+              <i class="fas fa-eye" id="pwEyeIcon"></i>
+            </button>
+          </div>
+          <div class="form-error" id="passwordError">비밀번호를 입력해주세요.</div>
+          <div class="form-link-row">
+            <a href="#" class="form-link" id="forgotPwLink">비밀번호를 잊으셨나요?</a>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <i class="fas fa-sign-in-alt"></i>
+          <span id="submitText">로그인</span>
+        </button>
+
+      </form>
+
+      <hr class="form-divider">
+
+      <div class="auth-footer-link">
+        처음 방문하셨나요? <a href="signup.html">🎸 회원가입</a>
+      </div>
+      <div class="auth-footer-link" style="margin-top:10px">
+        <a href="community.html" style="color:var(--text-sub); font-weight:400">
+          <i class="fas fa-arrow-left"></i> 커뮤니티로 돌아가기
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- 비밀번호 재설정 모달 -->
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal-box">
+      <div class="modal-title">🔑 비밀번호 재설정</div>
+      <p class="modal-desc">가입한 이메일 주소를 입력하면<br>재설정 링크를 보내드립니다.</p>
+      <input type="email" class="modal-input" id="resetEmail" placeholder="가입한 이메일 주소">
+      <div class="modal-btns">
+        <button class="btn-cancel" id="resetCancelBtn">취소</button>
+        <button class="btn-confirm" id="resetSendBtn">
+          <i class="fas fa-paper-plane"></i> 메일 발송
+        </button>
+      </div>
+      <div class="modal-msg" id="resetMsg"></div>
+    </div>
+  </div>
+
+  <!-- Supabase JS v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // 이메일 인증 완료 배너
+    const params = new URLSearchParams(location.search);
+    if (params.get('verified') === '1') {
+      document.getElementById('verifiedBanner').style.display = 'flex';
+    }
+
+    // 비밀번호 토글
+    const pwInput    = document.getElementById('password');
+    const pwToggle   = document.getElementById('pwToggle');
+    const pwEyeIcon  = document.getElementById('pwEyeIcon');
+    pwToggle.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      pwEyeIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+
+    // 로그인 폼
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      // 에러 초기화
+      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+      document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+      const globalErr = document.getElementById('globalError');
+      globalErr.classList.remove('show');
+
+      let valid = true;
+      const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailReg.test(email)) {
+        document.getElementById('emailError').classList.add('show');
+        document.getElementById('email').classList.add('error');
+        valid = false;
+      }
+      if (!password) {
+        document.getElementById('passwordError').classList.add('show');
+        document.getElementById('password').classList.add('error');
+        valid = false;
+      }
+      if (!valid) return;
+
+      // 로딩
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> 로그인 중...';
+
+      try {
+        const { data, error } = await signIn({ email, password });
+
+        if (error) {
+          let msg = error.message || '로그인에 실패했습니다.';
+          if (msg.includes('Invalid login') || msg.includes('invalid credentials')) {
+            msg = '이메일 또는 비밀번호가 올바르지 않습니다.';
+          } else if (msg.includes('Email not confirmed')) {
+            msg = '이메일 인증이 필요합니다. 받으신 인증 메일을 확인해주세요.';
+          } else if (msg.includes('rate limit')) {
+            msg = '잠시 후 다시 시도해주세요.';
+          }
+          globalErr.textContent = '❌ ' + msg;
+          globalErr.classList.add('show');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>로그인</span>';
+        } else {
+          // 성공 → 커뮤니티로 이동
+          const redirect = params.get('redirect') || 'community.html';
+          location.href = redirect;
+        }
+      } catch (err) {
+        console.error('[Login]', err);
+        globalErr.textContent = '❌ 네트워크 오류. 다시 시도해주세요.';
+        globalErr.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>로그인</span>';
+      }
+    });
+
+    // 비밀번호 재설정 모달
+    document.getElementById('forgotPwLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('resetEmail').value = document.getElementById('email').value;
+      document.getElementById('resetModal').classList.add('show');
+    });
+    document.getElementById('resetCancelBtn').addEventListener('click', () => {
+      document.getElementById('resetModal').classList.remove('show');
+      document.getElementById('resetMsg').className = 'modal-msg';
+    });
+    document.getElementById('resetSendBtn').addEventListener('click', async () => {
+      const email = document.getElementById('resetEmail').value.trim();
+      const msgEl = document.getElementById('resetMsg');
+      if (!email) { msgEl.textContent = '이메일을 입력해주세요.'; msgEl.className = 'modal-msg error'; return; }
+
+      const sb = getClient();
+      if (!sb) return;
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: `${location.origin}/reset-password.html`
+      });
+      if (error) {
+        msgEl.textContent = '❌ ' + (error.message || '오류가 발생했습니다.');
+        msgEl.className = 'modal-msg error';
+      } else {
+        msgEl.textContent = '✅ 재설정 링크를 발송했습니다. 이메일을 확인해주세요!';
+        msgEl.className = 'modal-msg success';
+      }
+    });
+
+    // 이미 로그인 상태면 커뮤니티로 이동
+    (async () => {
+      const session = await getSession();
+      if (session) { location.href = 'community.html'; }
+    })();
+  </script>
+</body>
+</html>
