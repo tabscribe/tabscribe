@@ -1,5 +1,5 @@
 /**
- * Main - TabScribe 메인 컨트롤러
+ * Main - 코드덕(CodeDuck) 메인 컨트롤러
  * UI 이벤트 처리, 분석 파이프라인, 상태 관리
  */
 
@@ -1770,7 +1770,7 @@ function applyTabScrollHeight() {
     wrap.style.overflowY = 'auto';
 }
 
-console.log('TabScribe v4.1 - 확장코드 + 수동편집 + BPM보정 초기화 완료');
+console.log('CodeDuck v4.1 - 확장코드 + 수동편집 + BPM보정 초기화 완료');
 
 /* ══════════════════════════════════════════════════════════════
    코드 박스 (Chord Box) — v4.4

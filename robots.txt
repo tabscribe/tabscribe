@@ -1,10 +1,10 @@
-# robots.txt - TabScribe 검색엔진 크롤링 허용 설정
+# robots.txt - 코드덕쿠(Codeducku) 검색엔진 크롤링 허용 설정
 
 User-agent: *
 Allow: /
 
 # 사이트맵 위치
-Sitemap: https://tabscribe.vercel.app/sitemap.xml
+Sitemap: https://codeducku.vercel.app/sitemap.xml
 
 # 크롤링 딜레이 (서버 부하 방지)
 Crawl-delay: 1
