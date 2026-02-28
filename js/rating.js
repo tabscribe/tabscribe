@@ -119,15 +119,24 @@ async function fetchRatings(page) {
 }
 
 async function submitRating(payload) {
-  return fetch('tables/ratings', {
+  const res = await fetch('tables/ratings', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+  if (!res.ok) {
+    const err = await res.text().catch(() => res.status);
+    throw new Error('submitRating failed: ' + err);
+  }
+  return res.json();
 }
 
 async function deleteRating(id) {
-  return fetch(`tables/ratings/${id}`, { method: 'DELETE' });
+  const res = await fetch(`tables/ratings/${id}`, { method: 'DELETE' });
+  if (!res.ok && res.status !== 204) {
+    throw new Error('deleteRating failed: ' + res.status);
+  }
+  return true;
 }
 
 /* 현재 유저가 해당 place에 남긴 평가 찾기 */
@@ -695,7 +704,8 @@ window.submitRatingNow = async function() {
   const btn = document.getElementById('submitRatingBtn');
   btn.disabled = true; btn.style.opacity = '.7'; btn.textContent = '제출 중...';
   try {
-    const uid = getCurrentUserId() || getAnonId();
+    const uid = getCurrentUserId();
+    if (!uid) throw new Error('로그인 정보를 찾을 수 없어요. 다시 로그인해주세요.');
     await submitRating({ page, place_id: placeId, place_name: placeName, user_id: uid, score1: star1, score2: star2, label1: cfg.label1, label2: cfg.label2 });
     const msg = document.getElementById('ratingMsg');
     msg.textContent = '🎉 쿠슐랭 평가가 등록됐어요! 감사합니다!';
@@ -703,11 +713,13 @@ window.submitRatingNow = async function() {
     btn.textContent = '✅ 완료';
     setTimeout(async () => {
       closeRatingModal();
+      /* _hofLoading 플래그 강제 해제 후 갱신 */
+      window._hofLoading = false;
       if (typeof loadHallOfFame === 'function') await loadHallOfFame();
     }, 1000);
-  } catch {
+  } catch(e) {
     const msg = document.getElementById('ratingMsg');
-    msg.textContent = '❌ 오류가 발생했어요. 잠시 후 다시 시도해주세요.';
+    msg.textContent = '❌ ' + (e.message || '오류가 발생했어요. 잠시 후 다시 시도해주세요.');
     msg.style.color = '#ef4444';
     btn.disabled = false; btn.style.opacity = '1';
     btn.textContent = '⭐ 쿠슐랭 평가 제출하기';
@@ -726,12 +738,14 @@ window.deleteRatingNow = async function() {
     if (msg) { msg.textContent = '✅ 평가가 삭제됐어요.'; msg.style.color = '#059669'; }
     setTimeout(async () => {
       closeRatingModal();
+      /* _hofLoading 플래그 강제 해제 후 갱신 */
+      window._hofLoading = false;
       if (typeof loadHallOfFame === 'function') await loadHallOfFame();
     }, 700);
-  } catch {
+  } catch(e) {
     if (btn) { btn.disabled = false; btn.textContent = '🗑️ 평가 삭제하기'; }
     const msg = document.getElementById('ratingMsg');
-    if (msg) { msg.textContent = '❌ 삭제 중 오류가 발생했어요.'; msg.style.color = '#ef4444'; }
+    if (msg) { msg.textContent = '❌ ' + (e.message || '삭제 중 오류가 발생했어요.'); msg.style.color = '#ef4444'; }
   }
 };
 
@@ -900,20 +914,3 @@ window.deleteRatingNow = async function() {
   document.head.appendChild(style);
 })();
 
-/* ── rating.js 로드 완료 후 loadHallOfFame 자동 트리거 (1회만) ── */
-(function triggerHallOfFame() {
-  var triggered = false;
-  function tryTrigger() {
-    if (triggered) return;
-    if (typeof loadHallOfFame !== 'function') return;
-    triggered = true;
-    loadHallOfFame();
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', tryTrigger, { once: true });
-  } else {
-    /* 이미 DOM 준비 완료 — 페이지 인라인 스크립트가 먼저 등록됐을 수 있으므로
-       마이크로태스크 이후 실행 (중복 방지: 이미 실행됐으면 skip) */
-    Promise.resolve().then(tryTrigger);
-  }
-})();
