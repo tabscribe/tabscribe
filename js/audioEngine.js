@@ -33,7 +33,9 @@ class AudioEngine {
     }
 
     async init() {
-        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // iOS Safari: AudioContext는 반드시 user gesture 스택 안에서 생성해야 함
+        const AC = window.AudioContext || window.webkitAudioContext;
+        this.audioContext = new AC();
         this.analyserNode = this.audioContext.createAnalyser();
         this.analyserNode.fftSize = this.fftSize;
         this.analyserNode.smoothingTimeConstant = 0.3;
@@ -41,14 +43,27 @@ class AudioEngine {
         this.gainNode.gain.value = this.volume;
         this.analyserNode.connect(this.gainNode);
         this.gainNode.connect(this.audioContext.destination);
+
+        // iOS: 생성 직후 suspended → 즉시 resume 시도
+        if (this.audioContext.state === 'suspended') {
+            try { await this.audioContext.resume(); } catch(_) {}
+        }
+    }
+
+    // iOS에서 AudioContext가 닫혔거나 broken 상태이면 재생성
+    async _ensureContext() {
+        if (!this.audioContext || this.audioContext.state === 'closed') {
+            await this.init();
+            return;
+        }
+        if (this.audioContext.state === 'suspended') {
+            try { await this.audioContext.resume(); } catch(_) {}
+        }
     }
 
     async loadFile(file) {
         if (!this.audioContext) await this.init();
-        // iOS Safari: suspended 상태 해제 (user gesture 직후 호출 필수)
-        if (this.audioContext.state === 'suspended') {
-            try { await this.audioContext.resume(); } catch(_) {}
-        }
+        await this._ensureContext();
 
         // ── ArrayBuffer 읽기 ──
         // file.arrayBuffer()는 iOS 13.4 미만에서 미지원 → FileReader 폴백
@@ -71,8 +86,6 @@ class AudioEngine {
                 err instanceof Error ? err : new Error('decodeAudioData 실패: 지원하지 않는 형식이거나 파일이 손상됐습니다.')
             );
             try {
-                // 콜백 우선 호출 (Safari 구형 호환)
-                // 반환값이 Promise이면 중복 resolve가 되지 않도록 무시
                 this.audioContext.decodeAudioData(arrayBuffer.slice(0), onSuccess, onError);
             } catch (e) { reject(e); }
         });
@@ -91,6 +104,42 @@ class AudioEngine {
             reader.onerror = (e) => reject(new Error('파일 읽기 실패: ' + (e.target.error?.message || '')));
             reader.readAsArrayBuffer(file);
         });
+    }
+
+    // iOS에서 안전하게 재생 — AudioContext 상태 보장 후 start()
+    async playAsync(offset = null) {
+        if (!this.audioBuffer || this.isPlaying) return;
+
+        // ① suspended → resumed 보장 (await로 완전히 기다림)
+        await this._ensureContext();
+
+        // ② resumed 됐는지 최종 확인
+        if (this.audioContext.state !== 'running') {
+            console.warn('[AudioEngine] AudioContext가 running 상태가 아님:', this.audioContext.state);
+            // iOS 17+: context가 완전히 막혀있으면 재생성 시도
+            try {
+                await this.init();
+                // 버퍼는 재사용 가능 (재생성 후에도 유지됨)
+            } catch(e) {
+                console.error('[AudioEngine] context 재생성 실패:', e);
+                return;
+            }
+        }
+
+        const startOffset = offset !== null ? offset : this.pauseOffset;
+        this.sourceNode = this.audioContext.createBufferSource();
+        this.sourceNode.buffer = this.audioBuffer;
+        this.sourceNode.connect(this.analyserNode);
+        this.sourceNode.start(0, startOffset);
+        this.startTime = this.audioContext.currentTime - startOffset;
+        this.isPlaying = true;
+        this.sourceNode.onended = () => {
+            if (this.isPlaying) {
+                this.isPlaying   = false;
+                this.pauseOffset = 0;
+                if (this.onEnded) this.onEnded();
+            }
+        };
     }
 
     play(offset = null) {
@@ -123,7 +172,10 @@ class AudioEngine {
         const wasPlaying = this.isPlaying;
         if (wasPlaying) { this.sourceNode.onended = null; this.sourceNode.stop(); this.isPlaying = false; }
         this.pauseOffset = Math.max(0, Math.min(time, this.duration));
-        if (wasPlaying) this.play();
+        if (wasPlaying) {
+            // iOS: seek 후 재생도 비동기 resume 보장
+            this.playAsync().catch(() => this.play());
+        }
     }
 
     getCurrentTime() {

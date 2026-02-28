@@ -4714,14 +4714,28 @@ body {
         display: none !important;
     }
 
-    /* ── 중앙 콘텐츠 래퍼 ── */
+    /* ── 중앙 콘텐츠 래퍼 — flex로 order 제어 ── */
     .intro-inner {
         width: 100%;
         min-width: 0;
-        /* 모든 자식 요소에 공통 좌우 패딩 적용 */
         padding: 0;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
     }
+
+    /* 모바일 전용 순서 재배치
+       1) 섹션 헤더
+       2) 안내 패널 + 파일선택 (intro-upload-row)
+       3) 카드 3개 (intro-cards)
+       4) 광고 배너
+       5) CTA 바
+    */
+    .intro-header       { order: 1; }
+    .intro-upload-row   { order: 2; }
+    .intro-cards        { order: 3; margin-top: 16px; }
+    .intro-ad-row       { order: 4; }
+    .intro-cta-bar      { order: 5; }
 
     /* ── 섹션 헤더 ── */
     .intro-header {

@@ -115,45 +115,45 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// iOS Safari AudioContext 선제 초기화
-// ── iOS는 첫 번째 user gesture(터치/클릭)에서만 AudioContext 생성/재개 가능
-// ── 파일 선택 dialog가 열리면 gesture context가 유실되기 때문에
-//    label 클릭 시 즉시 AudioContext를 생성해 둠
+// iOS Safari AudioContext 완전 해결책
+// ──────────────────────────────────────────
+// iOS 정책: AudioContext는 반드시 직접적인 user gesture
+// (touchstart/touchend/click) 핸들러 내에서 생성·resume 해야 함.
+//
+// 문제의 흐름:
+//   [터치] → label 클릭 → 파일선택 dialog 열림
+//   → dialog 닫힘(파일선택) → change 이벤트 → handleFile()
+//   → audioContext.resume() 시도 → 실패 (gesture 스택 소멸)
+//
+// 해결책:
+//   1) 화면의 모든 첫 터치에서 AudioContext를 미리 생성·resume
+//   2) 재생 버튼 touchstart에서 resume 후 즉시 playAsync() 호출
+//   3) 파일 로드 완료 후 "탭해서 재생" 안내 배너 표시
 // ==========================================
-(function iosAudioContextPreInit() {
-    // iOS/Safari 감지
-    const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
-                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (!isIOS && !isSafari) return;
 
-    // 파일 선택 버튼(label) 클릭 시 AudioContext 미리 생성
-    const fileLabel = document.querySelector('label[for="fileInput"]');
-    if (fileLabel) {
-        fileLabel.addEventListener('touchstart', async () => {
-            try {
-                if (!audioEngine.audioContext) {
-                    await audioEngine.init();
-                }
-                if (audioEngine.audioContext.state === 'suspended') {
-                    await audioEngine.audioContext.resume();
-                }
-            } catch(_) {}
-        }, { passive: true });
-    }
+// iOS/Safari 여부 한 번만 판별
+const _isIOS = /iP(hone|ad|od)/i.test(navigator.userAgent) ||
+               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const _isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const _needsGesture = _isIOS || _isSafari;
 
-    // dropZone 터치 시에도 동일하게 처리
-    if (dom.dropZone) {
-        dom.dropZone.addEventListener('touchstart', async () => {
-            try {
-                if (!audioEngine.audioContext) await audioEngine.init();
-                if (audioEngine.audioContext.state === 'suspended') {
-                    await audioEngine.audioContext.resume();
-                }
-            } catch(_) {}
-        }, { passive: true });
-    }
-})();
+// ── 전략 1: 화면 첫 터치에서 AudioContext 미리 생성 ──
+if (_needsGesture) {
+    const _unlockAudio = async () => {
+        try {
+            if (!audioEngine.audioContext) {
+                await audioEngine.init();
+            } else if (audioEngine.audioContext.state === 'suspended') {
+                await audioEngine.audioContext.resume();
+            }
+        } catch(e) {
+            console.warn('[iOS] AudioContext unlock 실패:', e);
+        }
+    };
+    // passive:false 로 등록 → iOS gesture 체인 유지
+    document.addEventListener('touchstart', _unlockAudio, { once: true, passive: true });
+    document.addEventListener('touchend',   _unlockAudio, { once: true, passive: true });
+}
 
 // ==========================================
 // 파일 업로드
@@ -207,18 +207,9 @@ async function handleFile(file) {
     try {
         showToast('파일 로딩 중...', 'info');
 
-        // iOS Safari: AudioContext는 반드시 user gesture 직후 생성/재개
-        // iosAudioContextPreInit()에서 미리 생성했지만 혹시 안 됐을 경우 재시도
+        // AudioContext가 없으면 생성 (첫 터치에서 이미 생성됐을 가능성 높음)
         if (!audioEngine.audioContext) {
             await audioEngine.init();
-        }
-        // suspended 상태이면 resume (iOS 15+ 정책 강화 대응)
-        if (audioEngine.audioContext.state === 'suspended') {
-            try {
-                await audioEngine.audioContext.resume();
-            } catch(resumeErr) {
-                console.warn('AudioContext resume 실패:', resumeErr);
-            }
         }
 
         await audioEngine.loadFile(file);
@@ -228,7 +219,18 @@ async function handleFile(file) {
         dom.playerSection.classList.remove('hidden');
         dom.timeTotal.textContent = formatTime(audioEngine.duration);
         drawWaveform(0);
-        showToast('파일 로드 완료!', 'success');
+
+        // iOS: 파일 로드 후 AudioContext 상태 확인
+        // dialog 열림/닫힘으로 gesture 체인이 끊겼을 수 있으므로
+        // "재생 버튼을 탭하세요" 안내 배너 표시
+        if (_needsGesture) {
+            const ctx = audioEngine.audioContext;
+            if (!ctx || ctx.state === 'suspended') {
+                _showIosPlayBanner();
+            }
+        }
+
+        showToast('파일 로드 완료! ▶ 재생 버튼을 눌러주세요.', 'success');
     } catch (err) {
         console.error('파일 로드 오류:', err);
         let msg = '파일 로드에 실패했습니다.';
@@ -240,7 +242,6 @@ async function handleFile(file) {
         } else if (errName === 'EncodingError' || errName === 'NotSupportedError' ||
                    errMsg.includes('decode') || errMsg.includes('format') ||
                    errMsg.includes('not supported')) {
-            // iOS Safari는 OGG, FLAC, OPUS를 지원하지 않음
             const ext = (file.name || '').split('.').pop().toUpperCase();
             if (['OGG','FLAC','OPUS','WEBM'].includes(ext)) {
                 msg = `${ext} 형식은 iPhone/Safari에서 지원되지 않습니다.\nMP3 또는 M4A/AAC 파일로 변환 후 다시 시도해주세요.`;
@@ -254,6 +255,34 @@ async function handleFile(file) {
         }
         showToast(msg, 'error');
     }
+}
+
+// ── iOS 전용: 재생 버튼 탭 안내 배너 ──────────────────────────
+function _showIosPlayBanner() {
+    // 이미 있으면 중복 생성 방지
+    if (document.getElementById('iosPlayBanner')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'iosPlayBanner';
+    banner.style.cssText = `
+        position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+        background: #1e293b; color: #fff; border-radius: 14px;
+        padding: 13px 22px; font-size: 0.88rem; font-weight: 600;
+        display: flex; align-items: center; gap: 10px;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+        z-index: 9999; white-space: nowrap;
+        animation: fadeInUp 0.3s ease;
+    `;
+    banner.innerHTML = `<i class="fas fa-hand-pointer" style="color:#f97316;font-size:1.1rem;"></i> ▶ 재생 버튼을 탭해 주세요`;
+
+    // 재생 버튼 누르면 배너 자동 제거
+    const removeBanner = () => { banner.remove(); };
+    dom.btnPlay.addEventListener('touchstart', removeBanner, { once: true });
+    dom.btnPlay.addEventListener('click', removeBanner, { once: true });
+    // 5초 후 자동 사라짐
+    setTimeout(removeBanner, 5000);
+
+    document.body.appendChild(banner);
 }
 
 function resetAll() {
@@ -295,15 +324,10 @@ function resetAll() {
 // ==========================================
 dom.btnPlay.addEventListener('click', togglePlay);
 
-// iOS Safari: touchstart 에서 AudioContext 즉시 resume → 소리 안 나는 문제 방지
+// iOS: touchstart에서 즉시 AudioContext resume + playAsync 호출
+// e.preventDefault()로 300ms click 지연 제거 → 이중 호출 방지
 dom.btnPlay.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // 300ms click 지연 제거
-    const ctx = audioEngine.audioContext;
-    if (ctx && ctx.state === 'suspended') {
-        ctx.resume().catch(() => {});
-    } else if (!ctx) {
-        audioEngine.init().catch(() => {});
-    }
+    e.preventDefault();
     togglePlay();
 }, { passive: false });
 
@@ -330,31 +354,50 @@ function togglePlay() {
     if (togglePlay._lastCall && now - togglePlay._lastCall < 300) return;
     togglePlay._lastCall = now;
 
-    if (!audioEngine.audioBuffer) {
-        // 오디오 없으면 무시 (하지만 이미 위에서 체크함)
-        return;
-    }
+    if (!audioEngine.audioBuffer) return;
+
     if (audioEngine.isPlaying) {
+        // ── 정지 ──
         audioEngine.pause();
         state.isPlaying = false;
         dom.playIcon.className = 'fas fa-play';
         dom.btnPlay.classList.remove('playing');
         if (state.animFrameId) { cancelAnimationFrame(state.animFrameId); state.animFrameId = null; }
     } else {
+        // ── 재생 ──
         if (state.animFrameId) { cancelAnimationFrame(state.animFrameId); state.animFrameId = null; }
-        // iOS Safari: play() 전 AudioContext resume (user gesture 직후)
-        const ctx = audioEngine.audioContext;
-        const doPlay = () => {
-            audioEngine.play();
-            state.isPlaying = true;
-            dom.playIcon.className = 'fas fa-pause';
-            dom.btnPlay.classList.add('playing');
-            startRenderLoop();
-        };
-        if (ctx && ctx.state === 'suspended') {
-            ctx.resume().then(doPlay).catch(doPlay);
+
+        // iOS/Safari: playAsync로 resume 완전 보장 후 재생
+        if (_needsGesture) {
+            audioEngine.playAsync().then(() => {
+                if (audioEngine.isPlaying) {
+                    state.isPlaying = true;
+                    dom.playIcon.className = 'fas fa-pause';
+                    dom.btnPlay.classList.add('playing');
+                    startRenderLoop();
+                } else {
+                    // 재생 실패 → 사용자에게 안내
+                    showToast('재생 버튼을 다시 탭해 주세요.', 'info');
+                }
+            }).catch((err) => {
+                console.error('[togglePlay] playAsync 실패:', err);
+                showToast('재생에 실패했습니다. 다시 탭해 주세요.', 'error');
+            });
         } else {
-            doPlay();
+            // 일반 브라우저: 기존 동기 방식
+            const ctx = audioEngine.audioContext;
+            const doPlay = () => {
+                audioEngine.play();
+                state.isPlaying = true;
+                dom.playIcon.className = 'fas fa-pause';
+                dom.btnPlay.classList.add('playing');
+                startRenderLoop();
+            };
+            if (ctx && ctx.state === 'suspended') {
+                ctx.resume().then(doPlay).catch(doPlay);
+            } else {
+                doPlay();
+            }
         }
     }
 }
@@ -413,8 +456,9 @@ dom.volumeSlider.addEventListener('input', (e) => {
 });
 // iOS: 슬라이더 터치 시 AudioContext 깨우기
 dom.volumeSlider.addEventListener('touchstart', () => {
-    const ctx = audioEngine.audioContext;
-    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    if (audioEngine.audioContext) {
+        audioEngine._ensureContext().catch(() => {});
+    }
 }, { passive: true });
 
 function updateProgressUI(currentTime) {
