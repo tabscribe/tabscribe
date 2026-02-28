@@ -81,16 +81,47 @@ body {
 
 .logo {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 10px;
-    font-size: 1.45rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
-.logo .fa-guitar { color: var(--accent); font-size: 1.3rem; }
-.logo-text { color: var(--text-primary); }
-.logo-text .accent { color: var(--accent); }
+/* 아이콘 */
+.logo .fa-guitar,
+.logo .logo-icon { color: var(--accent); font-size: 1.3rem; flex-shrink: 0; }
+
+/* 텍스트 묶음 (영문 + 한글) */
+.logo-textbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    line-height: 1;
+}
+
+.logo-text {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    line-height: 1.15;
+}
+.logo-text .accent,
+.logo-text .acc { color: var(--accent); }
+
+/* 한글 서브 이름 */
+.logo-ko {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--text-muted);
+    text-transform: none;
+    line-height: 1;
+    white-space: nowrap;
+}
 
 .header-sub {
     font-size: 0.78rem;
@@ -1801,6 +1832,7 @@ body {
 
 .intro-inner {
     min-width: 0;
+    padding: 0 8px;
 }
 
 /* ── 섹션 헤더 ── */
@@ -1826,23 +1858,23 @@ body {
 }
 
 .intro-header-title {
-    font-size: 2rem;
+    font-size: clamp(1.3rem, 3vw, 2rem);
     font-weight: 800;
     color: #1e293b;
     margin: 0 0 10px;
     letter-spacing: -0.02em;
     line-height: 1.2;
+    word-break: keep-all;
 }
 
-@media (max-width: 600px) {
-    .intro-header-title { font-size: 1.45rem; }
-}
+/* clamp()로 자동 크기 조정되므로 별도 미디어쿼리 불필요 */
 
 .intro-header-sub {
-    font-size: 1rem;
+    font-size: clamp(0.85rem, 2vw, 1rem);
     color: #64748b;
     margin: 0;
     font-weight: 400;
+    word-break: keep-all;
 }
 
 /* ── 카드 그리드 ── */
@@ -4624,160 +4656,261 @@ body {
 }
 
 /* ══════════════════════════════════════════
-   모바일 메인 레이아웃 최적화
+   모바일 반응형 — 메인 페이지 (≤ 768px)
+   휴대폰 화면 크기에 따라 자동으로 조정
    ══════════════════════════════════════════ */
 @media (max-width: 768px) {
     .main {
-        padding: 16px 0 60px;
+        padding: 0 0 60px;
     }
 
-    /* intro 섹션 */
+    /* ── intro 섹션 전체 ── */
     .intro-section {
         padding: 20px 0 40px;
     }
+    /* 사이드 광고 완전 숨김 + 레이아웃 단일컬럼 전환 */
     .intro-layout {
+        display: block;   /* grid → block 으로 전환 */
+        padding: 0;
         gap: 0;
-        padding: 0;
     }
-    /* 중앙 콘텐츠 전체 너비 사용 */
-    .intro-inner {
-        width: 100%;
-        padding: 0;
+    .intro-side {
+        display: none !important;
     }
 
-    /* 헤더 */
+    /* ── 중앙 콘텐츠 래퍼 ── */
+    .intro-inner {
+        width: 100%;
+        min-width: 0;
+        /* 모든 자식 요소에 공통 좌우 패딩 적용 */
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* ── 섹션 헤더 ── */
     .intro-header {
-        margin-bottom: 24px;
+        margin-bottom: 20px;
         padding: 0 16px;
     }
     .intro-header-title {
-        font-size: 1.45rem;
+        font-size: clamp(1.2rem, 5vw, 1.55rem);
+        word-break: keep-all;
     }
     .intro-header-sub {
-        font-size: 0.87rem;
+        font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+        word-break: keep-all;
     }
 
-    /* 카드 그리드 — 모바일 1열, 좌우 여백 확보 */
+    /* ── 카드 그리드 ── */
     .intro-cards {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 12px;
         padding: 0 14px;
         margin-bottom: 0;
     }
     .intro-card {
-        padding: 20px 18px 18px;
+        padding: 18px 16px 16px;
         border-radius: 14px;
-        /* 카드 내부 텍스트 줄바꿈 정상화 */
         word-break: keep-all;
         overflow-wrap: break-word;
+        width: 100%;
+        box-sizing: border-box;
     }
     .intro-card-body {
-        font-size: 0.875rem;
+        font-size: clamp(0.82rem, 3.5vw, 0.9rem);
         line-height: 1.7;
         word-break: keep-all;
     }
     .intro-card-title {
-        font-size: 1.05rem;
+        font-size: clamp(0.98rem, 4vw, 1.1rem);
+    }
+    .intro-chip {
+        font-size: clamp(0.62rem, 2.5vw, 0.7rem);
+        padding: 3px 8px;
     }
 
-    /* 업로드 row — 전체 너비 */
+    /* ── 업로드 ROW (안내패널 + 파일선택) ── */
     .intro-upload-row {
-        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-direction: column !important;
         padding: 0 14px;
-        gap: 14px;
-        margin-top: 20px;
-    }
-    .intro-info-panel {
-        padding: 20px 18px;
-        gap: 14px;
-    }
-    .intro-info-title {
-        font-size: 1.15rem !important;
-    }
-
-    /* 업로드 카드 — 전체 너비, 중앙 정렬 */
-    .intro-upload-card {
-        padding: 28px 20px;
+        gap: 12px;
+        margin-top: 16px;
         width: 100%;
         box-sizing: border-box;
     }
-    /* 드롭존 모바일 */
-    .drop-zone {
-        padding: 32px 20px !important;
-        width: 100% !important;
-    }
-    .drop-zone-inner {
+
+    /* 안내 패널 */
+    .intro-info-panel {
         width: 100%;
+        box-sizing: border-box;
+        padding: 18px 16px;
+        gap: 12px;
+        border-radius: 14px;
+    }
+    .intro-info-title {
+        font-size: clamp(1rem, 4.5vw, 1.2rem) !important;
+        word-break: keep-all;
+    }
+    .intro-info-desc {
+        font-size: clamp(0.82rem, 3.5vw, 0.9rem);
+        word-break: keep-all;
+    }
+    .intro-info-notice {
+        font-size: clamp(0.72rem, 3vw, 0.8rem);
+        word-break: keep-all;
+    }
+    .intro-info-badges {
+        gap: 5px;
+    }
+    .intro-info-badge {
+        font-size: clamp(0.65rem, 2.8vw, 0.72rem);
+        padding: 4px 10px;
+    }
+
+    /* 파일선택 카드 */
+    .intro-upload-card {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 24px 16px 20px;
+        border-radius: 14px;
+        display: flex;
+        flex-direction: column;
         align-items: center;
         text-align: center;
     }
+    /* 업로드 아이콘 래퍼 */
+    .intro-upload-card .upload-icon-wrap {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 12px;
+    }
+
+    /* ── 드롭존 ── */
+    .intro-upload-card .drop-zone,
+    .drop-zone {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        padding: clamp(20px, 5vw, 32px) clamp(12px, 4vw, 20px) !important;
+    }
+    .drop-zone-inner {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
+    }
     .drop-icon {
-        font-size: 2.2rem;
-        margin-bottom: 8px;
+        font-size: clamp(1.8rem, 6vw, 2.4rem);
+        margin-bottom: 6px;
     }
     .drop-text {
         white-space: normal !important;
-        font-size: 0.88rem;
+        font-size: clamp(0.82rem, 3.5vw, 0.9rem);
         text-align: center;
         word-break: keep-all;
+        margin-bottom: 8px !important;
     }
     .drop-hint {
         white-space: normal !important;
-        font-size: 0.72rem;
+        font-size: clamp(0.68rem, 2.8vw, 0.75rem);
         text-align: center;
+        word-break: keep-all;
     }
     .btn-upload {
-        margin: 0 auto 12px;
-        padding: 12px 28px;
-        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 8px auto 10px;
+        padding: clamp(10px, 2.5vw, 12px) clamp(22px, 6vw, 32px);
+        font-size: clamp(0.85rem, 3.5vw, 0.95rem);
+        white-space: nowrap;
     }
     .ios-hint {
-        font-size: 0.76rem;
+        font-size: clamp(0.7rem, 2.8vw, 0.76rem);
         text-align: center;
         word-break: keep-all;
     }
 
-    /* 광고 배너 (하단) */
+    /* ── 광고 배너 (하단) ── */
     .intro-ad-row {
-        margin: 18px 14px 0;
+        margin: 16px 14px 0;
     }
+    .intro-ad-slot.promo-hero,
     .promo-hero {
         flex-direction: column !important;
         border-radius: 14px;
+        min-height: auto !important;
     }
     .promo-hero-img-wrap {
         width: 100% !important;
-        height: 190px !important;
+        height: clamp(140px, 40vw, 200px) !important;
         min-width: 0 !important;
+        flex-shrink: 0;
     }
     .promo-hero-img {
         object-fit: cover !important;
+        width: 100% !important;
         height: 100% !important;
     }
     .promo-hero-body {
-        padding: 16px 18px 20px !important;
+        padding: 14px 16px 18px !important;
+        width: 100%;
     }
     .promo-hero-title {
-        font-size: 1rem !important;
+        font-size: clamp(0.9rem, 3.8vw, 1rem) !important;
         word-break: keep-all;
     }
     .promo-hero-desc {
-        font-size: 0.78rem !important;
+        font-size: clamp(0.74rem, 3vw, 0.8rem) !important;
         word-break: keep-all;
     }
-
-    /* CTA 바 */
-    .intro-cta-bar {
-        gap: 10px;
-        padding: 16px 14px;
+    .promo-tags {
         flex-wrap: wrap;
+        gap: 4px;
+    }
+    .promo-tag {
+        font-size: clamp(0.62rem, 2.5vw, 0.68rem) !important;
+        padding: 2px 7px !important;
+    }
+
+    /* ── CTA 바 ── */
+    .intro-cta-bar {
+        gap: 8px;
+        padding: 14px 14px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     .intro-cta-btn {
-        padding: 11px 18px;
-        font-size: 0.85rem;
-        flex: 1 1 calc(50% - 5px);
-        min-width: 130px;
+        padding: clamp(9px, 2.5vw, 11px) clamp(14px, 4vw, 18px);
+        font-size: clamp(0.8rem, 3.3vw, 0.88rem);
+        flex: 1 1 calc(50% - 4px);
+        min-width: 120px;
+        max-width: 100%;
         justify-content: center;
+        white-space: nowrap;
+    }
+}
+
+/* ══════════════════════════════════════════
+   소형 화면 (480px 이하)
+   ══════════════════════════════════════════ */
+@media (max-width: 480px) {
+    .intro-cards,
+    .intro-upload-row {
+        padding: 0 12px;
+    }
+    .intro-ad-row {
+        margin: 14px 12px 0;
+    }
+    .intro-cta-bar {
+        padding: 12px 12px;
+    }
+    .intro-cta-btn {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 110px;
     }
 }
 
@@ -4785,11 +4918,19 @@ body {
    초소형 화면 (iPhone SE 등, 390px 이하)
    ══════════════════════════════════════════ */
 @media (max-width: 390px) {
-    .logo { font-size: 1.1rem; }
-    .intro-header-title { font-size: 1.3rem; }
+    .logo { font-size: 1.05rem; }
+    .intro-header-title { font-size: 1.2rem; }
+    .intro-cards,
+    .intro-upload-row {
+        padding: 0 10px;
+    }
+    .intro-ad-row {
+        margin: 12px 10px 0;
+    }
     .intro-cta-btn {
         flex: 1 1 100%;
+        max-width: 100%;
     }
-    .nav-btn { font-size: 0.76rem; padding: 6px 10px; }
+    .nav-btn { font-size: 0.73rem; padding: 5px 8px; }
 }
 
