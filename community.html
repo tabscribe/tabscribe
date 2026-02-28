@@ -18,7 +18,7 @@
             padding: 36px 0 28px;
         }
         .comm-hero-inner {
-            max-width: 1100px;
+            max-width: 1360px;
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
@@ -65,7 +65,7 @@
 
         /* ── 메인 레이아웃 ── */
         .comm-layout {
-            max-width: 1100px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 28px 20px 60px;
             display: grid;
@@ -583,12 +583,12 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.45);
+            background: rgba(0,0,0,0.5);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px 20px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s;
@@ -599,13 +599,13 @@
         }
         .modal {
             background: var(--bg-card);
-            border-radius: 16px;
-            padding: 28px;
+            border-radius: 20px;
+            padding: 32px 36px;
             width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
+            max-width: 860px;
+            max-height: 88vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.22);
             transform: translateY(10px);
             transition: transform 0.2s;
         }
@@ -682,12 +682,16 @@
         .btn-submit:hover { background: #c24e03; }
 
         /* 게시글 상세 모달 */
-        .detail-modal { max-width: 680px; }
+        .detail-modal {
+            max-width: 920px;
+            padding: 36px 40px;
+        }
         .detail-title {
-            font-size: 1.15rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            line-height: 1.4;
         }
         .detail-meta {
             display: flex;
@@ -700,10 +704,12 @@
         }
         .detail-meta span { display: flex; align-items: center; gap: 4px; }
         .detail-body {
-            font-size: 0.9rem;
+            font-size: 0.97rem;
             color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 16px;
+            line-height: 1.85;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
         .detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
         .detail-contact {
@@ -724,6 +730,20 @@
         }
         .detail-price-box .price-lbl { font-size: 0.8rem; color: #16a34a; font-weight: 600; margin-bottom: 4px; }
         .detail-price-box .price-val { font-size: 1.3rem; font-weight: 800; color: #15803d; }
+
+        /* 모달 모바일 대응 */
+        @media (max-width: 768px) {
+            .modal {
+                padding: 22px 18px;
+                max-height: 92vh;
+                border-radius: 16px;
+            }
+            .detail-modal {
+                padding: 22px 18px;
+            }
+            .detail-title { font-size: 1.1rem; }
+            .detail-body  { font-size: 0.9rem; }
+        }
 
         /* 토스트 */
         .toast {
@@ -1062,9 +1082,9 @@
         }
         /* 광고 컬럼 ── sticky, 넘침 없이 */
         .comm-main-layout > .gw-ad-col {
-            width: 172px;
+            width: 160px;
             min-width: 0;
-            max-width: 172px;
+            max-width: 160px;
             position: sticky;
             top: 76px;
             align-self: flex-start;
@@ -1080,7 +1100,7 @@
         /* 커뮤니티 3단 레이아웃 반응형 */
         @media (max-width: 1300px) {
             .comm-main-layout {
-                grid-template-columns: 172px minmax(0,1fr);
+                grid-template-columns: 160px minmax(0,1fr);
             }
             #commAdRight.gw-ad-col { display: none !important; }
         }
@@ -1106,27 +1126,27 @@
                 <span class="logo-text">Tab<span class="accent">Scribe</span></span>
             </div>
             <div class="header-sub">COODUCK 기타 코드 악보 자동생성</div>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                <a href="index.html" style="display:inline-flex;align-items:center;gap:7px;background:#fff8f4;border:1.5px solid #fcd9c0;color:#e85d04;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#fff0e6'" onmouseout="this.style.background='#fff8f4'">
-                    <i class="fas fa-music"></i> 타브 생성
-                </a>
-                <a href="rehearsal.html" style="display:inline-flex;align-items:center;gap:7px;background:#f0f9ff;border:1.5px solid #bae6fd;color:#0369a1;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'">
-                    <i class="fas fa-drum"></i> 합주실
-                </a>
-                <a href="community.html" style="display:inline-flex;align-items:center;gap:7px;background:#fff7f0;border:1.5px solid #fed7aa;color:#ea580c;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;" >
-                    <i class="fas fa-users"></i> 커뮤니티
-                </a>
-                <a href="repair.html" style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #ddd6fe;color:#7c3aed;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
-                    <i class="fas fa-tools"></i> 리페어샵
-                </a>
-                <a href="instrument.html" style="display:inline-flex;align-items:center;gap:7px;background:#f0fdfa;border:1.5px solid #99f6e4;color:#0f766e;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ccfbf1'" onmouseout="this.style.background='#f0fdfa'">
-                    <i class="fas fa-guitar"></i> 악기샵
-                </a>
-                <a href="score.html" style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #ddd6fe;color:#6d28d9;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
-                    <i class="fas fa-file-pdf"></i> 악보공유
-                </a>
-            </div>
+            <nav class="header-nav" id="headerNav">
+                <a href="index.html" class="nav-btn nav-btn--accent"><i class="fas fa-music"></i> 타브 생성</a>
+                <a href="rehearsal.html" class="nav-btn nav-btn--blue"><i class="fas fa-drum"></i> 합주실</a>
+                <a href="community.html" class="nav-btn nav-btn--orange"><i class="fas fa-users"></i> 커뮤니티</a>
+                <a href="repair.html" class="nav-btn nav-btn--purple"><i class="fas fa-tools"></i> 리페어샵</a>
+                <a href="instrument.html" class="nav-btn nav-btn--teal"><i class="fas fa-guitar"></i> 악기샵</a>
+                <a href="score.html" class="nav-btn nav-btn--violet"><i class="fas fa-file-pdf"></i> 악보공유</a>
+            </nav>
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
+                <span></span><span></span><span></span>
+            </button>
         </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html" class="mobile-menu-item"><i class="fas fa-music"></i> 타브 생성</a>
+            <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-drum"></i> 합주실</a>
+            <a href="community.html" class="mobile-menu-item"><i class="fas fa-users"></i> 커뮤니티</a>
+            <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools"></i> 리페어샵</a>
+            <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar"></i> 악기샵</a>
+            <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf"></i> 악보공유</a>
+        </div>
+    </header>
     </header>
 
     <!-- 커뮤니티 히어로 -->
@@ -1160,7 +1180,7 @@
         <div class="gw-ad-col gw-ad-left" id="commAdLeft"></div>
 
         <!-- 사이드바 + 콘텐츠 래퍼 -->
-        <div class="comm-center-wrapper" style="display:grid;grid-template-columns:230px minmax(0,1fr);gap:24px;">
+        <div class="comm-center-wrapper" style="display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;">
         <aside class="comm-sidebar" style="position:sticky;top:20px;align-self:start;">
             <div class="sidebar-section">
                 <h3>전체 메뉴</h3>
@@ -2259,6 +2279,25 @@
         const el = document.querySelector(`[data-post-id="${postId}"] .comment-cnt-val`);
         if (el) el.textContent = cnt;
     }
+    </script>
+    <script>
+    // 햄버거 메뉴
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('hamburgerBtn');
+        const menu = document.getElementById('mobileMenu');
+        if (btn && menu) {
+            btn.addEventListener('click', function() {
+                const isOpen = menu.classList.toggle('is-open');
+                btn.classList.toggle('is-open', isOpen);
+            });
+            document.addEventListener('click', function(e) {
+                if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('is-open');
+                    btn.classList.remove('is-open');
+                }
+            });
+        }
+    });
     </script>
 </body>
 </html>

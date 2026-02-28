@@ -40,23 +40,26 @@
                 <span class="logo-text">Tab<span class="accent">Scribe</span></span>
             </div>
             <div class="header-sub">COODUCK 기타 코드 악보 자동생성</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-                <a href="rehearsal.html" style="display:inline-flex;align-items:center;gap:7px;background:#f0f9ff;border:1.5px solid #bae6fd;color:#0369a1;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='#f0f9ff'">
-                    <i class="fas fa-music"></i> 합주실 찾기
-                </a>
-                <a href="repair.html" style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #ddd6fe;color:#7c3aed;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
-                    <i class="fas fa-tools"></i> 리페어샵
-                </a>
-                <a href="instrument.html" style="display:inline-flex;align-items:center;gap:7px;background:#f0fdfa;border:1.5px solid #99f6e4;color:#0f766e;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ccfbf1'" onmouseout="this.style.background='#f0fdfa'">
-                    <i class="fas fa-guitar"></i> 악기샵
-                </a>
-                <a href="score.html" style="display:inline-flex;align-items:center;gap:7px;background:#f5f3ff;border:1.5px solid #ddd6fe;color:#6d28d9;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ede9fe'" onmouseout="this.style.background='#f5f3ff'">
-                    <i class="fas fa-file-pdf"></i> 악보공유
-                </a>
-                <a href="community.html" style="display:inline-flex;align-items:center;gap:7px;background:#fff7f0;border:1.5px solid #fed7aa;color:#ea580c;padding:7px 16px;border-radius:20px;font-size:0.82rem;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='#ffedd5'" onmouseout="this.style.background='#fff7f0'">
-                    <i class="fas fa-users"></i> 커뮤니티
-                </a>
-            </div>
+            <!-- 데스크탑 네비 -->
+            <nav class="header-nav" id="headerNav">
+                <a href="rehearsal.html" class="nav-btn nav-btn--blue"><i class="fas fa-music"></i> 합주실 찾기</a>
+                <a href="repair.html" class="nav-btn nav-btn--purple"><i class="fas fa-tools"></i> 리페어샵</a>
+                <a href="instrument.html" class="nav-btn nav-btn--teal"><i class="fas fa-guitar"></i> 악기샵</a>
+                <a href="score.html" class="nav-btn nav-btn--violet"><i class="fas fa-file-pdf"></i> 악보공유</a>
+                <a href="community.html" class="nav-btn nav-btn--orange"><i class="fas fa-users"></i> 커뮤니티</a>
+            </nav>
+            <!-- 햄버거 버튼 (모바일) -->
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <!-- 모바일 드롭다운 메뉴 -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music"></i> 합주실 찾기</a>
+            <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools"></i> 리페어샵</a>
+            <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar"></i> 악기샵</a>
+            <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf"></i> 악보공유</a>
+            <a href="community.html" class="mobile-menu-item"><i class="fas fa-users"></i> 커뮤니티</a>
         </div>
     </header>
 
@@ -655,6 +658,28 @@
     <footer class="footer">
         <p>COODUCK &copy; 2026 · Web Audio 기반 음악 분석 사이트입니다 · 분석 결과는 참고용이며 음원 파일은 저장되지 않습니다.</p>
     </footer>
+
+    <!-- 햄버거 메뉴 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('hamburgerBtn');
+        const menu = document.getElementById('mobileMenu');
+        if (btn && menu) {
+            btn.addEventListener('click', function() {
+                const isOpen = menu.classList.toggle('is-open');
+                btn.classList.toggle('is-open', isOpen);
+                btn.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+            });
+            // 메뉴 외부 클릭 시 닫기
+            document.addEventListener('click', function(e) {
+                if (!btn.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('is-open');
+                    btn.classList.remove('is-open');
+                }
+            });
+        }
+    });
+    </script>
 
     <script src="js/audioEngine.js"></script>
     <script src="js/pitchDetector.js"></script>
