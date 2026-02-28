@@ -4628,71 +4628,98 @@ body {
    ══════════════════════════════════════════ */
 @media (max-width: 768px) {
     .main {
-        padding: 20px 12px 60px;
+        padding: 16px 0 60px;
     }
 
     /* intro 섹션 */
     .intro-section {
-        padding: 24px 0 40px;
+        padding: 20px 0 40px;
     }
     .intro-layout {
         gap: 0;
+        padding: 0;
     }
+    /* 중앙 콘텐츠 전체 너비 사용 */
+    .intro-inner {
+        width: 100%;
+        padding: 0;
+    }
+
+    /* 헤더 */
     .intro-header {
-        margin-bottom: 28px;
+        margin-bottom: 24px;
         padding: 0 16px;
     }
     .intro-header-title {
-        font-size: 1.5rem;
+        font-size: 1.45rem;
     }
     .intro-header-sub {
-        font-size: 0.88rem;
+        font-size: 0.87rem;
     }
 
-    /* 카드 그리드 — 모바일 1열 */
+    /* 카드 그리드 — 모바일 1열, 좌우 여백 확보 */
     .intro-cards {
         grid-template-columns: 1fr;
-        gap: 14px;
-        padding: 0 16px;
+        gap: 12px;
+        padding: 0 14px;
+        margin-bottom: 0;
     }
     .intro-card {
-        padding: 22px 20px 20px;
+        padding: 20px 18px 18px;
         border-radius: 14px;
+        /* 카드 내부 텍스트 줄바꿈 정상화 */
+        word-break: keep-all;
+        overflow-wrap: break-word;
     }
     .intro-card-body {
-        font-size: 0.88rem;
-        line-height: 1.65;
+        font-size: 0.875rem;
+        line-height: 1.7;
+        word-break: keep-all;
+    }
+    .intro-card-title {
+        font-size: 1.05rem;
     }
 
-    /* 업로드 row */
+    /* 업로드 row — 전체 너비 */
     .intro-upload-row {
         grid-template-columns: 1fr !important;
-        padding: 0 16px;
-        gap: 16px;
-        margin-top: 24px;
+        padding: 0 14px;
+        gap: 14px;
+        margin-top: 20px;
     }
     .intro-info-panel {
         padding: 20px 18px;
+        gap: 14px;
     }
     .intro-info-title {
-        font-size: 1.2rem !important;
+        font-size: 1.15rem !important;
     }
-    /* 업로드 카드 모바일 */
+
+    /* 업로드 카드 — 전체 너비, 중앙 정렬 */
     .intro-upload-card {
-        padding: 24px 16px;
+        padding: 28px 20px;
+        width: 100%;
+        box-sizing: border-box;
     }
     /* 드롭존 모바일 */
     .drop-zone {
-        padding: 28px 16px !important;
+        padding: 32px 20px !important;
+        width: 100% !important;
     }
     .drop-zone-inner {
         width: 100%;
         align-items: center;
+        text-align: center;
+    }
+    .drop-icon {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
     }
     .drop-text {
         white-space: normal !important;
         font-size: 0.88rem;
         text-align: center;
+        word-break: keep-all;
     }
     .drop-hint {
         white-space: normal !important;
@@ -4700,13 +4727,19 @@ body {
         text-align: center;
     }
     .btn-upload {
-        margin-left: auto;
-        margin-right: auto;
+        margin: 0 auto 12px;
+        padding: 12px 28px;
+        font-size: 0.92rem;
+    }
+    .ios-hint {
+        font-size: 0.76rem;
+        text-align: center;
+        word-break: keep-all;
     }
 
     /* 광고 배너 (하단) */
     .intro-ad-row {
-        margin: 20px 16px 0;
+        margin: 18px 14px 0;
     }
     .promo-hero {
         flex-direction: column !important;
@@ -4714,7 +4747,7 @@ body {
     }
     .promo-hero-img-wrap {
         width: 100% !important;
-        height: 180px !important;
+        height: 190px !important;
         min-width: 0 !important;
     }
     .promo-hero-img {
@@ -4726,12 +4759,17 @@ body {
     }
     .promo-hero-title {
         font-size: 1rem !important;
+        word-break: keep-all;
+    }
+    .promo-hero-desc {
+        font-size: 0.78rem !important;
+        word-break: keep-all;
     }
 
     /* CTA 바 */
     .intro-cta-bar {
         gap: 10px;
-        padding: 16px;
+        padding: 16px 14px;
         flex-wrap: wrap;
     }
     .intro-cta-btn {
