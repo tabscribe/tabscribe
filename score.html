@@ -2,7 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e85d04">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="images/og-thumbnail.png" type="image/png">
+<link rel="apple-touch-icon" href="images/og-thumbnail.png">
 <title>악보 공유 — TabScribe</title>
 <meta name="description" content="기타·베이스 코드 악보를 PDF로 업로드하고 공유하세요. TabScribe 악보 공유 커뮤니티.">
 <link rel="stylesheet" href="css/style.css">
@@ -754,17 +759,21 @@
 
 /* ── 반응형 ── */
 @media(max-width: 768px) {
-  .score-hero-inner { flex-wrap: wrap; }
-  .score-stats { margin-left: 0; }
+  .score-hero { padding: 24px 0 18px; }
+  .score-hero-inner { flex-wrap: wrap; gap: 12px; padding: 0 14px; }
+  .score-hero h1 { font-size: clamp(1.1rem, 5vw, 1.4rem); word-break: keep-all; }
+  .score-hero p  { font-size: 0.82rem; word-break: keep-all; }
+  .score-stats { margin-left: 0; flex-wrap: wrap; gap: 12px; }
   .upload-form-grid { grid-template-columns: 1fr; }
-  .score-post-card { flex-wrap: wrap; }
+  .score-post-card { flex-wrap: wrap; padding: 12px 14px; }
   .score-post-actions { flex-direction: row; width: 100%; }
-  .score-post-title { max-width: 200px; }
-  .score-post-desc { max-width: 100%; }
+  .score-post-title { max-width: 100%; white-space: normal; word-break: keep-all; font-size: 0.9rem; }
+  .score-post-desc { max-width: 100%; font-size: 0.78rem; }
+  .score-layout { grid-template-columns: 1fr; }
+  .score-side { display: none; }
 }
 @media(max-width: 520px) {
-  .score-hero h1 { font-size: 1.3rem; }
-  .score-stats { gap: 12px; }
+  .score-stats { gap: 10px; }
 }
 </style>
 </head>

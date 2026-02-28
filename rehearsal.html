@@ -2,7 +2,11 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#d45d00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="images/og-thumbnail.png" type="image/png">
+<link rel="apple-touch-icon" href="images/og-thumbnail.png">
 <title>합주실 찾기 — TabScribe</title>
 <meta name="description" content="서울 지역 합주실 정보를 구·동별로 검색하세요. 홍대, 강남, 신촌, 성수, 건대 등 주요 지역 합주실 목록.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
@@ -34,12 +38,24 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 
 .header{background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.07);}
 .header-inner{max-width:1240px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;gap:10px;}
-.logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
 .logo-icon{color:var(--orange);font-size:1.2rem;}
-.logo-text{font-size:1.08rem;font-weight:800;color:var(--text);}
+.logo-textbox{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1;}
+.logo-text{font-size:1.08rem;font-weight:800;color:var(--text);line-height:1.15;}
 .logo-text .acc{color:var(--orange);}
+.logo-ko{font-size:0.58rem;font-weight:600;letter-spacing:0.16em;color:var(--muted);line-height:1;white-space:nowrap;}
 .logo-badge{background:var(--orange-lt);border:1.5px solid var(--orange-bd);color:var(--orange);font-size:.67rem;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
 .header-nav{margin-left:auto;display:flex;gap:8px;flex-shrink:0;}
+.hamburger-btn{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;padding:0;flex-shrink:0;margin-left:auto;}
+.hamburger-btn span{display:block;width:18px;height:2px;background:#334155;border-radius:2px;transition:all .25s ease;transform-origin:center;}
+.hamburger-btn.is-open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger-btn.is-open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.hamburger-btn.is-open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;flex-direction:column;background:#fff;border-top:1px solid var(--line);padding:8px 16px 12px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.mobile-menu.is-open{display:flex;}
+.mobile-menu-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-size:.88rem;font-weight:600;color:#334155;text-decoration:none;transition:background .15s;border-bottom:1px solid #f1f5f9;}
+.mobile-menu-item:last-child{border-bottom:none;}
+.mobile-menu-item:hover{background:#f8fafc;}
 .nav-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:8px;border:1.5px solid var(--line);font-size:.79rem;font-weight:600;color:var(--sub);text-decoration:none;background:#fff;transition:all .15s;white-space:nowrap;font-family:'Inter','Noto Sans KR',sans-serif;}
 .nav-btn:hover{border-color:var(--orange);color:var(--orange);}
 .nav-btn.active{border-color:var(--orange);color:var(--orange);background:var(--orange-lt);}
@@ -171,16 +187,20 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .empty i{font-size:2.4rem;margin-bottom:12px;display:block;color:var(--orange);opacity:.4;}
 .empty p{font-size:.93rem;}
 
+@media(max-width:860px){
+  .header-nav{display:none;}
+  .hamburger-btn{display:flex;}
+  .logo-badge{display:none;}
+}
 @media(max-width:768px){
   .header-inner{padding:0 14px;}
   .filter-bar{padding:14px;}
   .cards-grid{grid-template-columns:1fr;}
   .hero{padding:30px 14px 24px;}
   .hero-stats{gap:10px;}
+  .hero h1{font-size:clamp(1.3rem,5vw,1.8rem);}
 }
 @media(max-width:520px){
-  .logo-badge{display:none;}
-  .nav-btn span{display:none;}
   .gu-tab{font-size:.74rem;padding:5px 10px;}
 }
 
@@ -212,6 +232,15 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
       <a href="community.html" class="nav-btn"><i class="fas fa-users"></i> <span>커뮤니티</span></a>
       <a href="score.html" class="nav-btn"><i class="fas fa-file-pdf"></i> <span>악보공유</span></a>
     </nav>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="mobile-menu-item"><i class="fas fa-home" style="color:#e85d04"></i> 홈 (타브 생성)</a>
+    <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실 찾기</a>
+    <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵</a>
+    <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵</a>
+    <a href="community.html" class="mobile-menu-item"><i class="fas fa-users" style="color:#ea580c"></i> 커뮤니티</a>
+    <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf" style="color:#6d28d9"></i> 악보공유</a>
   </div>
 </header>
 
@@ -687,5 +716,22 @@ mountAds('rehearsalAdRight', ['REHEARSAL_R1','REHEARSAL_R2','REHEARSAL_R3','REHE
     <i class="fas fa-home"></i>
     <span class="home-fab-tooltip">홈으로</span>
 </a>
+<script>
+(function(){
+  var btn = document.getElementById('hamburgerBtn');
+  var menu = document.getElementById('mobileMenu');
+  if (!btn || !menu) return;
+  btn.addEventListener('click', function(){
+    btn.classList.toggle('is-open');
+    menu.classList.toggle('is-open');
+  });
+  document.addEventListener('click', function(e){
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+      btn.classList.remove('is-open');
+      menu.classList.remove('is-open');
+    }
+  });
+})();
+</script>
 </body>
 </html>

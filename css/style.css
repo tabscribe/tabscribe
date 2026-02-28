@@ -587,6 +587,24 @@ body {
     }
 }
 
+/* ── 태블릿 (769px ~ 1160px): 중앙 콘텐츠 여백 및 카드 2열 ── */
+@media (min-width: 769px) and (max-width: 1160px) {
+    .intro-inner {
+        padding: 0 20px;
+    }
+    /* 태블릿에서 카드 2열 */
+    .intro-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    /* 업로드 ROW 태블릿에서도 2열 유지 */
+    .intro-upload-row {
+        grid-template-columns: 1fr 1fr;
+    }
+    .main {
+        padding: 28px 20px 60px;
+    }
+}
+
 /* ── 반응형: 1161~1420px → player 오른쪽만 | upload 오른쪽만 | intro 오른쪽만 ── */
 @media (min-width: 1161px) and (max-width: 1420px) {
     /* player 섹션 */
@@ -881,6 +899,9 @@ body {
     .compact-player-bar .file-name { max-width: 100px; }
     .compact-player-bar { height: auto; padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
     .cpb-progress { width: 100%; order: 10; }
+    /* 모바일 볼륨 슬라이더 — 컴팩트하게 유지 */
+    .compact-player-bar .volume-slider { width: 60px; }
+    .compact-player-bar .vol-icon { font-size: 0.75rem; }
 }
 
 /* ==========================================
@@ -1019,6 +1040,20 @@ body {
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+/* 모바일 터치 영역 확대 */
+@media (max-width: 768px) {
+    .volume-slider {
+        width: 70px;
+        height: 5px;
+        /* 터치 영역을 넓혀서 손가락으로 쉽게 조작 */
+        touch-action: manipulation;
+    }
+    .volume-slider::-webkit-slider-thumb {
+        width: 18px;
+        height: 18px;
+    }
 }
 
 /* Visualizer */
@@ -2294,8 +2329,9 @@ body {
     .upload-title { font-size: 1.5rem; }
     .drop-zone { padding: 28px 20px; }
     .player-controls { gap: 10px; }
-    .volume-wrap { display: none; }
-    .main { padding: 24px 16px 60px; }
+    /* 모바일에서도 볼륨 표시 — 슬라이더를 컴팩트하게 */
+    .volume-wrap { display: flex; gap: 6px; align-items: center; }
+    .volume-slider { width: 70px !important; }
 }
 
 @media (max-width: 480px) {

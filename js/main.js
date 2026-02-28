@@ -295,6 +295,18 @@ function resetAll() {
 // ==========================================
 dom.btnPlay.addEventListener('click', togglePlay);
 
+// iOS Safari: touchstart 에서 AudioContext 즉시 resume → 소리 안 나는 문제 방지
+dom.btnPlay.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // 300ms click 지연 제거
+    const ctx = audioEngine.audioContext;
+    if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+    } else if (!ctx) {
+        audioEngine.init().catch(() => {});
+    }
+    togglePlay();
+}, { passive: false });
+
 // 스페이스바로 재생/정지
 document.addEventListener('keydown', (e) => {
     // input, textarea, select, button에 포커스 중이면 무시
@@ -313,6 +325,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 function togglePlay() {
+    // 연속 호출 방지 (touchstart + click 이중 발생 대비)
+    const now = Date.now();
+    if (togglePlay._lastCall && now - togglePlay._lastCall < 300) return;
+    togglePlay._lastCall = now;
+
     if (!audioEngine.audioBuffer) {
         // 오디오 없으면 무시 (하지만 이미 위에서 체크함)
         return;
@@ -394,6 +411,11 @@ dom.waveformCanvas.addEventListener('touchstart', (e) => {
 dom.volumeSlider.addEventListener('input', (e) => {
     audioEngine.setVolume(parseFloat(e.target.value));
 });
+// iOS: 슬라이더 터치 시 AudioContext 깨우기
+dom.volumeSlider.addEventListener('touchstart', () => {
+    const ctx = audioEngine.audioContext;
+    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+}, { passive: true });
 
 function updateProgressUI(currentTime) {
     const ratio = audioEngine.duration > 0 ? currentTime / audioEngine.duration : 0;
