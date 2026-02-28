@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e85d04">
+  <title>내 프로필 — CodeDuck</title>
+  <meta name="description" content="코드덕쿠 프로필 수정 페이지">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="images/og-thumbnail.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:    #e85d04;
+      --orange-dk: #c24e03;
+      --orange-lt: #fff7f0;
+      --bg:        #f4f5f7;
+      --bg-card:   #ffffff;
+      --border:    #e5e7eb;
+      --text:      #1a1a2e;
+      --text-sub:  #6b7280;
+      --radius:    14px;
+      --shadow:    0 2px 16px rgba(0,0,0,.08);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── 헤더 ── */
+    .auth-header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-link {
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+    }
+    .logo-icon { font-size: 1.5rem; }
+    .logo-text { font-size: 1.2rem; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
+    .logo-text span { color: var(--orange); }
+    .back-link {
+      font-size: 0.88rem; color: var(--text-sub);
+      text-decoration: none; display: flex; align-items: center; gap: 5px;
+    }
+    .back-link:hover { color: var(--orange); }
+
+    /* ── 메인 ── */
+    .profile-main {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 36px 16px 60px;
+    }
+
+    /* ── 프로필 헤더 카드 ── */
+    .profile-hero {
+      background: linear-gradient(135deg, #fff7f0 0%, #ffffff 100%);
+      border: 1px solid #fde8d0;
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: var(--shadow);
+    }
+    .avatar-circle {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, #e85d04, #f59e0b);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      color: #fff;
+      font-weight: 900;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(232,93,4,.3);
+    }
+    .hero-info { flex: 1; min-width: 0; }
+    .hero-nickname {
+      font-size: 1.4rem; font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .hero-email {
+      font-size: 0.85rem; color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .hero-tag {
+      font-size: 0.78rem; font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--orange-lt);
+      color: var(--orange);
+      border: 1px solid #fde8d0;
+    }
+    .hero-tag.gender { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+    .hero-tag.career { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+
+    /* ── 섹션 카드 ── */
+    .profile-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-header-icon {
+      width: 32px; height: 32px;
+      background: var(--orange-lt);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem;
+      color: var(--orange);
+    }
+    .card-header-title {
+      font-size: 1rem; font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .card-body { padding: 20px 22px; }
+
+    /* ── 폼 공통 ── */
+    .form-group { margin-bottom: 18px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label {
+      display: block;
+      font-size: 0.85rem; font-weight: 700;
+      margin-bottom: 7px; color: var(--text);
+    }
+    .form-label .required { color: var(--orange); margin-left: 3px; }
+    .form-label .optional { font-size: 0.78rem; font-weight: 400; color: var(--text-sub); margin-left: 4px; }
+    .form-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem; font-family: inherit;
+      color: var(--text); background: #fafafa;
+      transition: border-color .18s, box-shadow .18s;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(232,93,4,.12);
+      background: #fff;
+    }
+    .form-input:disabled {
+      background: #f3f4f6; color: var(--text-sub); cursor: not-allowed;
+    }
+    .form-hint { font-size: 0.78rem; color: var(--text-sub); margin-top: 5px; }
+    .form-error { font-size: 0.8rem; color: #ef4444; margin-top: 5px; display: none; }
+    .form-error.show { display: block; }
+
+    /* ── 성별 ── */
+    .gender-group { display: flex; gap: 10px; }
+    .gender-option { flex: 1; position: relative; }
+    .gender-option input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .gender-option label {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 12px; border: 1.5px solid var(--border);
+      border-radius: 10px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 500;
+      transition: all .18s; background: #fafafa; user-select: none;
+    }
+    .gender-option input:checked + label {
+      border-color: var(--orange); background: var(--orange-lt);
+      color: var(--orange); font-weight: 700;
+    }
+    .gender-option label:hover { border-color: #fdba74; background: var(--orange-lt); }
+
+    /* ── 파트 ── */
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 400px) { .parts-grid { grid-template-columns: repeat(2, 1fr); } }
+    .part-option { position: relative; }
+    .part-option input[type=checkbox] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .part-option label {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 12px; border: 1.5px solid var(--border);
+      border-radius: 9px; cursor: pointer;
+      font-size: 0.85rem; font-weight: 500;
+      transition: all .18s; background: #fafafa; user-select: none;
+    }
+    .part-option input:checked + label {
+      border-color: var(--orange); background: var(--orange-lt);
+      color: var(--orange); font-weight: 700;
+    }
+    .part-option label:hover { border-color: #fdba74; background: var(--orange-lt); }
+
+    /* ── select ── */
+    .form-select {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 0.95rem; font-family: inherit;
+      color: var(--text); background: #fafafa;
+      transition: border-color .18s; outline: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 38px;
+    }
+    .form-select:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(232,93,4,.12); }
+
+    /* ── 저장 버튼 ── */
+    .btn-save {
+      width: 100%; padding: 14px;
+      background: var(--orange); color: #fff;
+      border: none; border-radius: 11px;
+      font-size: 1rem; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: background .18s, transform .12s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-save:hover { background: var(--orange-dk); transform: translateY(-1px); }
+    .btn-save:disabled { background: #fdba74; cursor: not-allowed; transform: none; }
+
+    /* ── 위험 구역 (비밀번호 변경 / 로그아웃) ── */
+    .danger-row {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .btn-secondary {
+      flex: 1; min-width: 140px; padding: 12px;
+      background: #f3f4f6; color: var(--text-sub);
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all .18s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-secondary:hover { background: #e5e7eb; color: var(--text); }
+    .btn-danger {
+      flex: 1; min-width: 140px; padding: 12px;
+      background: #fef2f2; color: #dc2626;
+      border: 1.5px solid #fca5a5; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all .18s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .btn-danger:hover { background: #fee2e2; }
+
+    /* ── 토스트 ── */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: #1e2433; color: #fff;
+      padding: 12px 22px; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+      z-index: 9999; transition: transform .3s ease;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── 로딩 스피너 ── */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── 스켈레톤 로딩 ── */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* ── 비밀번호 변경 모달 ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none; align-items: center; justify-content: center;
+      z-index: 999; padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 14px;
+      padding: 28px; width: 100%; max-width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 900; margin-bottom: 6px; }
+    .modal-desc { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 18px; line-height: 1.6; }
+    .modal-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 0.92rem; font-family: inherit; margin-bottom: 10px; outline: none;
+    }
+    .modal-input:focus { border-color: var(--orange); }
+    .modal-btns { display: flex; gap: 8px; margin-top: 4px; }
+    .modal-btns .btn-cancel {
+      flex: 1; padding: 11px; background: #f3f4f6; border: none;
+      border-radius: 9px; font-family: inherit; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; color: var(--text-sub);
+    }
+    .modal-btns .btn-confirm {
+      flex: 2; padding: 11px; background: var(--orange); border: none;
+      border-radius: 9px; font-family: inherit; font-size: 0.9rem;
+      font-weight: 700; cursor: pointer; color: #fff;
+    }
+    .modal-btns .btn-confirm:hover { background: var(--orange-dk); }
+    .modal-msg { font-size: 0.82rem; margin-top: 10px; padding: 8px 12px; border-radius: 8px; display: none; }
+    .modal-msg.success { background: #f0fdf4; color: #166534; display: block; }
+    .modal-msg.error   { background: #fef2f2; color: #dc2626; display: block; }
+
+    /* ── 가입일 / 통계 ── */
+    .stat-row {
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .stat-box {
+      flex: 1; min-width: 100px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 14px; text-align: center;
+    }
+    .stat-val { font-size: 1.3rem; font-weight: 900; color: var(--orange); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-sub); margin-top: 2px; }
+
+    /* 글로벌 에러 */
+    .global-error {
+      background: #fef2f2; border: 1px solid #fca5a5;
+      border-radius: 10px; padding: 12px 16px;
+      font-size: 0.88rem; color: #dc2626;
+      margin-bottom: 16px; display: none;
+    }
+    .global-error.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 -->
+  <header class="auth-header">
+    <a href="index.html" class="logo-link" aria-label="코드덕쿠 홈으로">
+      <span class="logo-icon">🦆</span>
+      <span class="logo-text">Code<span>ducku</span></span>
+    </a>
+    <a href="community.html" class="back-link">
+      <i class="fas fa-arrow-left"></i> 커뮤니티로
+    </a>
+  </header>
+
+  <!-- 메인 -->
+  <main class="profile-main">
+
+    <!-- 프로필 히어로 -->
+    <div class="profile-hero" id="profileHero">
+      <div class="avatar-circle" id="avatarCircle">🦆</div>
+      <div class="hero-info">
+        <div class="hero-nickname" id="heroNickname">불러오는 중...</div>
+        <div class="hero-email" id="heroEmail"></div>
+        <div class="hero-tags" id="heroTags"></div>
+      </div>
+    </div>
+
+    <!-- 기본 정보 수정 카드 -->
+    <div class="profile-card">
+      <div class="card-header">
+        <div class="card-header-icon"><i class="fas fa-user"></i></div>
+        <div class="card-header-title">기본 정보 수정</div>
+      </div>
+      <div class="card-body">
+        <div class="global-error" id="globalError"></div>
+
+        <!-- 이메일 (수정 불가) -->
+        <div class="form-group">
+          <label class="form-label">이메일 <span class="optional">(변경 불가)</span></label>
+          <input type="email" class="form-input" id="emailField" disabled>
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="form-group">
+          <label class="form-label" for="nickname">닉네임 <span class="required">*</span></label>
+          <input type="text" id="nickname" class="form-input" maxlength="20" placeholder="2~20자">
+          <div class="form-hint">커뮤니티에서 사용할 이름이에요</div>
+          <div class="form-error" id="nicknameError">닉네임은 2~20자로 입력해주세요.</div>
+        </div>
+
+        <!-- 성별 -->
+        <div class="form-group">
+          <label class="form-label">성별 <span class="required">*</span></label>
+          <div class="gender-group">
+            <div class="gender-option">
+              <input type="radio" id="genderMale" name="gender" value="male">
+              <label for="genderMale">♂ 남성</label>
+            </div>
+            <div class="gender-option">
+              <input type="radio" id="genderFemale" name="gender" value="female">
+              <label for="genderFemale">♀ 여성</label>
+            </div>
+            <div class="gender-option">
+              <input type="radio" id="genderOther" name="gender" value="other">
+              <label for="genderOther">◎ 기타</label>
+            </div>
+          </div>
+          <div class="form-error" id="genderError">성별을 선택해주세요.</div>
+        </div>
+
+        <!-- 파트 -->
+        <div class="form-group">
+          <label class="form-label">나의 파트 <span class="required">*</span> <span class="optional">(중복 선택)</span></label>
+          <div class="parts-grid">
+            <div class="part-option"><input type="checkbox" id="partVocal"    name="parts" value="vocal">   <label for="partVocal">🎤 보컬</label></div>
+            <div class="part-option"><input type="checkbox" id="partGuitar"   name="parts" value="guitar">  <label for="partGuitar">🎸 기타</label></div>
+            <div class="part-option"><input type="checkbox" id="partBass"     name="parts" value="bass">    <label for="partBass">🎵 베이스</label></div>
+            <div class="part-option"><input type="checkbox" id="partKeyboard" name="parts" value="keyboard"><label for="partKeyboard">🎹 키보드</label></div>
+            <div class="part-option"><input type="checkbox" id="partDrums"    name="parts" value="drums">   <label for="partDrums">🥁 드럼</label></div>
+            <div class="part-option"><input type="checkbox" id="partDJ"       name="parts" value="dj">      <label for="partDJ">🎧 DJ</label></div>
+            <div class="part-option"><input type="checkbox" id="partViolin"   name="parts" value="violin">  <label for="partViolin">🎻 바이올린</label></div>
+            <div class="part-option"><input type="checkbox" id="partFlute"    name="parts" value="flute">   <label for="partFlute">🎶 플루트</label></div>
+            <div class="part-option"><input type="checkbox" id="partOther"    name="parts" value="other">   <label for="partOther">🎼 기타악기</label></div>
+          </div>
+          <div class="form-error" id="partsError">파트를 하나 이상 선택해주세요.</div>
+        </div>
+
+        <!-- 경력 -->
+        <div class="form-group">
+          <label class="form-label" for="career">음악 경력 <span class="optional">(선택)</span></label>
+          <select id="career" class="form-select">
+            <option value="">경력을 선택해주세요</option>
+            <option value="beginner">입문 (1년 미만)</option>
+            <option value="junior">초급 (1~3년)</option>
+            <option value="intermediate">중급 (3~5년)</option>
+            <option value="senior">고급 (5~10년)</option>
+            <option value="expert">전문가 (10년 이상)</option>
+          </select>
+        </div>
+
+        <button class="btn-save" id="saveBtn" onclick="saveProfile()">
+          <i class="fas fa-save"></i> 변경사항 저장
+        </button>
+      </div>
+    </div>
+
+    <!-- 계정 관리 카드 -->
+    <div class="profile-card">
+      <div class="card-header">
+        <div class="card-header-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="card-header-title">계정 관리</div>
+      </div>
+      <div class="card-body">
+        <div class="danger-row">
+          <button class="btn-secondary" onclick="openPwModal()">
+            <i class="fas fa-key"></i> 비밀번호 변경
+          </button>
+          <button class="btn-secondary" onclick="doLogout()">
+            <i class="fas fa-sign-out-alt"></i> 로그아웃
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 비밀번호 변경 모달 -->
+  <div class="modal-overlay" id="pwModal">
+    <div class="modal-box">
+      <div class="modal-title">🔑 비밀번호 변경</div>
+      <p class="modal-desc">가입한 이메일로 비밀번호 재설정 링크를 보내드립니다.</p>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="document.getElementById('pwModal').classList.remove('show')">취소</button>
+        <button class="btn-confirm" onclick="sendPwReset()">
+          <i class="fas fa-paper-plane"></i> 메일 발송
+        </button>
+      </div>
+      <div class="modal-msg" id="pwModalMsg"></div>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Supabase JS v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const PART_ICONS = {
+      vocal:'🎤', guitar:'🎸', bass:'🎵', keyboard:'🎹',
+      drums:'🥁', dj:'🎧', violin:'🎻', flute:'🎶', other:'🎼'
+    };
+    const PART_KO = {
+      vocal:'보컬', guitar:'기타', bass:'베이스', keyboard:'키보드',
+      drums:'드럼', dj:'DJ', violin:'바이올린', flute:'플루트', other:'기타악기'
+    };
+    const GENDER_KO = { male:'남성', female:'여성', other:'기타' };
+    const CAREER_KO = {
+      beginner:'입문', junior:'초급', intermediate:'중급',
+      senior:'고급', expert:'전문가'
+    };
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    // ── 페이지 초기화 ──
+    async function init() {
+      const session = await getSession();
+      if (!session) {
+        location.href = 'login.html?redirect=profile.html';
+        return;
+      }
+      currentUser = session.user;
+      currentProfile = await getProfile(currentUser.id);
+
+      if (!currentProfile) {
+        showToast('❌ 프로필 정보를 불러오지 못했습니다.');
+        return;
+      }
+      fillForm();
+      updateHero();
+    }
+
+    // ── 폼 채우기 ──
+    function fillForm() {
+      const p = currentProfile;
+      document.getElementById('emailField').value  = currentUser.email;
+      document.getElementById('nickname').value    = p.nickname || '';
+      document.getElementById('career').value      = p.career   || '';
+
+      // 성별
+      const genderRadio = document.querySelector(`input[name="gender"][value="${p.gender}"]`);
+      if (genderRadio) genderRadio.checked = true;
+
+      // 파트
+      document.querySelectorAll('input[name="parts"]').forEach(cb => {
+        cb.checked = Array.isArray(p.parts) && p.parts.includes(cb.value);
+      });
+    }
+
+    // ── 히어로 업데이트 ──
+    function updateHero() {
+      const p = currentProfile;
+      const nick = p.nickname || currentUser.email.split('@')[0];
+
+      // 아바타 이니셜
+      document.getElementById('avatarCircle').textContent = nick.charAt(0).toUpperCase();
+      document.getElementById('heroNickname').textContent = nick;
+      document.getElementById('heroEmail').textContent    = currentUser.email;
+
+      // 태그
+      const tags = [];
+      if (p.gender) tags.push(`<span class="hero-tag gender">${GENDER_KO[p.gender] || p.gender}</span>`);
+      if (Array.isArray(p.parts)) {
+        p.parts.forEach(pt => {
+          tags.push(`<span class="hero-tag">${PART_ICONS[pt] || ''} ${PART_KO[pt] || pt}</span>`);
+        });
+      }
+      if (p.career) tags.push(`<span class="hero-tag career">🎵 ${CAREER_KO[p.career] || p.career}</span>`);
+      document.getElementById('heroTags').innerHTML = tags.join('');
+    }
+
+    // ── 저장 ──
+    async function saveProfile() {
+      const nickname = document.getElementById('nickname').value.trim();
+      const gender   = document.querySelector('input[name="gender"]:checked')?.value || '';
+      const parts    = [...document.querySelectorAll('input[name="parts"]:checked')].map(c => c.value);
+      const career   = document.getElementById('career').value;
+
+      // 에러 초기화
+      document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+      document.getElementById('globalError').classList.remove('show');
+
+      let valid = true;
+      if (nickname.length < 2 || nickname.length > 20) {
+        document.getElementById('nicknameError').classList.add('show'); valid = false;
+      }
+      if (!gender) {
+        document.getElementById('genderError').classList.add('show'); valid = false;
+      }
+      if (parts.length === 0) {
+        document.getElementById('partsError').classList.add('show'); valid = false;
+      }
+      if (!valid) return;
+
+      const btn = document.getElementById('saveBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> 저장 중...';
+
+      try {
+        const sb = getClient();
+        const { error } = await sb.from('profiles').update({
+          nickname, gender, parts, career: career || null
+        }).eq('id', currentUser.id);
+
+        if (error) throw error;
+
+        // 로컬 갱신
+        currentProfile = { ...currentProfile, nickname, gender, parts, career };
+        updateHero();
+        showToast('✅ 프로필이 저장되었습니다!');
+      } catch (err) {
+        console.error('[Profile] save error:', err);
+        const errEl = document.getElementById('globalError');
+        errEl.textContent = '❌ 저장에 실패했습니다. 다시 시도해주세요.';
+        errEl.classList.add('show');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> 변경사항 저장';
+      }
+    }
+
+    // ── 로그아웃 ──
+    async function doLogout() {
+      await signOut();
+      location.href = 'index.html';
+    }
+
+    // ── 비밀번호 변경 모달 ──
+    function openPwModal() {
+      document.getElementById('pwModal').classList.add('show');
+      document.getElementById('pwModalMsg').className = 'modal-msg';
+    }
+
+    async function sendPwReset() {
+      const sb = getClient();
+      const { error } = await sb.auth.resetPasswordForEmail(currentUser.email, {
+        redirectTo: `${location.origin}/reset-password.html`
+      });
+      const msgEl = document.getElementById('pwModalMsg');
+      if (error) {
+        msgEl.textContent = '❌ 오류가 발생했습니다.';
+        msgEl.className = 'modal-msg error';
+      } else {
+        msgEl.textContent = `✅ ${currentUser.email} 로 재설정 링크를 발송했습니다!`;
+        msgEl.className = 'modal-msg success';
+      }
+    }
+
+    // ── 토스트 ──
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // 초기화
+    init();
+  </script>
+</body>
+</html>

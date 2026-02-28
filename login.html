@@ -351,7 +351,7 @@
           </div>
           <div class="form-error" id="passwordError">비밀번호를 입력해주세요.</div>
           <div class="form-link-row">
-            <a href="#" class="form-link" id="forgotPwLink">비밀번호를 잊으셨나요?</a>
+            <a href="reset-password.html" class="form-link" id="forgotPwLink">비밀번호를 잊으셨나요?</a>
           </div>
         </div>
 
@@ -375,22 +375,6 @@
 
     </div>
   </main>
-
-  <!-- 비밀번호 재설정 모달 -->
-  <div class="modal-overlay" id="resetModal">
-    <div class="modal-box">
-      <div class="modal-title">🔑 비밀번호 재설정</div>
-      <p class="modal-desc">가입한 이메일 주소를 입력하면<br>재설정 링크를 보내드립니다.</p>
-      <input type="email" class="modal-input" id="resetEmail" placeholder="가입한 이메일 주소">
-      <div class="modal-btns">
-        <button class="btn-cancel" id="resetCancelBtn">취소</button>
-        <button class="btn-confirm" id="resetSendBtn">
-          <i class="fas fa-paper-plane"></i> 메일 발송
-        </button>
-      </div>
-      <div class="modal-msg" id="resetMsg"></div>
-    </div>
-  </div>
 
   <!-- Supabase JS v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -474,33 +458,9 @@
       }
     });
 
-    // 비밀번호 재설정 모달
+    // 비밀번호 찾기: reset-password.html 로 이동
     document.getElementById('forgotPwLink').addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('resetEmail').value = document.getElementById('email').value;
-      document.getElementById('resetModal').classList.add('show');
-    });
-    document.getElementById('resetCancelBtn').addEventListener('click', () => {
-      document.getElementById('resetModal').classList.remove('show');
-      document.getElementById('resetMsg').className = 'modal-msg';
-    });
-    document.getElementById('resetSendBtn').addEventListener('click', async () => {
-      const email = document.getElementById('resetEmail').value.trim();
-      const msgEl = document.getElementById('resetMsg');
-      if (!email) { msgEl.textContent = '이메일을 입력해주세요.'; msgEl.className = 'modal-msg error'; return; }
-
-      const sb = getClient();
-      if (!sb) return;
-      const { error } = await sb.auth.resetPasswordForEmail(email, {
-        redirectTo: `${location.origin}/reset-password.html`
-      });
-      if (error) {
-        msgEl.textContent = '❌ ' + (error.message || '오류가 발생했습니다.');
-        msgEl.className = 'modal-msg error';
-      } else {
-        msgEl.textContent = '✅ 재설정 링크를 발송했습니다. 이메일을 확인해주세요!';
-        msgEl.className = 'modal-msg success';
-      }
+      // 이미 href로 이동하므로 추가 처리 불필요
     });
 
     // 이미 로그인 상태면 커뮤니티로 이동
