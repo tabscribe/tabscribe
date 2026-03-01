@@ -53,6 +53,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="js/ads.js"></script>
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- 문의하기 팝업 -->
+    <script src="js/inquiry.js"></script>
 </head>
 <body class="is-home">
     <!-- Header -->
@@ -171,73 +175,19 @@
                     <p class="intro-header-sub">코드부터 정보까지, 필요한 모든 것을 한곳에서</p>
                 </div>
 
-                <!-- 카드 3열 그리드 -->
-                <div class="intro-cards">
-
-                    <!-- 카드 1 — 안전합니다 -->
-                    <div class="intro-card intro-card--safe">
-                        <div class="intro-card-icon-wrap">
-                            <span class="intro-card-icon">🔒</span>
+                <!-- 음원 분석 섹션 타이틀 -->
+                <div class="intro-analyze-head">
+                    <div class="intro-analyze-head-left">
+                        <div class="intro-analyze-badge">
+                            <span class="intro-analyze-badge-dot"></span>
+                            BETA
                         </div>
-                        <div class="intro-card-tag">PRIVACY</div>
-                        <h3 class="intro-card-title">안전합니다</h3>
-                        <p class="intro-card-body">
-                            코드덕쿠는 음원 파일을 서버로 전송하지 않습니다.<br>
-                            모든 분석은 <strong>내 PC 안에서만</strong> 이루어지기 때문에
-                            무분별한 파일 전송으로 인한 <em>데이터 유출</em>이나
-                            <em>저작권 분쟁</em>에 대한 걱정 없이 자유롭게 사용하실 수 있습니다.
-                        </p>
-                        <div class="intro-card-chips">
-                            <span class="intro-chip intro-chip--green"><i class="fas fa-check-circle"></i> 로컬 분석</span>
-                            <span class="intro-chip intro-chip--green"><i class="fas fa-shield-alt"></i> 파일 미전송</span>
-                            <span class="intro-chip intro-chip--green"><i class="fas fa-lock"></i> 저작권 안전</span>
-                        </div>
+                        <h2 class="intro-analyze-title">
+                            내 음원 파일 <span>분석하기</span>
+                        </h2>
                     </div>
-
-                    <!-- 카드 2 — 개선 중 -->
-                    <div class="intro-card intro-card--wip">
-                        <div class="intro-card-icon-wrap">
-                            <span class="intro-card-icon">🔧</span>
-                        </div>
-                        <div class="intro-card-tag">IN PROGRESS</div>
-                        <h3 class="intro-card-title">계속 개선 중입니다</h3>
-                        <p class="intro-card-body">
-                            현재 음원 분석 정확도는 아직 개선이 필요한 단계입니다.
-                            정확도를 높이려면 AI 연동이 필요한데,
-                            <strong>개인 운영 사이트</strong>라 비용 부담이 큰 상황입니다.<br><br>
-                            사이트에 수익이 생기면 <em>AI 연동은 물론 다양한 서비스</em>를
-                            추가할 계획입니다. 많은 관심과 이용이 큰 힘이 됩니다! 🙏
-                        </p>
-                        <div class="intro-card-chips">
-                            <span class="intro-chip intro-chip--orange"><i class="fas fa-robot"></i> AI 연동 예정</span>
-                            <span class="intro-chip intro-chip--orange"><i class="fas fa-chart-line"></i> 지속 업데이트</span>
-                        </div>
-                    </div>
-
-                    <!-- 카드 3 — 코드덕쿠란? -->
-                    <div class="intro-card intro-card--about">
-                        <div class="intro-card-icon-wrap">
-                            <span class="intro-card-icon">🎸</span>
-                        </div>
-                        <div class="intro-card-tag">ABOUT</div>
-                        <h3 class="intro-card-title">코드덕쿠란?</h3>
-                        <p class="intro-card-body">
-                            기타·밴드 입문 시절, 코드 잡는 법, 합주실 예약,
-                            악기 리페어샵 찾기… 정보를 구하기가 너무 막막했습니다.
-                            지금은 정보가 너무 많아 오히려 <strong>더 못 찾는 상황</strong>을 자주 봅니다.<br><br>
-                            그래서 <em>초보자를 위한 정보 공유 &amp; 커뮤니티 사이트</em>를
-                            만들었습니다. 아직 부족하지만 자주 방문해 주시고
-                            커뮤니티에서 교류해 주신다면, 재미있고 유익한 공간으로
-                            꼭 성장시키겠습니다. 💪
-                        </p>
-                        <div class="intro-card-chips">
-                            <span class="intro-chip intro-chip--blue"><i class="fas fa-users"></i> 커뮤니티</span>
-                            <span class="intro-chip intro-chip--blue"><i class="fas fa-map-marker-alt"></i> 합주실·리페어샵</span>
-                            <span class="intro-chip intro-chip--blue"><i class="fas fa-music"></i> 코드 정보</span>
-                        </div>
-                    </div>
-
-                </div><!-- /intro-cards -->
+                    <p class="intro-analyze-sub">음원을 업로드하면 자동으로 기타 코드를 감지합니다 — 브라우저 안에서만 처리되어 파일이 외부로 전송되지 않습니다</p>
+                </div>
 
                 <!-- 2열: 왼쪽 안내문 + 오른쪽 파일선택 -->
                 <div class="intro-upload-row">
@@ -322,6 +272,74 @@
                         </div>
                     </a>
                 </div><!-- /intro-ad-row -->
+
+                <!-- 카드 3열 그리드 -->
+                <div class="intro-cards">
+
+                    <!-- 카드 1 — 안전합니다 -->
+                    <div class="intro-card intro-card--safe">
+                        <div class="intro-card-icon-wrap">
+                            <span class="intro-card-icon">🔒</span>
+                        </div>
+                        <div class="intro-card-tag">PRIVACY</div>
+                        <h3 class="intro-card-title">안전합니다</h3>
+                        <p class="intro-card-body">
+                            코드덕쿠는 음원 파일을 서버로 전송하지 않습니다.<br>
+                            모든 분석은 <strong>내 PC 안에서만</strong> 이루어지기 때문에
+                            무분별한 파일 전송으로 인한 <em>데이터 유출</em>이나
+                            <em>저작권 분쟁</em>에 대한 걱정 없이 자유롭게 사용하실 수 있습니다.
+                        </p>
+                        <div class="intro-card-chips">
+                            <span class="intro-chip intro-chip--green"><i class="fas fa-check-circle"></i> 로컬 분석</span>
+                            <span class="intro-chip intro-chip--green"><i class="fas fa-shield-alt"></i> 파일 미전송</span>
+                            <span class="intro-chip intro-chip--green"><i class="fas fa-lock"></i> 저작권 안전</span>
+                        </div>
+                    </div>
+
+                    <!-- 카드 2 — 개선 중 -->
+                    <div class="intro-card intro-card--wip">
+                        <div class="intro-card-icon-wrap">
+                            <span class="intro-card-icon">🔧</span>
+                        </div>
+                        <div class="intro-card-tag">IN PROGRESS</div>
+                        <h3 class="intro-card-title">계속 개선 중입니다</h3>
+                        <p class="intro-card-body">
+                            현재 음원 분석 정확도는 아직 개선이 필요한 단계입니다.
+                            정확도를 높이려면 AI 연동이 필요한데,
+                            <strong>개인 운영 사이트</strong>라 비용 부담이 큰 상황입니다.<br><br>
+                            사이트에 수익이 생기면 <em>AI 연동은 물론 다양한 서비스</em>를
+                            추가할 계획입니다. 많은 관심과 이용이 큰 힘이 됩니다! 🙏
+                        </p>
+                        <div class="intro-card-chips">
+                            <span class="intro-chip intro-chip--orange"><i class="fas fa-robot"></i> AI 연동 예정</span>
+                            <span class="intro-chip intro-chip--orange"><i class="fas fa-chart-line"></i> 지속 업데이트</span>
+                        </div>
+                    </div>
+
+                    <!-- 카드 3 — 코드덕쿠란? -->
+                    <div class="intro-card intro-card--about">
+                        <div class="intro-card-icon-wrap">
+                            <span class="intro-card-icon">🎸</span>
+                        </div>
+                        <div class="intro-card-tag">ABOUT</div>
+                        <h3 class="intro-card-title">코드덕쿠란?</h3>
+                        <p class="intro-card-body">
+                            기타·밴드 입문 시절, 코드 잡는 법, 합주실 예약,
+                            악기 리페어샵 찾기… 정보를 구하기가 너무 막막했습니다.
+                            지금은 정보가 너무 많아 오히려 <strong>더 못 찾는 상황</strong>을 자주 봅니다.<br><br>
+                            그래서 <em>초보자를 위한 정보 공유 &amp; 커뮤니티 사이트</em>를
+                            만들었습니다. 아직 부족하지만 자주 방문해 주시고
+                            커뮤니티에서 교류해 주신다면, 재미있고 유익한 공간으로
+                            꼭 성장시키겠습니다. 💪
+                        </p>
+                        <div class="intro-card-chips">
+                            <span class="intro-chip intro-chip--blue"><i class="fas fa-users"></i> 커뮤니티</span>
+                            <span class="intro-chip intro-chip--blue"><i class="fas fa-map-marker-alt"></i> 합주실·리페어샵</span>
+                            <span class="intro-chip intro-chip--blue"><i class="fas fa-music"></i> 코드 정보</span>
+                        </div>
+                    </div>
+
+                </div><!-- /intro-cards -->
 
                 <!-- 코드덕쿠 사이트 홍보 이미지 배너 -->
                 <a href="community.html" class="page-promo-banner" style="margin-top:16px;">
