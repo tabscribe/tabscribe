@@ -131,15 +131,10 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 
 @media(max-width:1100px){
   .page-layout{grid-template-columns:180px 1fr 180px;gap:14px;}
-  .cards-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
 }
 @media(max-width:860px){
   .page-layout{grid-template-columns:1fr;padding:16px 12px 60px;}
   .side-panel{display:none;}
-  .cards-grid{grid-template-columns:repeat(2,1fr);}
-}
-@media(max-width:520px){
-  .cards-grid{grid-template-columns:1fr;}
 }
 
 .filter-bar{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
@@ -261,6 +256,19 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 }
 @media(max-width:520px){
   .gu-tab,.cat-tab{font-size:.74rem;padding:5px 10px;}
+}
+/* 모바일·태블릿 카드 반응형 */
+@media(max-width:900px){
+  .cards-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+}
+@media(max-width:640px){
+  .cards-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .card{padding:11px;}
+  .card-name{font-size:.88rem;}
+  .card-row{font-size:.74rem;}
+}
+@media(max-width:440px){
+  .cards-grid{grid-template-columns:1fr;gap:10px;}
 }
 
 .hof-promo-banner{margin:10px 0 14px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#1e293b 100%);border:1.5px solid rgba(99,102,241,.35);box-shadow:0 4px 24px rgba(0,0,0,.18);padding:12px 16px;}

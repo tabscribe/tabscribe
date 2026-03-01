@@ -60,8 +60,7 @@
 
     /* ── 레이아웃 ── */
     .page-layout{max-width:1340px;margin:0 auto;padding:28px 24px 60px;display:grid;grid-template-columns:220px 1fr;gap:24px;}
-    @media(max-width:900px){.page-layout{grid-template-columns:1fr;}.sidebar{display:none;}.card-grid{grid-template-columns:repeat(2,1fr);}}
-    @media(max-width:520px){.card-grid{grid-template-columns:1fr;}}
+    @media(max-width:900px){.page-layout{grid-template-columns:1fr;}.sidebar{display:none;}}
 
     /* ── 사이드바 ── */
     .sidebar{position:sticky;top:80px;align-self:flex-start;}
@@ -85,6 +84,10 @@
 
     /* ── 카드 그리드 ── */
     .card-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+    /* 모바일·태블릿 카드 반응형 */
+    @media(max-width:900px){.card-grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
+    @media(max-width:640px){.card-grid{grid-template-columns:repeat(2,1fr);gap:10px;}.card{padding:14px;}}
+    @media(max-width:440px){.card-grid{grid-template-columns:1fr;}}
     .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;box-shadow:0 1px 6px rgba(0,0,0,.05);transition:transform .18s,box-shadow .18s;position:relative;}
     .card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.1);border-color:#c4b5fd;}
     .card-badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
