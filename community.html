@@ -2614,8 +2614,9 @@
             updateCategoryTitle(cat, 'all');
             loadPosts();
             updateTotalCount();
-        } catch {
-            showToast('❌ 등록에 실패했습니다. 다시 시도해주세요.');
+        } catch (err) {
+            console.error('[submitPost] 등록 실패:', err);
+            showToast('❌ 등록 실패: ' + (err.message || '알 수 없는 오류'));
         } finally {
             btn.disabled = false;
             btn.textContent = '등록하기';
