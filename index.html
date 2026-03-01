@@ -58,52 +58,93 @@
     <!-- Header -->
     <header class="header">
         <div class="header-inner">
-            <a href="index.html" class="logo" aria-label="코드덕쿠 홈으로 이동">
-                <i class="fas fa-guitar"></i>
-                <div class="logo-textbox">
-                    <span class="logo-text">Code<span class="accent">ducku</span></span>
-                    <span class="logo-ko">코드덕쿠</span>
-                </div>
-            </a>
-            <!-- 데스크탑 네비 -->
-            <nav class="header-nav" id="headerNav">
-                <div class="nav-info-group">
-                    <a href="rehearsal.html" class="nav-btn nav-btn--blue"><i class="fas fa-music"></i> 합주실 찾기</a>
-                    <a href="repair.html" class="nav-btn nav-btn--purple"><i class="fas fa-tools"></i> 리페어샵 찾기</a>
-                    <a href="instrument.html" class="nav-btn nav-btn--teal"><i class="fas fa-guitar"></i> 악기샵 찾기</a>
-                    <a href="academy.html" class="nav-btn nav-btn--accent"><i class="fas fa-school"></i> 음악학원 찾기</a>
-                    <a href="venue.html" class="nav-btn nav-btn--violet"><i class="fas fa-theater-masks"></i> 공연장 찾기</a>
-                </div>
-                <a href="score.html" class="nav-btn nav-btn--violet"><i class="fas fa-file-pdf"></i> 악보공유</a>
-                <a href="community.html" class="nav-btn nav-btn--orange"><i class="fas fa-users"></i> 커뮤니티</a>
-            </nav>
-            <!-- Auth 버튼 -->
-            <div class="header-auth-btns">
-                <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn">
-                    <i class="fas fa-sign-in-alt"></i> 로그인
+            <!-- 상단줄: 로고 + 로그인 박스 -->
+            <div class="header-top-row">
+                <a href="index.html" class="logo" aria-label="코드덕쿠 홈으로 이동">
+                    <i class="fas fa-guitar"></i>
+                    <div class="logo-textbox">
+                        <span class="logo-text">Code<span class="accent">ducku</span></span>
+                        <span class="logo-ko">코드덕쿠</span>
+                    </div>
                 </a>
-                <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none">
-                    <i class="fas fa-user-circle"></i>
-                    <span id="headerNickname"></span>
-                </a>
-                <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()">
-                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                <!-- Auth 버튼 오른쪽 상단 -->
+                <div class="header-login-box">
+                    <div class="header-auth-btns" id="headerAuthArea">
+                        <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn">
+                            <i class="fas fa-sign-in-alt"></i> 로그인
+                        </a>
+                        <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="headerNickname"></span>
+                        </a>
+                        <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()">
+                            <i class="fas fa-sign-out-alt"></i> 로그아웃
+                        </button>
+                    </div>
+                </div>
+                <!-- 햄버거 버튼 (모바일) -->
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
+                    <span></span><span></span><span></span>
                 </button>
             </div>
-            <!-- 햄버거 버튼 (모바일) -->
-            <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
-                <span></span><span></span><span></span>
-            </button>
+            <!-- 하단줄: 챕터 네비게이션 -->
+            <nav class="header-nav" id="headerNav">
+                <div class="header-nav-row1">
+                    <div class="nav-info-group">
+                        <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> 합주실</a>
+                        <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> 리페어샵</a>
+                        <a href="instrument.html" class="nav-btn"><i class="fas fa-guitar"></i> 악기샵</a>
+                        <a href="academy.html" class="nav-btn"><i class="fas fa-school"></i> 음악학원</a>
+                        <a href="venue.html" class="nav-btn"><i class="fas fa-theater-masks"></i> 공연장</a>
+                    </div>
+                    <div class="nav-service-group">
+                        <a href="score.html" class="nav-btn"><i class="fas fa-file-pdf"></i> 악보공유</a>
+                        <a href="analyze.html" class="nav-btn"><i class="fas fa-waveform-path"></i> 음원분석</a>
+                    </div>
+                </div>
+                <div class="header-nav-row2">
+                    <div class="nav-community-group">
+                        <a href="community.html" class="nav-btn"><i class="fas fa-home"></i> 전체글</a>
+                        <a href="community.html?cat=free" class="nav-btn"><i class="fas fa-comment-dots"></i> 자유게시판</a>
+                        <a href="community.html?cat=gear" class="nav-btn"><i class="fas fa-sliders-h"></i> 장비리뷰</a>
+                        <a href="community.html?cat=band" class="nav-btn"><i class="fas fa-user-friends"></i> 밴드구인구직</a>
+                        <a href="community.html?cat=lesson" class="nav-btn"><i class="fas fa-chalkboard-teacher"></i> 개인레슨</a>
+                        <a href="community.html?cat=market" class="nav-btn"><i class="fas fa-tag"></i> 중고장터</a>
+                    </div>
+                    <div class="nav-video-group">
+                        <a href="video-review.html" class="nav-btn"><i class="fas fa-star"></i> 리뷰영상</a>
+                        <a href="video-cover.html" class="nav-btn"><i class="fas fa-music"></i> 카피영상</a>
+                        <a href="video-fun.html" class="nav-btn"><i class="fas fa-laugh"></i> 재미있는영상</a>
+                        <a href="video-bandstage.html" class="nav-btn"><i class="fas fa-drum"></i> 밴드라이브</a>
+                    </div>
+                </div>
+            </nav>
         </div>
         <!-- 모바일 드롭다운 메뉴 -->
         <div class="mobile-menu" id="mobileMenu">
+            <div style="padding:5px 12px 2px;font-size:.68rem;font-weight:800;color:#059669;letter-spacing:.04em;">📍 정보</div>
             <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실 찾기</a>
             <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵 찾기</a>
             <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵 찾기</a>
             <a href="academy.html" class="mobile-menu-item"><i class="fas fa-school" style="color:#d45d00"></i> 음악학원 찾기</a>
             <a href="venue.html" class="mobile-menu-item"><i class="fas fa-theater-masks" style="color:#7c3aed"></i> 공연장 찾기</a>
+            <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+            <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#7c3aed;letter-spacing:.04em;">🎵 코덕서비스</div>
             <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf" style="color:#6d28d9"></i> 악보공유</a>
-            <a href="community.html" class="mobile-menu-item"><i class="fas fa-users" style="color:#ea580c"></i> 커뮤니티</a>
+            <a href="analyze.html" class="mobile-menu-item"><i class="fas fa-waveform-path" style="color:#7c3aed"></i> 음원분석</a>
+            <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+            <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#ea580c;letter-spacing:.04em;">💬 커뮤니티</div>
+            <a href="community.html" class="mobile-menu-item"><i class="fas fa-comment-dots" style="color:#f97316"></i> 자유게시판</a>
+            <a href="community.html?cat=gear" class="mobile-menu-item"><i class="fas fa-sliders-h" style="color:#f97316"></i> 장비리뷰/정보</a>
+            <a href="community.html?cat=band" class="mobile-menu-item"><i class="fas fa-user-friends" style="color:#f97316"></i> 밴드구인구직</a>
+            <a href="community.html?cat=lesson" class="mobile-menu-item"><i class="fas fa-chalkboard-teacher" style="color:#f97316"></i> 개인레슨</a>
+            <a href="community.html?cat=market" class="mobile-menu-item"><i class="fas fa-tag" style="color:#f97316"></i> 중고장터</a>
+            <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+            <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#dc2626;letter-spacing:.04em;">🎬 영상</div>
+            <a href="video-review.html" class="mobile-menu-item"><i class="fas fa-star" style="color:#dc2626"></i> 리뷰영상</a>
+            <a href="video-cover.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#dc2626"></i> 카피영상</a>
+            <a href="video-fun.html" class="mobile-menu-item"><i class="fas fa-laugh" style="color:#dc2626"></i> 재미있는영상</a>
+            <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-drum" style="color:#dc2626"></i> 밴드라이브</a>
             <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
                 <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
                 <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
@@ -119,13 +160,7 @@
              사이트 소개 섹션 (업로드 섹션 바로 아래)
         ════════════════════════════════════════════ -->
         <section class="intro-section" id="introSection">
-            <!-- 3컬럼: 왼쪽 사이드 광고 | 중앙 콘텐츠 | 오른쪽 사이드 광고 -->
             <div class="intro-layout">
-
-            <!-- 왼쪽 사이드 광고 -->
-            <aside class="intro-side intro-side--left">
-                <div id="homeDefaultLeft" class="gw-ad-col gw-ad-left"></div>
-            </aside>
 
             <div class="intro-inner">
 
@@ -288,6 +323,17 @@
                     </a>
                 </div><!-- /intro-ad-row -->
 
+                <!-- 코드덕쿠 사이트 홍보 이미지 배너 -->
+                <a href="community.html" class="page-promo-banner" style="margin-top:16px;">
+                  <img src="images/banner-index.jpg" alt="코드덕쿠 뮤지션 커뮤니티">
+                  <div class="page-promo-banner-overlay">
+                    <span class="page-promo-banner-label">✦ Codeducku 커뮤니티</span>
+                    <span class="page-promo-banner-title">뮤지션 커뮤니티 — 기타 초보자를 위한 모든 것</span>
+                    <span class="page-promo-banner-sub">자유게시판 · 밴드구인구직 · 장비리뷰 · 개인레슨 · 중고장터 — 지금 바로 참여하세요!</span>
+                    <span class="page-promo-banner-cta">커뮤니티 가기 →</span>
+                  </div>
+                </a>
+
                 <!-- 하단 CTA 바 -->
                 <div class="intro-cta-bar">
                     <a href="community.html" class="intro-cta-btn intro-cta-btn--primary">
@@ -306,11 +352,6 @@
 
             </div><!-- /intro-inner -->
 
-            <!-- 오른쪽 사이드 광고 -->
-            <aside class="intro-side intro-side--right">
-                <div id="homeDefaultRight" class="gw-ad-col gw-ad-right"></div>
-            </aside>
-
             </div><!-- /intro-layout -->
         </section>
         <!-- /소개 섹션 -->
@@ -318,13 +359,8 @@
         <!-- Player & Analysis Section (hidden until file loaded) -->
         <section class="player-section hidden" id="playerSection">
 
-            <!-- 3컬럼 레이아웃: 왼쪽광고 | 중앙컨텐츠 | 오른쪽광고 -->
+            <!-- 플레이어 레이아웃 -->
             <div class="player-layout">
-
-            <!-- index.html 플레이어 섹션 왼쪽 사이드 -->
-            <aside class="promo-side promo-side--left">
-                <div id="homeAnalyzeLeft" class="gw-ad-col gw-ad-left"></div>
-            </aside>
 
             <!-- 중앙 컨텐츠 -->
             <div class="player-content">
@@ -692,11 +728,6 @@
 
             </div><!-- /player-content -->
 
-            <!-- index.html 플레이어 섹션 오른쪽 사이드 -->
-            <aside class="promo-side promo-side--right">
-                <div id="homeAnalyzeRight" class="gw-ad-col gw-ad-right"></div>
-            </aside>
-
             </div><!-- /player-layout -->
 
         </section>
@@ -709,6 +740,17 @@
 
     <!-- 햄버거 메뉴 -->
     <script>
+    /* 커뮤니티 드롭다운 토글 */
+    function toggleCommunityDropdown(e) {
+        e.stopPropagation();
+        const dd = document.getElementById('communityDropdown');
+        if (dd) dd.classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const dd = document.getElementById('communityDropdown');
+        if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('hamburgerBtn');
         const menu = document.getElementById('mobileMenu');
@@ -739,20 +781,5 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/auth-header.js"></script>
-
-    <!-- ═══════════════════════════════════════════════════════
-         index.html 광고 분기 스크립트
-         - 기본 화면(uploadSection 표시) → HOME_DEFAULT 광고 (upload-side 내 gw-ad-card)
-         - 분석 화면(playerSection 표시) → HOME_ANALYZE 광고 (promo-side 내 gw-ad-card)
-         ═══════════════════════════════════════════════════════ -->
-    <script>
-    // 즉시 실행 (스크립트 로드 시점에 DOM 이미 파싱 완료)
-    // 기본화면 광고 마운트 (uploadSection 양쪽 사이드) - 각 4개씩
-    mountAds('homeDefaultLeft',  ['HOME_DEFAULT_L1','HOME_DEFAULT_L2','HOME_DEFAULT_L3','HOME_DEFAULT_L4']);
-    mountAds('homeDefaultRight', ['HOME_DEFAULT_R1','HOME_DEFAULT_R2','HOME_DEFAULT_R3','HOME_DEFAULT_R4']);
-    // 분석화면 광고 마운트 (playerSection 양쪽 사이드) - 각 4개씩
-    mountAds('homeAnalyzeLeft',  ['HOME_ANALYZE_L1','HOME_ANALYZE_L2','HOME_ANALYZE_L3','HOME_ANALYZE_L4']);
-    mountAds('homeAnalyzeRight', ['HOME_ANALYZE_R1','HOME_ANALYZE_R2','HOME_ANALYZE_R3','HOME_ANALYZE_R4']);
-    </script>
 </body>
 </html>

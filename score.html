@@ -94,38 +94,20 @@
   color: var(--text-muted);
 }
 
-/* ── 메인 3단 레이아웃 ── */
+/* ── 메인 레이아웃 ── */
 .score-main-layout {
-  max-width: 1560px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 28px 20px 80px;
-  display: grid;
-  grid-template-columns: 200px minmax(0,1fr) 200px;
-  gap: 22px;
-  align-items: start;
 }
 .score-center-wrapper {
   display: grid;
   grid-template-columns: 220px minmax(0,1fr);
   gap: 22px;
 }
-@media(max-width:1300px) {
-  .score-main-layout { grid-template-columns: 170px minmax(0,1fr) 170px; gap:14px; }
-}
-@media(max-width:1000px) {
-  .score-main-layout { grid-template-columns: 1fr; }
-  .score-ad-side { display: none; }
+@media(max-width:800px) {
   .score-center-wrapper { grid-template-columns: 1fr; }
   .score-sidebar { display: none; }
-}
-
-/* ── 광고 사이드 ── */
-.score-ad-side {
-  position: sticky;
-  top: 72px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 /* ── 사이드바 ── */
@@ -809,16 +791,34 @@
       </div>
     </a>
         <nav class="header-nav" id="headerNav">
-      <a href="index.html" class="nav-btn nav-btn--accent"><i class="fas fa-home"></i> 홈</a>
-      <div class="nav-info-group">
-        <a href="rehearsal.html" class="nav-btn nav-btn--blue"><i class="fas fa-music"></i> 합주실</a>
-        <a href="repair.html" class="nav-btn nav-btn--purple"><i class="fas fa-tools"></i> 리페어샵 찾기</a>
-        <a href="instrument.html" class="nav-btn nav-btn--teal"><i class="fas fa-guitar"></i> 악기샵 찾기</a>
-        <a href="academy.html" class="nav-btn nav-btn--accent"><i class="fas fa-school"></i> 음악학원</a>
-        <a href="venue.html" class="nav-btn nav-btn--violet"><i class="fas fa-theater-masks"></i> 공연장</a>
+      <div class="header-nav-row1">
+        <div class="nav-info-group">
+          <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> 합주실</a>
+          <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> 리페어샵</a>
+          <a href="instrument.html" class="nav-btn"><i class="fas fa-guitar"></i> 악기샵</a>
+          <a href="academy.html" class="nav-btn"><i class="fas fa-school"></i> 음악학원</a>
+          <a href="venue.html" class="nav-btn"><i class="fas fa-theater-masks"></i> 공연장</a>
+        </div>
+        <div class="nav-service-group">
+          <a href="score.html" class="nav-btn active"><i class="fas fa-file-pdf"></i> 악보공유</a>
+          <a href="analyze.html" class="nav-btn"><i class="fas fa-waveform-path"></i> 음원분석</a>
+        </div>
       </div>
-      <a href="score.html" class="nav-btn nav-btn--violet"><i class="fas fa-file-pdf"></i> 악보공유</a>
-      <a href="community.html" class="nav-btn nav-btn--orange"><i class="fas fa-users"></i> 커뮤니티</a>
+      <div class="header-nav-row2">
+        <div class="nav-community-group">
+          <a href="community.html" class="nav-btn"><i class="fas fa-comment-dots"></i> 자유게시판</a>
+          <a href="community.html?cat=gear" class="nav-btn"><i class="fas fa-sliders-h"></i> 장비리뷰</a>
+          <a href="community.html?cat=band" class="nav-btn"><i class="fas fa-user-friends"></i> 밴드구인구직</a>
+          <a href="community.html?cat=lesson" class="nav-btn"><i class="fas fa-chalkboard-teacher"></i> 개인레슨</a>
+          <a href="community.html?cat=market" class="nav-btn"><i class="fas fa-tag"></i> 중고장터</a>
+        </div>
+        <div class="nav-video-group">
+          <a href="video-review.html" class="nav-btn"><i class="fas fa-star"></i> 리뷰영상</a>
+          <a href="video-cover.html" class="nav-btn"><i class="fas fa-music"></i> 카피영상</a>
+          <a href="video-fun.html" class="nav-btn"><i class="fas fa-laugh"></i> 재미있는영상</a>
+          <a href="video-bandstage.html" class="nav-btn"><i class="fas fa-drum"></i> 밴드라이브</a>
+        </div>
+      </div>
     </nav>
     <div class="header-auth-btns">
         <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
@@ -830,14 +830,29 @@
     </button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="index.html" class="mobile-menu-item"><i class="fas fa-home" style="color:#e85d04"></i> 홈</a>
-    <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실</a>
+    <div style="padding:5px 12px 2px;font-size:.68rem;font-weight:800;color:#059669;letter-spacing:.04em;">📍 정보</div>
+    <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실 찾기</a>
     <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵 찾기</a>
     <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵 찾기</a>
     <a href="academy.html" class="mobile-menu-item"><i class="fas fa-school" style="color:#d45d00"></i> 음악학원 찾기</a>
     <a href="venue.html" class="mobile-menu-item"><i class="fas fa-theater-masks" style="color:#7c3aed"></i> 공연장 찾기</a>
+    <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+    <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#7c3aed;letter-spacing:.04em;">🎵 코덕서비스</div>
     <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf" style="color:#6d28d9"></i> 악보공유</a>
-    <a href="community.html" class="mobile-menu-item"><i class="fas fa-users" style="color:#ea580c"></i> 커뮤니티</a>
+    <a href="analyze.html" class="mobile-menu-item"><i class="fas fa-waveform-path" style="color:#7c3aed"></i> 음원분석</a>
+    <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+    <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#ea580c;letter-spacing:.04em;">💬 커뮤니티</div>
+    <a href="community.html" class="mobile-menu-item"><i class="fas fa-comment-dots" style="color:#f97316"></i> 자유게시판</a>
+    <a href="community.html?cat=gear" class="mobile-menu-item"><i class="fas fa-sliders-h" style="color:#f97316"></i> 장비리뷰/정보</a>
+    <a href="community.html?cat=band" class="mobile-menu-item"><i class="fas fa-user-friends" style="color:#f97316"></i> 밴드구인구직</a>
+    <a href="community.html?cat=lesson" class="mobile-menu-item"><i class="fas fa-chalkboard-teacher" style="color:#f97316"></i> 개인레슨</a>
+    <a href="community.html?cat=market" class="mobile-menu-item"><i class="fas fa-tag" style="color:#f97316"></i> 중고장터</a>
+    <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+    <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#dc2626;letter-spacing:.04em;">🎬 영상</div>
+    <a href="video-review.html" class="mobile-menu-item"><i class="fas fa-star" style="color:#dc2626"></i> 리뷰영상</a>
+    <a href="video-cover.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#dc2626"></i> 카피영상</a>
+    <a href="video-fun.html" class="mobile-menu-item"><i class="fas fa-laugh" style="color:#dc2626"></i> 재미있는영상</a>
+    <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-drum" style="color:#dc2626"></i> 밴드라이브</a>
     <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
         <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
         <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
@@ -872,9 +887,6 @@
 
 <!-- ── 3단 레이아웃 ── -->
 <div class="score-main-layout">
-
-  <!-- 좌측 광고 -->
-  <div class="score-ad-side" id="scoreAdLeft"></div>
 
   <!-- 사이드바 + 콘텐츠 -->
   <div class="score-center-wrapper">
@@ -965,9 +977,6 @@
 
     </main>
   </div><!-- /score-center-wrapper -->
-
-  <!-- 우측 광고 -->
-  <div class="score-ad-side" id="scoreAdRight"></div>
 
 </div><!-- /score-main-layout -->
 
@@ -1472,12 +1481,19 @@ function closePdfModal(){
 /* ── 초기화 ── */
 bindSidebar();
 loadScores();
-
-/* ── 광고 마운트 ── */
-mountAds('scoreAdLeft',  ['SCORE_L1','SCORE_L2','SCORE_L3','SCORE_L4']);
-mountAds('scoreAdRight', ['SCORE_R1','SCORE_R2','SCORE_R3','SCORE_R4'], true);
 </script>
 <script>
+// 커뮤니티 드롭다운
+function toggleCommunityDropdown(e) {
+    e.stopPropagation();
+    const dd = document.getElementById('communityDropdown');
+    if (dd) dd.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+    const dd = document.getElementById('communityDropdown');
+    if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
+
 // 햄버거 메뉴
 document.addEventListener('DOMContentLoaded', function() {
     const btn = document.getElementById('hamburgerBtn');

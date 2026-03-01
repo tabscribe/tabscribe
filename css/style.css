@@ -63,7 +63,7 @@ body {
 .header {
     background: #ffffff;
     border-bottom: 1px solid var(--border);
-    padding: 14px 0;
+    padding: 6px 0 0;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -71,12 +71,45 @@ body {
 }
 
 .header-inner {
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
-    padding: 0 28px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* 상단줄: 로고 + 로그인 */
+.header-top-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* 로그인 박스 (오른쪽 상단) */
+.header-login-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 8px;
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border: 1.5px solid #fed7aa;
+    border-radius: 20px;
+}
+.header-login-box::before {
+    content: '🔐 계정';
+    font-size: .6rem;
+    font-weight: 800;
+    color: #ea580c;
+    background: #ffedd5;
+    border: 1px solid #fdba74;
+    border-radius: 20px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .logo {
@@ -91,7 +124,7 @@ body {
 
 /* 아이콘 */
 .logo .fa-guitar,
-.logo .logo-icon { color: var(--accent); font-size: 1.3rem; flex-shrink: 0; }
+.logo .logo-icon { color: var(--accent); font-size: 1.7rem; flex-shrink: 0; }
 
 /* 텍스트 묶음 (영문 + 한글) */
 .logo-textbox {
@@ -103,7 +136,7 @@ body {
 }
 
 .logo-text {
-    font-size: 1.35rem;
+    font-size: 1.6rem;
     font-weight: 800;
     letter-spacing: -0.5px;
     color: var(--text-primary);
@@ -114,7 +147,7 @@ body {
 
 /* 한글 서브 이름 */
 .logo-ko {
-    font-size: 0.62rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.18em;
     color: var(--text-muted);
@@ -427,12 +460,11 @@ body {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* 3컬럼: 사이드광고 | 메인컨텐츠 | 사이드광고 */
+/* 광고 제거 후 단일 컬럼 */
 .player-layout {
-    display: grid;
-    grid-template-columns: 195px 1fr 195px;
-    gap: 20px;
-    align-items: start;
+    display: block;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 /* 사이드 광고 — 스크롤 연동 (static) */
@@ -562,27 +594,12 @@ body {
     min-width: 0;  /* grid overflow 방지 */
 }
 
-/* ── 반응형: 1300px 이하 → player 사이드 숨기고 단일 컬럼 | upload 사이드도 숨김 ── */
+/* 광고 제거 후 불필요한 미디어쿼리 정리 */
 @media (max-width: 1160px) {
-    /* player 섹션 */
-    .player-layout {
-        grid-template-columns: 1fr;
-    }
-    .promo-side {
-        display: none;
-    }
-    /* upload 섹션 */
     .upload-layout {
         grid-template-columns: 1fr;
     }
     .upload-side {
-        display: none;
-    }
-    /* intro 섹션 */
-    .intro-layout {
-        grid-template-columns: 1fr;
-    }
-    .intro-side {
         display: none;
     }
 }
@@ -605,27 +622,13 @@ body {
     }
 }
 
-/* ── 반응형: 1161~1420px → player 오른쪽만 | upload 오른쪽만 | intro 오른쪽만 ── */
+/* 광고 제거 후 upload 반응형만 유지 */
 @media (min-width: 1161px) and (max-width: 1420px) {
-    /* player 섹션 */
-    .player-layout {
-        grid-template-columns: 1fr 195px;
-    }
-    .promo-side--left {
-        display: none;
-    }
     /* upload 섹션 */
     .upload-layout {
         grid-template-columns: 1fr 195px;
     }
     .upload-side--left {
-        display: none;
-    }
-    /* intro 섹션 */
-    .intro-layout {
-        grid-template-columns: 1fr 210px;
-    }
-    .intro-side--left {
         display: none;
     }
 }
@@ -1842,18 +1845,16 @@ body {
 /* ── 전체 섹션 ── */
 .intro-section {
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
-    padding: 40px 16px 60px;
+    padding: 40px 0px 60px;
     border-top: 1px solid #e2e8f0;
 }
 
-/* 3컬럼: 사이드광고 | 중앙콘텐츠 | 사이드광고 */
+/* 광고 제거 후 단일 컬럼 */
 .intro-layout {
-    display: grid;
-    grid-template-columns: 200px 1fr 200px;
-    gap: 20px;
-    align-items: start;
-    max-width: 1540px;
+    display: block;
+    max-width: 1340px;
     margin: 0 auto;
+    padding: 0 20px;
 }
 
 /* 사이드 광고 컨테이너 */
@@ -2210,13 +2211,14 @@ body {
     align-items: stretch;
 }
 
-/* promo-hero 기본 max-width 해제 */
+/* promo-hero 기본 max-width 해제 + 높이 70% 수준으로 축소 */
 .intro-ad-slot.promo-hero {
     max-width: 100%;
-    min-height: 220px;
-    max-height: none;
-    height: auto;
+    min-height: 148px;
+    max-height: 158px;
+    height: 154px;
     border-radius: 14px;
+    overflow: hidden;
 }
 
 /* ── 하단 CTA 바 ── */
@@ -2261,6 +2263,332 @@ body {
     color: #1e293b;
     border-color: #cbd5e1;
     transform: translateY(-2px);
+}
+
+/* ==========================================
+   코드덕쿠 사이트 홍보 배너 (공통)
+   ========================================== */
+.cdku-promo-banner {
+    margin-top: 16px;
+    margin-bottom: 4px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e293b 100%);
+    border: 1.5px solid rgba(99,102,241,.35);
+    box-shadow: 0 4px 24px rgba(0,0,0,.18);
+    padding: 16px 18px;
+}
+.cdku-promo-banner-title {
+    font-size: .7rem;
+    font-weight: 800;
+    color: #a5b4fc;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.cdku-promo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+@media (max-width: 900px) {
+    .cdku-promo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+    .cdku-promo-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+}
+.cdku-promo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+}
+.cdku-promo-item:hover {
+    background: rgba(255,255,255,.1);
+    transform: translateY(-1px);
+}
+.cdku-promo-item--highlight {
+    background: rgba(99,102,241,.15);
+    border-color: rgba(99,102,241,.4);
+    cursor: default;
+}
+.cdku-promo-icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.cdku-promo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.cdku-promo-text strong {
+    font-size: .8rem;
+    font-weight: 800;
+    color: #f0f0ff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cdku-promo-text span {
+    font-size: .68rem;
+    color: #94a3b8;
+    line-height: 1.4;
+    word-break: keep-all;
+}
+
+/* info/video 페이지용 HOF 아래 배너 */
+.hof-promo-banner {
+    margin: 12px 0 20px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e293b 100%);
+    border: 1.5px solid rgba(99,102,241,.35);
+    box-shadow: 0 4px 24px rgba(0,0,0,.18);
+    padding: 14px 16px;
+}
+.hof-promo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
+@media (max-width: 900px) {
+    .hof-promo-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 560px) {
+    .hof-promo-grid { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+}
+.hof-promo-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 9px;
+    padding: 7px 8px;
+    text-decoration: none;
+    transition: background .15s, transform .15s;
+}
+.hof-promo-item:hover {
+    background: rgba(255,255,255,.1);
+    transform: translateY(-1px);
+}
+.hof-promo-item--cta {
+    background: linear-gradient(135deg, rgba(99,102,241,.25), rgba(139,92,246,.2));
+    border-color: rgba(139,92,246,.5);
+    cursor: default;
+}
+.hof-promo-item--analyze {
+    background: linear-gradient(135deg, rgba(234,88,12,.22), rgba(251,146,60,.15));
+    border-color: rgba(234,88,12,.5);
+}
+.hof-promo-item--analyze:hover {
+    background: linear-gradient(135deg, rgba(234,88,12,.35), rgba(251,146,60,.25));
+    border-color: rgba(234,88,12,.8);
+}
+.hof-promo-item--analyze .hof-promo-text strong {
+    color: #fed7aa;
+}
+.hof-promo-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1; }
+.hof-promo-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hof-promo-text strong {
+    font-size: .76rem; font-weight: 800; color: #f0f0ff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hof-promo-text span { font-size: .65rem; color: #94a3b8; line-height: 1.4; word-break: keep-all; }
+
+/* ==========================================
+   이미지 배너 — 쿠슐랭 가이드 아래 페이지별 홍보
+   ========================================== */
+.page-promo-banner {
+    display: block;
+    width: 100%;
+    height: 164px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    margin: 10px 0 18px;
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    transition: transform .2s, box-shadow .2s;
+}
+.page-promo-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 36px rgba(0,0,0,.38);
+}
+.page-promo-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+.page-promo-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,.65) 0%, rgba(0,0,0,.3) 55%, rgba(0,0,0,.08) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 24px;
+    gap: 3px;
+}
+.page-promo-banner-label {
+    font-size: .6rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+}
+.page-promo-banner-title {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.25;
+    word-break: keep-all;
+    text-shadow: 0 2px 6px rgba(0,0,0,.5);
+}
+.page-promo-banner-sub {
+    font-size: .74rem;
+    color: rgba(255,255,255,.82);
+    word-break: keep-all;
+    line-height: 1.4;
+}
+.page-promo-banner-cta { display: none; }
+@media (max-width: 640px) {
+    .page-promo-banner { height: 126px; }
+    .page-promo-banner-title { font-size: .88rem; }
+    .page-promo-banner-sub { display: none; }
+    .page-promo-banner-overlay { padding: 0 14px; }
+}
+
+/* ==========================================
+   코드덕쿠 사이트 홍보 배너 — HOF/쿠슐랭 가이드 아래
+   ========================================== */
+.cdku-site-promo {
+    margin: 14px 0 20px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f172a 0%, #1a1035 40%, #1e1b4b 70%, #0f172a 100%);
+    border: 1.5px solid rgba(99,102,241,.4);
+    box-shadow: 0 6px 28px rgba(0,0,0,.22);
+    padding: 20px 22px;
+    position: relative;
+}
+.cdku-site-promo::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #6366f1, #a78bfa, #ec4899, #f59e0b, #6366f1);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.cdku-site-promo-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.cdku-site-promo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(99,102,241,.2);
+    border: 1px solid rgba(99,102,241,.5);
+    color: #a5b4fc;
+    font-size: .65rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+.cdku-site-promo-title {
+    font-size: .78rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    letter-spacing: .04em;
+}
+.cdku-site-promo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+@media (max-width: 900px) {
+    .cdku-site-promo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .cdku-site-promo-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
+}
+.cdku-site-promo-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    padding: 12px 14px;
+    text-decoration: none;
+    transition: background .15s, transform .15s, border-color .15s;
+    cursor: pointer;
+}
+.cdku-site-promo-item:hover {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(99,102,241,.45);
+    transform: translateY(-2px);
+}
+.cdku-site-promo-item-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cdku-site-promo-emoji {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.cdku-site-promo-name {
+    font-size: .79rem;
+    font-weight: 800;
+    color: #f0f0ff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cdku-site-promo-desc {
+    font-size: .65rem;
+    color: #94a3b8;
+    line-height: 1.45;
+    word-break: keep-all;
+}
+.cdku-site-promo-item--accent {
+    background: linear-gradient(135deg, rgba(99,102,241,.18), rgba(236,72,153,.12));
+    border-color: rgba(99,102,241,.45);
+}
+.cdku-site-promo-item--accent:hover {
+    background: linear-gradient(135deg, rgba(99,102,241,.28), rgba(236,72,153,.2));
+}
+.cdku-site-promo-item--gold {
+    background: linear-gradient(135deg, rgba(245,158,11,.14), rgba(251,191,36,.08));
+    border-color: rgba(245,158,11,.4);
+}
+.cdku-site-promo-item--gold:hover {
+    background: linear-gradient(135deg, rgba(245,158,11,.24), rgba(251,191,36,.16));
 }
 
 /* ==========================================
@@ -2697,9 +3025,9 @@ body {
     display: flex;
     align-items: stretch;
     width: 100%;
-    max-width: 600px;
-    min-height: 220px;
-    max-height: none;
+    max-width: 100%;
+    min-height: 154px;
+    max-height: 162px;
     border-radius: 18px;
     overflow: hidden;
     background: linear-gradient(110deg, #1a1408 0%, #2c1f06 55%, #3a2a08 100%);
@@ -2715,9 +3043,9 @@ body {
 
 /* 이미지 래퍼: 제품이 잘 보이도록 비율 고정 */
 .promo-hero-img-wrap {
-    width: 220px;
-    min-width: 160px;
-    min-height: 220px;
+    width: 180px;
+    min-width: 140px;
+    min-height: 154px;
     flex-shrink: 0;
     overflow: hidden;
     position: relative;
@@ -4580,18 +4908,36 @@ body {
 /* 데스크탑 네비 버튼 공통 스타일 */
 .header-nav {
     display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    width: 100%;
+    padding-bottom: 5px;
+}
+
+/* 1행: 정보그룹 + 코덕서비스 */
+.header-nav-row1 {
+    display: flex;
     gap: 8px;
     align-items: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+}
+
+/* 2행: 커뮤니티 그룹 + 영상 그룹 */
+.header-nav-row2 {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .nav-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
+    gap: 5px;
+    padding: 5px 11px;
     border-radius: 20px;
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.2s;
@@ -4614,8 +4960,22 @@ body {
 .header-auth-btns {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-left: 8px;
+    gap: 6px;
+    flex-shrink: 0;
+}
+/* header-login-box 안의 auth-btns는 항상 표시 (모바일 포함) */
+.header-login-box .header-auth-btns {
+    display: flex !important;
+}
+/* 독립적인 header-auth-btns는 좁은 화면에서 숨김 */
+@media (max-width: 640px) {
+    .header-top-row > .header-auth-btns { display: none; }
+    .header-login-box { padding: 2px 7px 2px 6px; }
+    .header-login-box::before { display: none; }
+    .nav-btn--login, .nav-btn--logout, .header-profile-btn {
+        padding: 5px 9px;
+        font-size: 0.74rem;
+    }
 }
 .nav-btn--login {
     background: #fff7f0 !important;
@@ -4666,9 +5026,6 @@ body {
     white-space: nowrap;
 }
 .header-profile-btn:hover { background: #ffe8d0; }
-@media (max-width: 900px) {
-    .header-auth-btns { display: none; }
-}
 
 /* ── 네비게이션 정보 페이지 구역 배지 ── */
 .nav-info-group {
@@ -4697,10 +5054,248 @@ body {
 .nav-info-group .nav-btn {
     border-color: transparent;
     background: transparent;
+    font-size: 0.76rem;
+    padding: 4px 10px;
 }
 .nav-info-group .nav-btn:hover {
-    background: rgba(255,255,255,.8);
+    background: rgba(255,255,255,.85);
     border-color: #6ee7b7;
+}
+.nav-info-group .nav-btn.active {
+    background: rgba(255,255,255,.95);
+    border-color: #34d399;
+}
+
+/* ── 커뮤니티 드롭다운 ── */
+.nav-dropdown {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+.nav-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px 5px 10px;
+    background: linear-gradient(135deg,#fff7f0,#fff0e6);
+    border: 1.5px solid #fdba74;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #ea580c;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s;
+    font-family: inherit;
+    position: relative;
+}
+.nav-dropdown-btn::before {
+    content: '💬 커뮤니티';
+    font-size: .62rem;
+    font-weight: 800;
+    color: #ea580c;
+    background: #ffedd5;
+    border: 1px solid #fdba74;
+    border-radius: 20px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    margin-right: 2px;
+}
+.nav-dropdown-btn:hover { background: linear-gradient(135deg,#ffedd5,#ffe8d0); }
+.nav-dropdown-chevron {
+    font-size: .65rem;
+    transition: transform .2s;
+    margin-left: 2px;
+}
+.nav-dropdown.open .nav-dropdown-chevron {
+    transform: rotate(180deg);
+}
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: #fff;
+    border: 1.5px solid #fed7aa;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    padding: 6px;
+    min-width: 200px;
+    z-index: 500;
+    animation: dropdownIn .15s ease;
+}
+.nav-dropdown.open .nav-dropdown-menu {
+    display: block;
+}
+.nav-dropdown.is-open .nav-dropdown-menu {
+    display: block;
+}
+@keyframes dropdownIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.nav-dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 9px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #374151;
+    text-decoration: none;
+    transition: background .15s;
+    white-space: nowrap;
+}
+.nav-dropdown-menu a:hover {
+    background: #fff7f0;
+    color: #ea580c;
+}
+.nav-dropdown-menu a i {
+    width: 16px;
+    text-align: center;
+    font-size: .8rem;
+    color: #ea580c;
+    flex-shrink: 0;
+}
+.nav-dropdown-divider {
+    height: 1px;
+    background: #f3f4f6;
+    margin: 4px 6px;
+}
+
+/* ── 악보공유 + 음원분석 가로 나란히 ── */
+.nav-score-group {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 6px;
+    align-items: center;
+}
+.nav-score-group .nav-btn {
+    padding: 5px 11px;
+    font-size: .78rem;
+}
+.nav-btn--analyze {
+    background: linear-gradient(135deg,#f5f3ff,#ede9fe);
+    border: 1.5px solid #c4b5fd;
+    color: #7c3aed;
+}
+.nav-btn--analyze:hover { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
+
+/* ── 커뮤니티 그룹 (정보 그룹과 동일 스타일) ── */
+.nav-community-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px 3px 6px;
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 1.5px solid #fed7aa;
+    border-radius: 20px;
+    position: relative;
+}
+.nav-community-group::before {
+    content: '💬 커뮤니티';
+    font-size: .62rem;
+    font-weight: 800;
+    color: #ea580c;
+    background: #ffedd5;
+    border: 1px solid #fdba74;
+    border-radius: 20px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    letter-spacing: .02em;
+    flex-shrink: 0;
+}
+.nav-community-group .nav-btn {
+    border-color: transparent;
+    background: transparent;
+    font-size: 0.76rem;
+    padding: 4px 10px;
+}
+.nav-community-group .nav-btn:hover {
+    background: rgba(255,255,255,.85);
+    border-color: #fed7aa;
+}
+.nav-community-group .nav-btn.active {
+    background: rgba(255,255,255,.95);
+    border-color: #fdba74;
+}
+
+/* ── 코덕서비스 그룹 (보라색 계열) ── */
+.nav-service-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px 3px 6px;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    border: 1.5px solid #c4b5fd;
+    border-radius: 20px;
+    position: relative;
+}
+.nav-service-group::before {
+    content: '🎵 코덕서비스';
+    font-size: .62rem;
+    font-weight: 800;
+    color: #7c3aed;
+    background: #ede9fe;
+    border: 1px solid #c4b5fd;
+    border-radius: 20px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    letter-spacing: .02em;
+    flex-shrink: 0;
+}
+.nav-service-group .nav-btn {
+    border-color: transparent;
+    background: transparent;
+    font-size: 0.76rem;
+    padding: 4px 10px;
+}
+.nav-service-group .nav-btn:hover {
+    background: rgba(255,255,255,.85);
+    border-color: #c4b5fd;
+}
+.nav-service-group .nav-btn.active {
+    background: rgba(255,255,255,.95);
+    border-color: #a78bfa;
+}
+
+/* ── 영상 그룹 (빨강/유튜브 계열) ── */
+.nav-video-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px 3px 6px;
+    background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+    border: 1.5px solid #fca5a5;
+    border-radius: 20px;
+    position: relative;
+}
+.nav-video-group::before {
+    content: '🎬 영상';
+    font-size: .62rem;
+    font-weight: 800;
+    color: #dc2626;
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    border-radius: 20px;
+    padding: 1px 7px;
+    white-space: nowrap;
+    letter-spacing: .02em;
+    flex-shrink: 0;
+}
+.nav-video-group .nav-btn {
+    border-color: transparent;
+    background: transparent;
+    font-size: 0.76rem;
+    padding: 4px 10px;
+}
+.nav-video-group .nav-btn:hover {
+    background: rgba(255,255,255,.85);
+    border-color: #fca5a5;
+}
+.nav-video-group .nav-btn.active {
+    background: rgba(255,255,255,.9);
 }
 
 /* 햄버거 버튼 — 기본 숨김 */
@@ -4778,6 +5373,7 @@ body {
 
     .header-inner {
         padding: 0 16px;
+        align-items: center;
     }
     .logo {
         font-size: 1.25rem;

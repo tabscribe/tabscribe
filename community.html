@@ -42,7 +42,7 @@
             padding: 36px 0 28px;
         }
         .comm-hero-inner {
-            max-width: 1360px;
+            max-width: 1240px;
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
@@ -91,14 +91,14 @@
         .comm-layout {
             max-width: 100%;
             margin: 0 auto;
-            padding: 28px 20px 60px;
+            padding: 28px 24px 60px;
             display: grid;
-            grid-template-columns: 230px 1fr;
+            grid-template-columns: 280px 1fr;
             gap: 24px;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 860px) {
             .comm-layout { grid-template-columns: 1fr; }
-            .comm-sidebar { display: none; }
+            .comm-sidebar { display: none !important; }
             .comm-main-layout {
                 padding: 12px 10px 60px;
                 gap: 0;
@@ -131,28 +131,24 @@
             .comm-hero { padding: 22px 0 18px; }
         }
 
-        /* ── 사이드바 ── */
-        .comm-sidebar {
-            position: sticky;
-            top: 20px;
-            align-self: start;
-        }
+        /* ── 사이드바 기본 ── */
+        /* grid-area: sidebar 로 오른쪽 열에 배치됨 (아래 레이아웃 CSS 참조) */
         .sidebar-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 12px 10px;
-            margin-bottom: 10px;
+            padding: 10px 8px;
+            margin-bottom: 8px;
             box-shadow: var(--shadow);
         }
         .sidebar-section h3 {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-            padding: 0 6px;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+            padding: 0 5px;
         }
         .sidebar-menu {
             list-style: none;
@@ -160,10 +156,10 @@
         .sidebar-menu li a, .sidebar-menu li button {
             display: flex;
             align-items: center;
-            gap: 7px;
-            padding: 6px 8px;
+            gap: 6px;
+            padding: 5px 7px;
             border-radius: 6px;
-            font-size: 0.83rem;
+            font-size: 0.8rem;
             font-weight: 500;
             color: var(--text-secondary);
             text-decoration: none;
@@ -173,6 +169,9 @@
             width: 100%;
             text-align: left;
             transition: all 0.15s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .sidebar-menu li a:hover, .sidebar-menu li button:hover {
             background: var(--bg-secondary);
@@ -1134,71 +1133,54 @@
         }
         .comment-cnt i { font-size: 0.72rem; }
 
-        /* ── 커뮤니티 메인 레이아웃 (Grid 3단) ── */
+        /* ── 커뮤니티 메인 레이아웃 ── */
         .comm-main-layout {
-            display: grid;
-            grid-template-columns: 200px minmax(0,1fr) 200px;
-            gap: 18px;
-            max-width: 1480px;
+            max-width: 1240px;
             margin: 0 auto;
             padding: 20px 20px 60px;
+        }
+        /* 중앙 콘텐츠 래퍼 ── 사이드바(왼) + 게시물(오) */
+        .comm-center-wrapper {
+            display: grid !important;
+            grid-template-columns: 200px minmax(0,1fr) !important;
+            grid-template-areas: "sidebar content" !important;
+            gap: 16px;
+            min-width: 0;
             align-items: start;
         }
-        /* 광고 컬럼 ── sticky */
-        .comm-main-layout > .gw-ad-col {
-            width: 200px;
+        /* 게시물: 오른쪽 두 번째 열 */
+        .comm-content {
+            grid-area: content;
             min-width: 0;
-            max-width: 200px;
+        }
+        /* 사이드바: 왼쪽 첫 번째 열 */
+        .comm-sidebar {
+            grid-area: sidebar;
             position: sticky;
-            top: 76px;
-            align-self: flex-start;
-            z-index: 1;
-            overflow: visible;
-            flex-shrink: 0;
-        }
-        /* 광고 카드 크기 통일 */
-        .comm-main-layout > .gw-ad-col .gw-ad-card {
-            width: 100% !important;
-            max-width: 200px !important;
-        }
-        .comm-main-layout > .gw-ad-col .gw-ad-card img {
-            width: 100% !important;
-            height: 180px !important;
-            object-fit: cover !important;
-        }
-        /* 중앙 콘텐츠 래퍼 ── 절대 넘치지 않게 */
-        .comm-center-wrapper {
+            top: 80px;
+            align-self: start;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            scrollbar-width: none;
             min-width: 0;
+        }
+        .comm-sidebar::-webkit-scrollbar { display: none; }
+        .comm-sidebar .sidebar-section { word-break: keep-all; }
+        .comm-sidebar .sidebar-menu li button {
+            white-space: nowrap;
             overflow: hidden;
+            text-overflow: ellipsis;
         }
-        /* 커뮤니티 3단 레이아웃 반응형 */
-        @media (max-width: 1400px) {
-            .comm-main-layout {
-                grid-template-columns: 180px minmax(0,1fr) 180px;
-            }
-        }
-        @media (max-width: 1100px) {
-            .comm-main-layout {
-                grid-template-columns: 160px minmax(0,1fr);
-            }
-            #commAdRight.gw-ad-col { display: none !important; }
-        }
-        @media (max-width: 900px) {
-            .comm-main-layout {
-                grid-template-columns: minmax(0,1fr);
-                padding: 12px 10px 60px;
-            }
-            #commAdLeft.gw-ad-col  { display: none !important; }
-            /* 모바일 게시글 카드 */
-            .post-card { padding: 14px 14px; }
-            .post-title { font-size: 0.97rem; white-space: normal; }
+        /* 검색바 */
+        .search-bar input { font-size: 0.85rem; }
+        /* 상단 툴바 */
+        .board-toolbar { flex-wrap: wrap; gap: 8px; }
+        @media (max-width: 860px) {
             .comm-center-wrapper {
                 grid-template-columns: 1fr !important;
+                grid-template-areas: "content" !important;
             }
-            /* 검색바 */
-            .search-bar input { font-size: 0.85rem; }
-            /* 상단 툴바 */
-            .board-toolbar { flex-wrap: wrap; gap: 8px; }
+            .comm-sidebar { display: none !important; }
         }
         /* ── 홈 FAB 버튼 ── */
         .home-fab{position:fixed;bottom:26px;left:26px;width:48px;height:48px;background:#d45d00;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;box-shadow:0 4px 16px rgba(212,93,0,.38);z-index:800;transition:background .18s,transform .18s;}
@@ -1270,51 +1252,90 @@
     <!-- Header -->
     <header class="header">
         <div class="header-inner">
-            <a href="index.html" class="logo" aria-label="코드덕쿠 홈으로 이동">
-                <i class="fas fa-guitar"></i>
-                <div class="logo-textbox">
-                    <span class="logo-text">Code<span class="accent">ducku</span></span>
-                    <span class="logo-ko">코드덕쿠</span>
-                </div>
-            </a>
-            <nav class="header-nav" id="headerNav">
-                <a href="index.html" class="nav-btn nav-btn--accent"><i class="fas fa-music"></i> 타브 생성</a>
-                <div class="nav-info-group">
-                    <a href="rehearsal.html" class="nav-btn nav-btn--blue"><i class="fas fa-drum"></i> 합주실</a>
-                    <a href="repair.html" class="nav-btn nav-btn--purple"><i class="fas fa-tools"></i> 리페어샵 찾기</a>
-                    <a href="instrument.html" class="nav-btn nav-btn--teal"><i class="fas fa-guitar"></i> 악기샵 찾기</a>
-                    <a href="academy.html" class="nav-btn nav-btn--accent"><i class="fas fa-school"></i> 음악학원</a>
-                    <a href="venue.html" class="nav-btn nav-btn--violet"><i class="fas fa-theater-masks"></i> 공연장</a>
-                </div>
-                <a href="community.html" class="nav-btn nav-btn--orange"><i class="fas fa-users"></i> 커뮤니티</a>
-                <a href="score.html" class="nav-btn nav-btn--violet"><i class="fas fa-file-pdf"></i> 악보공유</a>
-            </nav>
-            <!-- 로그인/프로필 버튼 -->
-            <div class="header-auth-btns" id="headerAuthArea">
-                <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn">
-                    <i class="fas fa-sign-in-alt"></i> 로그인
+            <!-- 상단줄: 로고 + 로그인 박스 -->
+            <div class="header-top-row">
+                <a href="index.html" class="logo" aria-label="코드덕쿠 홈으로 이동">
+                    <i class="fas fa-guitar"></i>
+                    <div class="logo-textbox">
+                        <span class="logo-text">Code<span class="accent">ducku</span></span>
+                        <span class="logo-ko">코드덕쿠</span>
+                    </div>
                 </a>
-                <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none" title="프로필 수정">
-                    <i class="fas fa-user-circle"></i>
-                    <span id="headerNickname">닉네임</span>
-                </a>
-                <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="doLogout()">
-                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                <div class="header-login-box">
+                    <div class="header-auth-btns" id="headerAuthArea">
+                        <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn">
+                            <i class="fas fa-sign-in-alt"></i> 로그인
+                        </a>
+                        <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none" title="프로필 수정">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="headerNickname">닉네임</span>
+                        </a>
+                        <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="doLogout()">
+                            <i class="fas fa-sign-out-alt"></i> 로그아웃
+                        </button>
+                    </div>
+                </div>
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
+                    <span></span><span></span><span></span>
                 </button>
             </div>
-            <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
-                <span></span><span></span><span></span>
-            </button>
+            <!-- 하단줄: 챕터 네비게이션 -->
+            <nav class="header-nav" id="headerNav">
+                <div class="header-nav-row1">
+                    <div class="nav-info-group">
+                        <a href="rehearsal.html" class="nav-btn"><i class="fas fa-music"></i> 합주실</a>
+                        <a href="repair.html" class="nav-btn"><i class="fas fa-tools"></i> 리페어샵</a>
+                        <a href="instrument.html" class="nav-btn"><i class="fas fa-guitar"></i> 악기샵</a>
+                        <a href="academy.html" class="nav-btn"><i class="fas fa-school"></i> 음악학원</a>
+                        <a href="venue.html" class="nav-btn"><i class="fas fa-theater-masks"></i> 공연장</a>
+                    </div>
+                    <div class="nav-service-group">
+                        <a href="score.html" class="nav-btn"><i class="fas fa-file-pdf"></i> 악보공유</a>
+                        <a href="analyze.html" class="nav-btn"><i class="fas fa-waveform-path"></i> 음원분석</a>
+                    </div>
+                </div>
+                <div class="header-nav-row2">
+                    <div class="nav-community-group">
+                        <a href="community.html" class="nav-btn" id="navCatAll"><i class="fas fa-home"></i> 전체글</a>
+                        <a href="community.html?cat=free" class="nav-btn" id="navCatFree"><i class="fas fa-comment-dots"></i> 자유게시판</a>
+                        <a href="community.html?cat=gear" class="nav-btn" id="navCatGear"><i class="fas fa-sliders-h"></i> 장비리뷰</a>
+                        <a href="community.html?cat=band" class="nav-btn" id="navCatBand"><i class="fas fa-user-friends"></i> 밴드구인구직</a>
+                        <a href="community.html?cat=lesson" class="nav-btn" id="navCatLesson"><i class="fas fa-chalkboard-teacher"></i> 개인레슨</a>
+                        <a href="community.html?cat=market" class="nav-btn" id="navCatMarket"><i class="fas fa-tag"></i> 중고장터</a>
+                    </div>
+                    <div class="nav-video-group">
+                        <a href="video-review.html" class="nav-btn"><i class="fas fa-star"></i> 리뷰영상</a>
+                        <a href="video-cover.html" class="nav-btn"><i class="fas fa-music"></i> 카피영상</a>
+                        <a href="video-fun.html" class="nav-btn"><i class="fas fa-laugh"></i> 재미있는영상</a>
+                        <a href="video-bandstage.html" class="nav-btn"><i class="fas fa-drum"></i> 밴드라이브</a>
+                    </div>
+                </div>
+            </nav>
         </div>
         <div class="mobile-menu" id="mobileMenu">
-            <a href="index.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#e85d04"></i> 타브 생성</a>
-            <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-drum" style="color:#0369a1"></i> 합주실</a>
+            <div style="padding:5px 12px 2px;font-size:.68rem;font-weight:800;color:#059669;letter-spacing:.04em;">📍 정보</div>
+            <a href="rehearsal.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#0369a1"></i> 합주실 찾기</a>
             <a href="repair.html" class="mobile-menu-item"><i class="fas fa-tools" style="color:#7c3aed"></i> 리페어샵 찾기</a>
             <a href="instrument.html" class="mobile-menu-item"><i class="fas fa-guitar" style="color:#0f766e"></i> 악기샵 찾기</a>
             <a href="academy.html" class="mobile-menu-item"><i class="fas fa-school" style="color:#d45d00"></i> 음악학원 찾기</a>
             <a href="venue.html" class="mobile-menu-item"><i class="fas fa-theater-masks" style="color:#7c3aed"></i> 공연장 찾기</a>
-            <a href="community.html" class="mobile-menu-item"><i class="fas fa-users" style="color:#ea580c"></i> 커뮤니티</a>
+            <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+            <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#7c3aed;letter-spacing:.04em;">🎵 코덕서비스</div>
             <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf" style="color:#6d28d9"></i> 악보공유</a>
+            <a href="analyze.html" class="mobile-menu-item"><i class="fas fa-waveform-path" style="color:#7c3aed"></i> 음원분석</a>
+            <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+            <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#ea580c;letter-spacing:.04em;">💬 커뮤니티</div>
+            <a href="community.html" class="mobile-menu-item"><i class="fas fa-comment-dots" style="color:#f97316"></i> 자유게시판</a>
+            <a href="community.html?cat=gear" class="mobile-menu-item"><i class="fas fa-sliders-h" style="color:#f97316"></i> 장비리뷰/정보</a>
+            <a href="community.html?cat=band" class="mobile-menu-item"><i class="fas fa-user-friends" style="color:#f97316"></i> 밴드구인구직</a>
+            <a href="community.html?cat=lesson" class="mobile-menu-item"><i class="fas fa-chalkboard-teacher" style="color:#f97316"></i> 개인레슨</a>
+            <a href="community.html?cat=market" class="mobile-menu-item"><i class="fas fa-tag" style="color:#f97316"></i> 중고장터</a>
+            <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
+            <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#dc2626;letter-spacing:.04em;">🎬 영상</div>
+            <a href="video-review.html" class="mobile-menu-item"><i class="fas fa-star" style="color:#dc2626"></i> 리뷰영상</a>
+            <a href="video-cover.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#dc2626"></i> 카피영상</a>
+            <a href="video-fun.html" class="mobile-menu-item"><i class="fas fa-laugh" style="color:#dc2626"></i> 재미있는영상</a>
+            <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-drum" style="color:#dc2626"></i> 밴드라이브</a>
             <div class="mobile-auth-area" id="mobileAuthArea">
                 <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn">
                     <i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입
@@ -1352,67 +1373,11 @@
         </div>
     </div>
 
-    <!-- 메인 레이아웃 (3단: 광고 | 카테고리+콘텐츠 | 광고) -->
+    <!-- 메인 레이아웃 -->
     <div class="comm-main-layout">
-        <!-- 좌측 광고 사이드바 -->
-        <div class="gw-ad-col gw-ad-left" id="commAdLeft"></div>
-
         <!-- 사이드바 + 콘텐츠 래퍼 -->
-        <div class="comm-center-wrapper" style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:18px;">
-        <aside class="comm-sidebar" style="position:sticky;top:20px;align-self:start;">
-            <div class="sidebar-section">
-                <h3>전체 메뉴</h3>
-                <ul class="sidebar-menu" id="sideMenu">
-                    <li><button data-cat="all" class="active"><i class="fas fa-home" style="width:16px;color:#e85d04"></i> 전체글 보기</button></li>
-                    <li><button data-cat="free_talk"><i class="fas fa-comment-dots" style="width:16px;color:#ca8a04"></i> 자유게시판</button></li>
-                    <li><button data-cat="info"><i class="fas fa-star" style="width:16px;color:#9333ea"></i> 장비리뷰 / 정보</button></li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h3>🎸 밴드 구인구직</h3>
-                <ul class="sidebar-menu">
-                    <li><button data-cat="band_recruit" data-sub="all"><i class="fas fa-users" style="width:16px;color:#dc2626"></i> 전체 구인구직</button></li>
-                    <li><button data-cat="band_recruit" data-sub="guitarist"><i class="fas fa-guitar" style="width:16px;color:#dc2626"></i> 기타리스트 모집</button></li>
-                    <li><button data-cat="band_recruit" data-sub="bassist"><i class="fas fa-music" style="width:16px;color:#dc2626"></i> 베이시스트 모집</button></li>
-                    <li><button data-cat="band_recruit" data-sub="drummer"><i class="fas fa-drum" style="width:16px;color:#dc2626"></i> 드러머 모집</button></li>
-                    <li><button data-cat="band_recruit" data-sub="vocalist"><i class="fas fa-microphone" style="width:16px;color:#dc2626"></i> 보컬리스트 모집</button></li>
-                    <li><button data-cat="band_recruit" data-sub="band_join"><i class="fas fa-user-plus" style="width:16px;color:#dc2626"></i> 밴드 찾습니다</button></li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h3>🎓 개인 레슨</h3>
-                <ul class="sidebar-menu">
-                    <li><button data-cat="lesson" data-sub="all"><i class="fas fa-chalkboard-teacher" style="width:16px;color:#2563eb"></i> 전체 레슨</button></li>
-                    <li><button data-cat="lesson" data-sub="guitar"><i class="fas fa-guitar" style="width:16px;color:#2563eb"></i> 기타 레슨</button></li>
-                    <li><button data-cat="lesson" data-sub="bass"><i class="fas fa-music" style="width:16px;color:#2563eb"></i> 베이스 레슨</button></li>
-                    <li><button data-cat="lesson" data-sub="drum"><i class="fas fa-drum" style="width:16px;color:#2563eb"></i> 드럼 레슨</button></li>
-                    <li><button data-cat="lesson" data-sub="vocal"><i class="fas fa-microphone-alt" style="width:16px;color:#2563eb"></i> 보컬 레슨</button></li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h3>🛒 중고장터</h3>
-                <ul class="sidebar-menu">
-                    <li>
-                        <button data-cat="used_gear" data-sub="all" id="usedAllBtn">
-                            <i class="fas fa-shopping-bag" style="width:16px;color:#16a34a"></i> 전체 중고장터
-                        </button>
-                    </li>
-                    <li><button data-cat="used_gear" data-sub="acoustic"><i class="fas fa-guitar" style="width:16px;color:#16a34a"></i> 어쿠스틱 기타</button></li>
-                    <li><button data-cat="used_gear" data-sub="electric"><i class="fas fa-bolt" style="width:16px;color:#16a34a"></i> 일렉 기타</button></li>
-                    <li><button data-cat="used_gear" data-sub="bass"><i class="fas fa-music" style="width:16px;color:#16a34a"></i> 베이스 기타</button></li>
-                    <li><button data-cat="used_gear" data-sub="effector"><i class="fas fa-sliders-h" style="width:16px;color:#16a34a"></i> 이펙터</button></li>
-                    <li><button data-cat="used_gear" data-sub="drum"><i class="fas fa-drum" style="width:16px;color:#16a34a"></i> 드럼</button></li>
-                    <li><button data-cat="used_gear" data-sub="pa"><i class="fas fa-volume-up" style="width:16px;color:#16a34a"></i> PA / 음향</button></li>
-                    <li><button data-cat="used_gear" data-sub="amp"><i class="fas fa-plug" style="width:16px;color:#16a34a"></i> 앰프</button></li>
-                    <li><button data-cat="used_gear" data-sub="etc"><i class="fas fa-ellipsis-h" style="width:16px;color:#16a34a"></i> 기타 용품</button></li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- 콘텐츠 -->
+        <div class="comm-center-wrapper">
+        <!-- 게시물 콘텐츠 (왼쪽) -->
         <main class="comm-content">
             <!-- 안내 배너 -->
             <div class="mule-tip-banner">
@@ -1458,10 +1423,58 @@
             <!-- 페이지네이션 -->
             <div class="pagination" id="pagination"></div>
         </main>
-        </div><!-- /comm-center-wrapper -->
 
-        <!-- 우측 광고 사이드바 -->
-        <div class="gw-ad-col gw-ad-right" id="commAdRight"></div>
+        <!-- 사이드바 메뉴 (오른쪽) -->
+        <aside class="comm-sidebar">
+            <div class="sidebar-section">
+                <h3>전체 메뉴</h3>
+                <ul class="sidebar-menu" id="sideMenu">
+                    <li><button data-cat="all" class="active"><i class="fas fa-home" style="width:16px;color:#e85d04"></i> 전체글 보기</button></li>
+                    <li><button data-cat="free_talk"><i class="fas fa-comment-dots" style="width:16px;color:#ca8a04"></i> 자유게시판</button></li>
+                    <li><button data-cat="info"><i class="fas fa-star" style="width:16px;color:#9333ea"></i> 장비리뷰 / 정보</button></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🎸 밴드 구인구직</h3>
+                <ul class="sidebar-menu">
+                    <li><button data-cat="band_recruit" data-sub="all"><i class="fas fa-users" style="width:16px;color:#dc2626"></i> 전체 구인구직</button></li>
+                    <li><button data-cat="band_recruit" data-sub="guitarist"><i class="fas fa-guitar" style="width:16px;color:#dc2626"></i> 기타리스트 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="bassist"><i class="fas fa-music" style="width:16px;color:#dc2626"></i> 베이시스트 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="drummer"><i class="fas fa-drum" style="width:16px;color:#dc2626"></i> 드러머 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="vocalist"><i class="fas fa-microphone" style="width:16px;color:#dc2626"></i> 보컬리스트 모집</button></li>
+                    <li><button data-cat="band_recruit" data-sub="band_join"><i class="fas fa-user-plus" style="width:16px;color:#dc2626"></i> 밴드 찾습니다</button></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🎓 개인 레슨</h3>
+                <ul class="sidebar-menu">
+                    <li><button data-cat="lesson" data-sub="all"><i class="fas fa-chalkboard-teacher" style="width:16px;color:#2563eb"></i> 전체 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="guitar"><i class="fas fa-guitar" style="width:16px;color:#2563eb"></i> 기타 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="bass"><i class="fas fa-music" style="width:16px;color:#2563eb"></i> 베이스 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="drum"><i class="fas fa-drum" style="width:16px;color:#2563eb"></i> 드럼 레슨</button></li>
+                    <li><button data-cat="lesson" data-sub="vocal"><i class="fas fa-microphone-alt" style="width:16px;color:#2563eb"></i> 보컬 레슨</button></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>🛒 중고장터</h3>
+                <ul class="sidebar-menu">
+                    <li><button data-cat="used_gear" data-sub="all" id="usedAllBtn"><i class="fas fa-shopping-bag" style="width:16px;color:#16a34a"></i> 전체 중고장터</button></li>
+                    <li><button data-cat="used_gear" data-sub="acoustic"><i class="fas fa-guitar" style="width:16px;color:#16a34a"></i> 어쿠스틱 기타</button></li>
+                    <li><button data-cat="used_gear" data-sub="electric"><i class="fas fa-bolt" style="width:16px;color:#16a34a"></i> 일렉 기타</button></li>
+                    <li><button data-cat="used_gear" data-sub="bass"><i class="fas fa-music" style="width:16px;color:#16a34a"></i> 베이스 기타</button></li>
+                    <li><button data-cat="used_gear" data-sub="effector"><i class="fas fa-sliders-h" style="width:16px;color:#16a34a"></i> 이펙터</button></li>
+                    <li><button data-cat="used_gear" data-sub="drum"><i class="fas fa-drum" style="width:16px;color:#16a34a"></i> 드럼</button></li>
+                    <li><button data-cat="used_gear" data-sub="pa"><i class="fas fa-volume-up" style="width:16px;color:#16a34a"></i> PA / 음향</button></li>
+                    <li><button data-cat="used_gear" data-sub="amp"><i class="fas fa-plug" style="width:16px;color:#16a34a"></i> 앰프</button></li>
+                    <li><button data-cat="used_gear" data-sub="etc"><i class="fas fa-ellipsis-h" style="width:16px;color:#16a34a"></i> 기타 용품</button></li>
+                </ul>
+            </div>
+        </aside>
+
+        </div><!-- /comm-center-wrapper -->
     </div>
 
     <!-- 글쓰기 모달 -->
@@ -1703,24 +1716,68 @@
     };
 
     function updateCommAds(cat) {
-        const map = COMM_AD_MAP[cat] || COMM_AD_MAP.all;
-        if (typeof mountAds === 'function') {
-            mountAds('commAdLeft',  map.left);
-            mountAds('commAdRight', map.right);
-        }
+        // 광고 시스템 비활성화됨
     }
 
     // ── 즉시 실행 (코드 로드 직후) ──
     setupSideMenu();
     setupWriteModal();
     setupDetailModal();
+
+    // ── URL 파라미터로 초기 카테고리 설정 ──
+    (function initCatFromUrl() {
+        const CAT_MAP = {
+            'all': 'all',
+            'free': 'free_talk',
+            'free_talk': 'free_talk',
+            'gear': 'info',
+            'info': 'info',
+            'band': 'band_recruit',
+            'band_recruit': 'band_recruit',
+            'lesson': 'lesson',
+            'market': 'used_gear',
+            'used_gear': 'used_gear',
+        };
+        const params = new URLSearchParams(window.location.search);
+        const catParam = params.get('cat');
+        if (catParam && CAT_MAP[catParam]) {
+            const mappedCat = CAT_MAP[catParam];
+            state.category = mappedCat;
+            state.subcategory = 'all';
+            // 사이드메뉴 버튼 active 표시 (data-sub="all" 또는 data-sub 없는 버튼 우선)
+            let btn = document.querySelector(`.sidebar-section button[data-cat="${mappedCat}"][data-sub="all"]`);
+            if (!btn) btn = document.querySelector(`.sidebar-section button[data-cat="${mappedCat}"]:not([data-sub])`);
+            if (!btn) btn = document.querySelector(`.sidebar-section button[data-cat="${mappedCat}"]`);
+            if (btn) {
+                setActiveMenuBtn(btn);
+                // 사이드바 섹션이 접혀있으면 펼치기
+                const section = btn.closest('.sidebar-section');
+                if (section) {
+                    const ul = section.querySelector('ul.sidebar-menu');
+                    if (ul) ul.style.display = 'block';
+                }
+            }
+            updateCategoryTitle(mappedCat, 'all');
+        }
+        // 헤더 nav-btn active 상태 업데이트
+        document.querySelectorAll('.nav-community-group .nav-btn').forEach(a => {
+            a.classList.remove('active');
+            try {
+                const href = new URL(a.href, location.href);
+                const hCat = href.searchParams.get('cat') || 'all';
+                const curCat = catParam || 'all';
+                if (hCat === curCat) a.classList.add('active');
+            } catch(e) {}
+        });
+    })();
+
     loadPosts();
     updateTotalCount();
     updateCommAds('all');
 
     // ─── 사이드 메뉴 ───
     function setupSideMenu() {
-        document.querySelectorAll('#sideMenu button, .sidebar-section button[data-cat]').forEach(btn => {
+        document.querySelectorAll('.comm-sidebar button[data-cat], #sideMenu button[data-cat]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const cat = btn.dataset.cat;
                 const sub = btn.dataset.sub || 'all';
@@ -1746,8 +1803,9 @@
     }
 
     function setActiveMenuBtn(active) {
-        document.querySelectorAll('.sidebar-section button[data-cat]').forEach(b => b.classList.remove('active'));
-        active.classList.add('active');
+        // 모든 사이드바 버튼 비활성화
+        document.querySelectorAll('.comm-sidebar button[data-cat]').forEach(b => b.classList.remove('active'));
+        if (active) active.classList.add('active');
     }
 
     function doSearch() {
@@ -2523,6 +2581,17 @@
     // 햄버거 메뉴
     // Auth 초기화 (페이지 로드 시)
     initAuth();
+
+    // 커뮤니티 드롭다운
+    function toggleCommunityDropdown(e) {
+        e.stopPropagation();
+        const dd = document.getElementById('communityDropdown');
+        if (dd) dd.classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+        const dd = document.getElementById('communityDropdown');
+        if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('hamburgerBtn');

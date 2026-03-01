@@ -194,7 +194,44 @@ function aggregateRatings(ratings) {
   }));
 }
 
-/* renderStars: 간단 캐시 (val×size 조합별) */
+/* ── 카드로 스크롤 이동 ── */
+function scrollToCard(placeName) {
+  /* .card-name 텍스트 매칭으로 카드 찾기 */
+  const allNames = document.querySelectorAll('.card-name');
+  let targetCard = null;
+  for (const el of allNames) {
+    if (el.textContent.trim() === placeName) {
+      targetCard = el.closest('.card') || el.parentElement;
+      break;
+    }
+  }
+  /* 영상 카드: .video-card h4 텍스트 매칭 */
+  if (!targetCard) {
+    const videoTitles = document.querySelectorAll('.video-card h4');
+    for (const el of videoTitles) {
+      if (el.textContent.trim() === placeName) {
+        targetCard = el.closest('.video-card');
+        break;
+      }
+    }
+  }
+  if (!targetCard) return;
+  /* 헤더 높이 오프셋 보정 */
+  const headerH = document.querySelector('.header')?.offsetHeight || 72;
+  const rect = targetCard.getBoundingClientRect();
+  const scrollTop = window.pageYOffset + rect.top - headerH - 16;
+  window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+  /* 하이라이트 효과 */
+  targetCard.style.transition = 'box-shadow .3s, outline .3s';
+  targetCard.style.outline = '2.5px solid #f59e0b';
+  targetCard.style.boxShadow = '0 0 0 4px rgba(245,158,11,.25)';
+  setTimeout(() => {
+    targetCard.style.outline = '';
+    targetCard.style.boxShadow = '';
+  }, 2000);
+}
+
+
 const _starCache = new Map();
 function renderStars(val, size) {
   const sz = size || '1rem';
@@ -250,9 +287,9 @@ function buildCardRatingSection(cfg, aggData, page, placeName) {
     const safeName = placeName.replace(/'/g, "\\'");
 
     if (!loggedIn) {
-      rateBtn = `<button class="rate-btn" disabled data-need-login
+      rateBtn = `<button class="rate-btn rate-btn--need-login"
         style="background:#f8fafc;border-color:#e2e8f0;color:#94a3b8;"
-        onclick="alert('로그인 후 평가할 수 있어요! 상단 로그인 버튼을 눌러주세요 🔐')"
+        onclick="handleRateBtnClick('${page}','${safeName}')"
         title="로그인 후 평가 가능">
         🔒 로그인 후 평가 가능
       </button>`;
@@ -265,7 +302,7 @@ function buildCardRatingSection(cfg, aggData, page, placeName) {
     } else {
       rateBtn = `<button class="rate-btn"
         style="background:${cfg.colorLt};border-color:${cfg.colorBd};color:${cfg.color};"
-        onclick="openRatingModal('${page}','${safeName}')">
+        onclick="handleRateBtnClick('${page}','${safeName}')">
         ⭐ 쿠슐랭 평가하기
       </button>`;
     }
@@ -353,6 +390,31 @@ function injectRatingBadge(cfg, aggData, cardEl) {
 }
 
 /* ══════════════════════════════════════════════
+   로그인 상태 변경 시 평가 버튼 즉시 재렌더
+   auth-header.js에서 window.reloadRatingBadges() 호출
+══════════════════════════════════════════════ */
+window.reloadRatingBadges = function() {
+  /* 현재 페이지 타입 찾기 */
+  const page = window._cdkuRatingPage || null;
+  if (!page) return;
+  const cfg = RATING_CONFIG[page];
+  if (!cfg) return;
+
+  /* 로그인 상태 변경 → area의 ratingKey 캐시를 전부 무효화 후 재렌더 */
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.card-rating-area').forEach(area => {
+      /* 캐시 키 강제 초기화 (재렌더 유도) */
+      delete area.dataset.ratingKey;
+    });
+    /* aggMap이 있으면 즉시 재렌더 */
+    if (window._cdkuAggMap) {
+      refreshAllCardRatings(page, window._cdkuAggMap);
+    }
+    /* 쿠슐랭 가이드도 재렌더 (로그인 상태는 HOF에 영향 없지만 평가 버튼 보여줌) */
+  });
+};
+
+/* ══════════════════════════════════════════════
    쿠슐랭 가이드 — 명예의 전당
    평가가 없어도 "선정 중" 슬롯으로 항상 표시
 ══════════════════════════════════════════════ */
@@ -376,17 +438,22 @@ function buildHallOfFame(page, agg) {
 
   /* 1등 채워진 슬롯 */
   function firstSlot(r, scoreKey) {
+    const safeName = r.place_name.replace(/'/g, "\\'");
     return `
-<div style="${rankBg[0]} border-radius:12px;padding:12px;margin-bottom:6px;position:relative;overflow:hidden;">
+<div style="${rankBg[0]} border-radius:12px;padding:9px 10px;margin-bottom:6px;position:relative;overflow:hidden;cursor:pointer;"
+  onclick="scrollToCard('${safeName}')" title="${r.place_name} 카드로 이동">
   <div style="position:absolute;top:-6px;right:-4px;font-size:2.8rem;opacity:.1;pointer-events:none;line-height:1;">🏆</div>
-  <div style="font-size:1.5rem;line-height:1;margin-bottom:5px;">${rankMedal[0]}</div>
-  <div style="font-size:.95rem;font-weight:900;color:#1e293b;margin-bottom:5px;word-break:keep-all;line-height:1.25;">${r.place_name}</div>
-  <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;">
-    ${renderStars(r[scoreKey], '1rem')}
-    <span style="font-size:.95rem;font-weight:800;color:#d97706;margin-left:5px;">${fmtScore(r[scoreKey])}</span>
+  <div style="font-size:1.2rem;line-height:1;margin-bottom:3px;">${rankMedal[0]}</div>
+  <div style="font-size:.88rem;font-weight:900;color:#1e293b;margin-bottom:3px;word-break:keep-all;line-height:1.25;">${r.place_name}</div>
+  <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;">
+    ${renderStars(r[scoreKey], '.9rem')}
+    <span style="font-size:.88rem;font-weight:800;color:#d97706;margin-left:5px;">${fmtScore(r[scoreKey])}</span>
   </div>
   <div style="font-size:.65rem;color:#78716c;display:flex;align-items:center;gap:3px;">
     <i class="fas fa-user" style="font-size:.55rem;"></i> ${r.cnt}명이 선택했어요
+  </div>
+  <div style="margin-top:6px;font-size:.6rem;color:#d97706;font-weight:700;display:flex;align-items:center;gap:3px;">
+    <i class="fas fa-arrow-down"></i> 카드 보기
   </div>
 </div>`;
   }
@@ -394,10 +461,10 @@ function buildHallOfFame(page, agg) {
   /* 1등 빈 슬롯 */
   function firstEmpty() {
     return `
-<div style="${emptyFirstBg} border-radius:12px;padding:14px 12px;margin-bottom:6px;text-align:center;">
-  <div style="font-size:1.9rem;margin-bottom:6px;opacity:.5;">👑</div>
-  <div style="font-size:.82rem;font-weight:800;color:#94a3b8;margin-bottom:4px;">선정 중</div>
-  <div style="font-size:.65rem;color:#64748b;line-height:1.6;">
+<div style="${emptyFirstBg} border-radius:12px;padding:10px 12px;margin-bottom:6px;text-align:center;">
+  <div style="font-size:1.5rem;margin-bottom:4px;opacity:.5;">👑</div>
+  <div style="font-size:.78rem;font-weight:800;color:#94a3b8;margin-bottom:3px;">선정 중</div>
+  <div style="font-size:.62rem;color:#64748b;line-height:1.5;">
     아직 이 자리의 주인공이<br>정해지지 않았어요.<br>
     <span style="color:#6366f1;font-weight:600;">당신의 평가가 1등을 만듭니다!</span>
   </div>
@@ -406,8 +473,10 @@ function buildHallOfFame(page, agg) {
 
   /* 2·3등 채워진 슬롯 */
   function otherSlot(r, i, scoreKey) {
+    const safeName = r.place_name.replace(/'/g, "\\'");
     return `
-<div style="${rankBg[i]} border-radius:8px;padding:7px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;">
+<div style="${rankBg[i]} border-radius:8px;padding:7px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;cursor:pointer;"
+  onclick="scrollToCard('${safeName}')" title="${r.place_name} 카드로 이동">
   <span style="font-size:1.15rem;flex-shrink:0;">${rankMedal[i]}</span>
   <div style="flex:1;min-width:0;">
     <div style="font-size:.8rem;font-weight:700;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.place_name}</div>
@@ -417,6 +486,7 @@ function buildHallOfFame(page, agg) {
       <i class="fas fa-user" style="font-size:.55rem;"></i>${r.cnt}명
     </div>
   </div>
+  <i class="fas fa-arrow-down" style="font-size:.6rem;color:#94a3b8;flex-shrink:0;"></i>
 </div>`;
   }
 
@@ -460,7 +530,7 @@ function buildHallOfFame(page, agg) {
   return `
 <section id="hallOfFame" style="
   background:linear-gradient(160deg,#0f0c29 0%,#1a1a4e 40%,#24243e 100%);
-  border-radius:18px;padding:18px 16px 15px;margin-bottom:20px;
+  border-radius:18px;padding:12px 16px 12px;margin-bottom:20px;
   box-shadow:0 8px 30px rgba(0,0,0,.45);
   position:relative;overflow:hidden;
   border:1px solid rgba(255,255,255,.06);
@@ -468,32 +538,32 @@ function buildHallOfFame(page, agg) {
 
   <div style="position:relative;">
     <!-- 헤더 -->
-    <div style="text-align:center;margin-bottom:14px;">
+    <div style="text-align:center;margin-bottom:8px;">
       <div style="
         display:inline-flex;align-items:center;gap:5px;
         background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);
-        border-radius:20px;padding:3px 11px;margin-bottom:7px;
-        font-size:.58rem;font-weight:800;color:#fbbf24;letter-spacing:.1em;text-transform:uppercase;
+        border-radius:20px;padding:2px 9px;margin-bottom:5px;
+        font-size:.55rem;font-weight:800;color:#fbbf24;letter-spacing:.1em;text-transform:uppercase;
       ">🍋 COODUCK MICHELIN</div>
-      <h2 style="font-size:1.2rem;font-weight:900;color:#fff;margin-bottom:5px;letter-spacing:-.5px;line-height:1.2;">
+      <h2 style="font-size:1rem;font-weight:900;color:#fff;margin-bottom:3px;letter-spacing:-.5px;line-height:1.2;">
         쿠슐랭 가이드 ${cfg.emoji}
       </h2>
-      <p style="font-size:.74rem;color:#a5b4fc;line-height:1.6;max-width:340px;margin:0 auto;">
+      <p style="font-size:.68rem;color:#a5b4fc;line-height:1.5;max-width:340px;margin:0 auto;">
         미식가에겐 미슐랭, <strong style="color:#fbbf24;">음악인에겐 쿠슐랭</strong>.
         직접 다녀온 ${cfg.title}만 압니다.
-        <span style="color:#818cf8;font-size:.68rem;">— 별 하나의 무게를 아는 사람들의 어워드</span>
+        <span style="color:#818cf8;font-size:.64rem;">— 별 하나의 무게를 아는 사람들의 어워드</span>
       </p>
     </div>
 
     <!-- 어워드 2개 -->
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
       ${award(top1, cfg.label1, cfg.icon1, 'avg1')}
       ${award(top2, cfg.label2, cfg.icon2, 'avg2')}
     </div>
 
     <!-- 하단 안내 -->
     <div style="
-      margin-top:12px;padding-top:10px;
+      margin-top:8px;padding-top:8px;
       border-top:1px solid rgba(255,255,255,.08);
       display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;
     ">
@@ -711,6 +781,35 @@ window.openRatingModal = function(page, placeName) {
   const div = document.createElement('div');
   div.innerHTML = buildRatingModal(cfg, placeName);
   document.body.appendChild(div.firstElementChild);
+};
+
+/* ── 평가 버튼 클릭 핸들러: 클릭 시점에 세션 재확인 ── */
+window.handleRateBtnClick = async function(page, placeName) {
+  /* 1. window.currentUser 우선 확인 */
+  let loggedIn = isLoggedIn();
+  /* 2. 없으면 Supabase 세션 직접 확인 (모바일 타이밍 이슈 대응) */
+  if (!loggedIn) {
+    try {
+      const sb = (typeof getClient === 'function') ? getClient() : null;
+      if (sb) {
+        const { data } = await sb.auth.getSession();
+        if (data?.session?.user) {
+          window.currentUser = {
+            id: data.session.user.id,
+            email: data.session.user.email,
+          };
+          loggedIn = true;
+          /* 평가 버튼 상태도 즉시 갱신 */
+          if (typeof window.reloadRatingBadges === 'function') window.reloadRatingBadges();
+        }
+      }
+    } catch(_) {}
+  }
+  if (!loggedIn) {
+    alert('로그인 후 평가할 수 있어요! 상단 로그인 버튼을 눌러주세요 🔐');
+    return;
+  }
+  openRatingModal(page, placeName);
 };
 
 /* ── 내 평가 삭제 확인 다이얼로그 열기 ── */

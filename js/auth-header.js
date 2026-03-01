@@ -38,6 +38,11 @@
 
   renderHeaderAuth(session, profile);
 
+  /* 초기 세션 설정 완료 → 카드 평가 버튼 즉시 재렌더 (모바일 타이밍 이슈 해결) */
+  if (session && typeof window.reloadRatingBadges === 'function') {
+    window.reloadRatingBadges();
+  }
+
   /* 로그인 상태가 바뀌면 평가 버튼 상태도 갱신 */
   if (typeof supabase !== 'undefined' && typeof getClient === 'function') {
     const sb = getClient();
@@ -57,8 +62,10 @@
         window.currentUser  = null;
       }
       renderHeaderAuth(sess, sess ? window._cdkuProfile : null);
-      /* 카드 평가 버튼 재렌더 */
-      if (typeof window.reloadRatingBadges === 'function') window.reloadRatingBadges();
+      /* 카드 평가 버튼 재렌더 — 즉시 실행 */
+      if (typeof window.reloadRatingBadges === 'function') {
+        window.reloadRatingBadges();
+      }
     });
   }
 })();

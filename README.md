@@ -1,204 +1,138 @@
-# TabScribe — COODUCK 기타 타브 악보 생성기
+# 코드덕쿠 (Codeducku) — 기타·뮤지션 커뮤니티
 
-> GOPHERWOOD 기타 브랜드 연계 음악 분석 웹앱
+> 기타 초보자를 위한 코드 악보 생성기 & 음악인 정보/커뮤니티 사이트
 
 ---
 
 ## 📋 완료된 기능
+
+### 🗂️ 헤더 네비게이션 (4개 챕터 구조)
+
+헤더가 **2행 레이아웃 × 4개 챕터**로 구성됩니다.
+
+| 행 | 그룹 | 색상 | 항목 |
+|---|---|---|---|
+| 1행 | 📍 정보 | 초록(teal) | 합주실, 리페어샵, 악기샵, 음악학원, 공연장 |
+| 1행 | 🎵 코덕서비스 | 보라(violet) | 악보공유, 음원분석 |
+| 2행 | 💬 커뮤니티 | 주황(orange) | 자유게시판, 장비리뷰, 밴드구인구직, 개인레슨, 중고장터 |
+| 2행 | 🎬 영상 | 빨강(red) | 리뷰영상, 카피영상, 재미있는영상, 밴드라이브 |
 
 ### 페이지 목록
 
 | 페이지 | URL | 설명 |
 |---|---|---|
 | `index.html` | `/` | 메인 홈 — MP3 업로드 → 타브 악보 자동 생성 |
-| `rehearsal.html` | `/rehearsal.html` | 서울 합주실 찾기 |
-| `repair.html` | `/repair.html` | 서울 기타·베이스 리페어샵 |
-| `instrument.html` | `/instrument.html` | 서울 악기샵 (스마트스토어 운영 업체) |
-| `community.html` | `/community.html` | 뮤지션 커뮤니티 |
+| `rehearsal.html` | `/rehearsal.html` | 서울 합주실 찾기 + 쿠슐랭 가이드 |
+| `repair.html` | `/repair.html` | 서울 기타·베이스 리페어샵 + 쿠슐랭 가이드 |
+| `instrument.html` | `/instrument.html` | 서울 악기샵 + 쿠슐랭 가이드 |
+| `academy.html` | `/academy.html` | 서울 음악학원 찾기 + 쿠슐랭 가이드 |
+| `venue.html` | `/venue.html` | 서울 공연장 찾기 + 쿠슐랭 가이드 |
+| `community.html` | `/community.html` | 뮤지션 커뮤니티 (자유/장비/밴드/레슨/중고) |
+| `score.html` | `/score.html` | 악보 공유 |
+| `video-review.html` | `/video-review.html` | 리뷰 영상 + 쿠슐랭 가이드 HOF |
+| `video-cover.html` | `/video-cover.html` | 카피 영상 + 쿠슐랭 가이드 HOF |
+| `video-fun.html` | `/video-fun.html` | 재미있는 영상 + 쿠슐랭 가이드 HOF |
+| `video-bandstage.html` | `/video-bandstage.html` | 밴드라이브 영상 + 쿠슐랭 가이드 HOF |
+| `auth.html` | `/auth.html` | 로그인/회원가입 통합 |
+| `login.html` | `/login.html` | 로그인 |
+| `signup.html` | `/signup.html` | 회원가입 |
+| `profile.html` | `/profile.html` | 프로필 |
+| `reset-password.html` | `/reset-password.html` | 비밀번호 재설정 |
 
 ---
 
-## 🎯 광고 시스템 (js/ads.js)
+## ✅ 최근 완료된 주요 작업 (2026-03-01)
 
-### 구조
-- **모든 페이지** 좌우 사이드에 **각 4개씩** 광고 카드 표시
-- **헤리티지 우디오일** 광고가 각 페이지 우측 마지막(R4) 슬롯에 1개 배치
-- `mountAds(containerId, [슬롯키…])` 호출로 렌더링
-- 중앙 관리: `js/ads.js`의 `_IMG` 또는 `_OIL` 값만 수정하면 전체 반영
+### 1. 🖼️ 사이드 배너 이미지 완전 제거
+- 모든 페이지(index, rehearsal, repair, instrument, academy, venue, community, score)에서 `gw-ad-col`, `mountAds` 관련 광고 코드 완전 제거
+- 단일 컬럼 레이아웃으로 전환 (`.page-layout` → 1fr 단일 컬럼)
 
-### 광고 컨테이너 클래스
-- `gw-ad-col gw-ad-left` — 왼쪽 광고 컬럼
-- `gw-ad-col gw-ad-right` — 오른쪽 광고 컬럼
-- `page-layout` 그리드의 직접 자식으로 배치 (sticky-inside-sticky 방지)
+### 2. 🍋 쿠슐랭 가이드 — 정보 페이지
+- rehearsal, repair, instrument, academy, venue 페이지에 **쿠슐랭 가이드 명예의 전당(HOF)** 섹션 적용
+- Supabase `ratings` 테이블 기반 실시간 집계
+- HOF 순위 카드 클릭 시 해당 업체 카드로 **스크롤 이동 + 하이라이트** 효과 (`scrollToCard` 함수)
 
-### 광고 슬롯 키 목록
+### 3. 🎬 쿠슐랭 가이드 — 영상 페이지 (신규)
+- video-review, video-cover, video-fun, video-bandstage 4개 페이지에 **좋아요 기반 HOF 랭킹** 추가
+- `localStorage`에 좋아요 정보 저장 (키: `codeducku_likes_{page}`)
+- 영상 카드에 ❤️ 추천 버튼 추가 — 토글 방식, 추천 수 실시간 반영
+- HOF 순위 클릭 시 해당 영상 카드로 스크롤 이동 + 빨간 하이라이트
 
-| 페이지 | 왼쪽 슬롯 (L1~L4) | 오른쪽 슬롯 (R1~R4, R4=오일) |
+### 4. 🔐 평가 버튼 로그인 상태 이슈 수정
+- **모바일 환경** 및 페이지 초기 로드 시 `window.currentUser`가 늦게 설정되는 타이밍 이슈 해결
+- 수정 내용:
+  1. `handleRateBtnClick`: 클릭 시점에 Supabase 세션 직접 재확인 (async)
+  2. `auth-header.js`: 초기 세션 설정 완료 후 `reloadRatingBadges()` 즉시 호출
+  3. 각 info 페이지: 1.5초 후 카드 평가 버튼 재렌더 (지연 대응 fallback)
+  4. `rating.js`: `reloadRatingBadges` 개선 — aggMap 캐시 활용해 즉시 재렌더
+
+### 5. 🎥 영상 재생 오류 수정
+- 이전 `?autoplay=1` 파라미터 → `?enablejsapi=1&rel=0&modestbranding=1` 으로 변경
+- `allow="autoplay"` 제거 → `accelerometer; gyroscope; picture-in-picture` 표준 속성으로 교체
+- 임베드 제한 영상 감지 시 에러 오버레이 + YouTube 직접 링크 표시
+
+---
+
+## 🗄️ 데이터 모델
+
+### Supabase `ratings` 테이블
+| 컬럼 | 타입 | 설명 |
 |---|---|---|
-| 메인 기본 | HOME_DEFAULT_L1~L4 | HOME_DEFAULT_R1~R4 |
-| 메인 분석 | HOME_ANALYZE_L1~L4 | HOME_ANALYZE_R1~R4 |
-| 합주실 | REHEARSAL_L1~L4 | REHEARSAL_R1~R4 |
-| 리페어샵 | REPAIR_L1~L4 | REPAIR_R1~R4 |
-| 악기샵 | INSTRUMENT_L1~L4 | INSTRUMENT_R1~R4 |
-| 커뮤니티 전체 | COMM_ALL_L1~L4 | COMM_ALL_R1~R4 |
-| 커뮤니티 밴드 | COMM_BAND_L1~L4 | COMM_BAND_R1~R4 |
-| 커뮤니티 레슨 | COMM_LESSON_L1~L4 | COMM_LESSON_R1~R4 |
-| 커뮤니티 중고 | COMM_USED_L1~L4 | COMM_USED_R1~R4 |
-| 커뮤니티 자유 | COMM_FREE_L1~L4 | COMM_FREE_R1~R4 |
-| 커뮤니티 리뷰 | COMM_INFO_L1~L4 | COMM_INFO_R1~R4 |
+| `id` | UUID | 평가 고유 ID |
+| `page` | text | 페이지 구분 (rehearsal/repair/instrument/academy/venue) |
+| `place_id` | text | 업체 고유 ID (`{page}_{name}`) |
+| `place_name` | text | 업체명 |
+| `user_id` | text | 유저 ID (Supabase auth UUID) |
+| `score1` | integer | 첫 번째 평가 항목 (1~5) |
+| `score2` | integer | 두 번째 평가 항목 (1~5) |
+| `created_at` | timestamp | 생성 시각 |
 
-### 헤리티지 우디오일 이미지 배치
-
-| 페이지 | 이미지 파일 |
+### localStorage (영상 좋아요)
+| 키 | 내용 |
 |---|---|
-| 메인 기본화면 | `images/oil-ad-dark.jpg` |
-| 메인 분석화면 | `images/oil-ad-bright.jpg` |
-| 합주실 | `images/oil-ad-craft.jpg` |
-| 리페어샵 | `images/oil-ad-retail.jpg` |
-| 악기샵 | `images/oil-ad-dark.jpg` |
-| 커뮤니티 전체 | `images/oil-ad-retail.jpg` |
-| 커뮤니티 밴드 | `images/oil-ad-craft.jpg` |
-| 커뮤니티 레슨 | `images/oil-ad-bright.jpg` |
-| 커뮤니티 중고 | `images/oil-ad-retail.jpg` |
-| 커뮤니티 자유 | `images/oil-ad-dark.jpg` |
-| 커뮤니티 리뷰 | `images/oil-ad-craft.jpg` |
+| `codeducku_likes_{page}` | `{videoId: count}` 객체 |
+| `codeducku_my_likes_{page}` | `{videoId: 1}` 내 좋아요 기록 |
+| `codeducku_videos_{page}` | 영상 목록 배열 |
 
 ---
 
-## 🏠 홈 버튼
+## 🔑 주요 기능 경로 요약
 
-- **index.html**: 홈 페이지이므로 FAB 버튼 없음
-- **기타 모든 페이지**: 좌하단 고정 홈 FAB 버튼 (`id="gw-home-fab" class="home-fab"`)
-  - `ads.js`의 `insertHomeFab()` 이 `gw-home-fab` id를 확인하여 중복 삽입 방지
-
----
-
-## ⚙️ 주요 기술 사항
-
-### 광고 표시 문제 해결 이력
-- **원인**: `DOMContentLoaded` 이벤트 리스너가 `</body>` 직전 스크립트에 추가될 때 이미 이벤트가 발생한 경우 광고 미표시
-- **해결**: 모든 `mountAds()` 호출을 `DOMContentLoaded` 리스너 대신 **즉시 실행**으로 변경
-- **추가 원인**: `ad-sidebar-col` 클래스가 `side-panel` (sticky) 안에 중첩되어 sticky-inside-sticky 충돌
-- **해결**: 광고 컨테이너를 `side-panel` 밖으로 이동하여 `page-layout` 그리드의 직접 자식으로 배치
-- **CSS 통일**: 기존 `ad-sidebar-col` → `gw-ad-col` 클래스로 전체 통일
-
-### TabScribe v4.7 기능 (index.html) — 최신 업데이트
-- **코드박스 프리뷰 7카드 슬라이드 전면 재설계**
-  - 총 7개 카드 동시 표시: 지나간 코드 2개(왼쪽, 흐릿) + **현재 코드 1개(중앙, 강조)** + 다음 코드 4개(오른쪽, 점진 투명)
-  - 현재 코드 카드: 가장 크게(148×188px), 파란 테두리 + 빛 효과로 강조
-  - 재생 진행에 따라 오른쪽→왼쪽으로 카드가 슬라이드 이동 (transition 애니메이션)
-  - 빈 슬롯은 점선 박스로 표시
-  - 좌우 엣지 그라디언트 마스크 + 중앙 파란 세로 하이라이트 선
-- **코드 다이어그램 손가락 번호 추가**
-  - 검지(1)/중지(2)/약지(3)/소지(4) 번호를 운지 점 안에 흰색 숫자로 표시
-  - 바레 코드는 바레 바 위에 '1' 표시
-  - 다크 테마 전용 다이어그램 렌더러(`_drawChordDiagramDark`) 추가 — 파란색 계열 운지점
-  - `_getFullChordDictionary`에 주요 코드(C, D, E, F, G, Am, Em, Dm 등) finger 데이터 추가
-- **`drawChordDiagram` scale 지원** — 임의 크기 canvas에 비율 유지하며 렌더
-- **코드 박스 (Chord Box) 추가** — 파형 박스 바로 아래 배치
-  - 분석 완료 후 마디별 4칸 코드 흐름을 가로 스크롤 트랙으로 표시
-  - 각 칸(슬롯)은 마디 번호 + 박자(1~4) + 코드명을 표시
-  - 음원 재생 시 현재 마디/박자에 맞춰 파란색 강조 + 자동 스크롤
-  - 코드박스 아래 "현재 코드" 다이어그램 + "NEXT 1~3" 다음 코드 3개 미리보기
-  - 슬롯 클릭 → 팝업 코드 수정 → 타브 악보 코드명 즉시 동기화
-  - 전조 시 코드박스 코드명도 함께 자동 갱신
-  - 편집기(tabEditor) 코드 수정 시 코드박스도 자동 반영
-- **악보 수동 수정 안내 배너 삭제** — `_showEditNoticeBanner()` 제거
-- **사이트 컨셉 변경**: "타브 악보 자동 생성" → **"코드 악보 자동 생성"**
-  - index.html, community.html, score.html, portfolio.html 전체 텍스트 일괄 변경
-  - 메타태그, 헤더, 버튼, 설명문 등 모든 노출 텍스트 반영
-- **악보 가독성 대폭 향상** (tabRenderer.js)
-  - 프렛 숫자 네모 박스 완전 제거 — 줄 위에 숫자만 깔끔하게 표시
-  - 개방현(0): 숫자 0으로 표시 (기존 원형 기호 제거)
-  - 뮤트(×): 기호만 텍스트로 표시
-  - 줄 간격 28→34px, 프렛 폰트 13→14px, 코드명 폰트 15→16px
-  - 줄 굵기 강화 (6번줄 1.4→1.8, 기타 줄 1.0px으로 통일)
-  - PAD_TOP 54→46px (코드명 영역 최소화, 악보 비율 개선)
-  - TAB 레이블 및 현 이름 폰트 확대
-- **악보 너비 100% 표시** (tabRenderer.js)
-  - PAD_SAFE=12px 적용으로 악보가 컨테이너 가로를 꽉 채움
-  - applyTabScrollHeight 최솟값 440px, 최댓값 1000px으로 확대
-- **악기 레이블 텍스트** "기본 기타코드폼" → "기본 기타 코드 악보" 등 변경
+| 기능 | 경로/파라미터 |
+|---|---|
+| 합주실 | `/rehearsal.html` |
+| 커뮤니티 장비리뷰 | `/community.html?cat=gear` |
+| 커뮤니티 밴드구인 | `/community.html?cat=band` |
+| 커뮤니티 개인레슨 | `/community.html?cat=lesson` |
+| 커뮤니티 중고장터 | `/community.html?cat=market` |
 
 ---
 
-## 📂 파일 구조
+## 🚧 미구현 / 개선 예정
 
-```
-index.html          메인 홈 (타브 생성기)
-rehearsal.html      합주실 찾기
-repair.html         리페어샵
-instrument.html     악기샵
-community.html      뮤지션 커뮤니티
-css/
-  style.css         메인 스타일
-js/
-  ads.js            광고 중앙 관리
-  audioEngine.js    오디오 엔진
-  pitchDetector.js  피치 감지
-  tabConverter.js   타브 변환
-  tabRenderer.js    타브 렌더링 (SVG, 편집모드 지원)
-  tabEditor.js      TAB 에디터 UI (코드/프렛 편집, 코드폼 추천)
-  main.js           메인 로직
-images/
-  oil-ad-*.jpg      헤리티지 우디오일 광고 이미지
-  gw-*.jpg          GOPHERWOOD 제품 이미지
-  product*.jpg      제품 이미지
-```
+- [ ] 영상 좋아요 서버 동기화 (현재 localStorage만 사용 → 브라우저 초기화 시 초기화됨)
+- [ ] community.html 게시글 이미지 업로드
+- [ ] score.html 악보 PDF 다운로드
+- [ ] 사용자별 즐겨찾기 업체 저장
+- [ ] 전국 지역 확장 (현재 서울만)
+- [ ] AI 기반 음원 분석 정확도 개선
 
 ---
 
-## 🔍 검색엔진 등록 가이드
+## 🔧 외부 서비스
 
-### 준비된 파일
+- **Supabase**: `https://aubagaamktdmtvfabcbd.supabase.co` — 인증, 평가 데이터 저장
+- **Font Awesome 6.4.0**: 아이콘
+- **Google Fonts (Inter, Noto Sans KR)**: 폰트
+- **YouTube Embed API**: 영상 재생
+
+---
+
+## 📁 주요 JS 파일
+
 | 파일 | 역할 |
 |---|---|
-| `robots.txt` | 검색엔진 크롤링 허용 설정 |
-| `sitemap.xml` | 사이트맵 (전체 페이지 URL 목록) |
-
-### 구글 Search Console 등록 절차
-
-1. **https://search.google.com/search-console** 접속
-2. "속성 추가" → **URL 접두사** 선택 → `https://tabscribe.vercel.app` 입력
-3. 소유권 확인 방법 선택:
-   - **HTML 태그** 방식 권장: Google이 제공하는 `<meta name="google-site-verification" content="xxxxx">` 코드 복사
-4. 복사한 코드를 **모든 HTML 파일**의 `<head>` 안 아래 주석 위치에 삽입:
-   ```html
-   <!-- 아래 주석을 실제 코드로 교체 -->
-   <!-- <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE"> -->
-   ```
-   → 주석 제거 후 코드 삽입
-5. GitHub에 커밋·푸시 후 Vercel 배포 완료되면 → Search Console에서 "확인" 클릭
-6. 등록 완료 후 좌측 메뉴 **Sitemaps** → `sitemap.xml` 입력하여 제출
-
-### 네이버 Search Advisor 등록 절차
-
-1. **https://searchadvisor.naver.com** 접속 (네이버 계정 로그인)
-2. "사이트 등록" → `https://tabscribe.vercel.app` 입력
-3. 소유권 확인 방법 선택:
-   - **HTML 태그** 방식 권장: Naver가 제공하는 `<meta name="naver-site-verification" content="xxxxx">` 코드 복사
-4. 복사한 코드를 모든 HTML 파일 `<head>` 안 주석 위치에 삽입:
-   ```html
-   <!-- <meta name="naver-site-verification" content="YOUR_NAVER_VERIFICATION_CODE"> -->
-   ```
-5. GitHub 커밋·푸시 → 배포 완료 후 → Search Advisor에서 "소유확인" 클릭
-6. 확인 후 **웹마스터도구 → 요청 → 사이트맵 제출**:
-   - `https://tabscribe.vercel.app/sitemap.xml`
-
-### 인증 후 확인사항
-- 구글: 색인 생성까지 **1~2주** 소요
-- 네이버: 색인 생성까지 **2~4주** 소요
-- robots.txt 접근 확인: `https://tabscribe.vercel.app/robots.txt`
-- sitemap.xml 접근 확인: `https://tabscribe.vercel.app/sitemap.xml`
-
----
-
-## 🔜 미구현 / 다음 개발 권장사항
-
-1. **멀티트랙 분리** (보컬+드럼 분리) — 서버사이드 처리 필요
-2. **PDF/MusicXML 내보내기**
-3. **커뮤니티 게시물 이미지 첨부**
-4. **사용자 좋아요 기능 (중복 방지)**
-5. **광고 이미지 고해상도 교체** — `_IMG` 상수의 경로만 변경
-6. **모바일 커뮤니티 사이드바** — 오버레이 드로어
-7. **합주실/리페어샵/악기샵 데이터 검증** — 현장/전화 확인 권장
+| `js/auth.js` | Supabase 클라이언트, 로그인/회원가입/세션 관리 |
+| `js/auth-header.js` | 헤더 로그인 버튼 UI 관리, 로그인 상태 변경 감지 |
+| `js/rating.js` | 쿠슐랭 평가 시스템 (HOF 빌드, 별점 UI, Supabase CRUD) |
+| `js/ads.js` | (레거시) 광고 마운트 — 현재 미사용 |
