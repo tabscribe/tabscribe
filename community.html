@@ -649,6 +649,57 @@
             font-size: 0.95rem; letter-spacing: 0.02em;
         }
 
+        /* 판매완료 버튼 영역 */
+        .sold-out-section {
+            margin-top: 16px;
+            border: 1.5px dashed #f59e0b;
+            border-radius: 12px;
+            padding: 14px 16px;
+            background: #fffbeb;
+        }
+        .sold-out-notice {
+            font-size: 0.78rem;
+            color: #92400e;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .sold-out-notice i { color: #f59e0b; margin-right: 4px; }
+        .btn-sold-out {
+            width: 100%;
+            padding: 11px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-sold-out:hover { background: linear-gradient(135deg, #d97706, #b45309); transform: translateY(-1px); }
+        .btn-sold-out:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .sold-out-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #6b7280;
+            color: #fff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        .contact-hidden-msg {
+            display: flex; align-items: center; gap: 8px;
+            background: #f3f4f6;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 14px;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
         /* 레슨 카드 */
         .lesson-grid {
             display: grid;
@@ -2329,10 +2380,27 @@
                 <div class="price-lbl">💰 판매가격</div>
                 <div class="price-val">${fmtPrice(p.price)}</div>
             </div>` : '';
-        const contactHtml = p.contact ? `
-            <div class="detail-contact">
-                <strong><i class="fas fa-phone-alt"></i> 판매자 연락처</strong>
-                <span class="detail-contact-value">${escHtml(p.contact)}</span>
+        // 판매완료 여부에 따라 연락처 표시 결정
+        const isSold = p.status === 'sold';
+        const contactHtml = p.category === 'used_gear'
+            ? (isSold
+                ? `<div class="contact-hidden-msg"><i class="fas fa-lock"></i> 판매가 완료되어 연락처가 숨겨졌습니다.</div>`
+                : (p.contact ? `<div class="detail-contact" id="detailContactBox"><strong><i class="fas fa-phone-alt"></i> 판매자 연락처</strong><span class="detail-contact-value">${escHtml(p.contact)}</span></div>` : '')
+            )
+            : (p.contact ? `<div class="detail-contact"><strong><i class="fas fa-phone-alt"></i> 연락처</strong><span class="detail-contact-value">${escHtml(p.contact)}</span></div>` : '');
+
+        // 글쓴이 본인 확인 (닉네임 비교)
+        const isAuthor = currentUser && currentProfile && (currentProfile.nickname === p.author);
+        const soldOutSectionHtml = (p.category === 'used_gear' && !isSold && isAuthor) ? `
+            <div class="sold-out-section" id="soldOutSection">
+                <div class="sold-out-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>판매완료</strong> 버튼을 누르면 연락처가 숨겨집니다.<br>
+                    판매가 완료된 경우에만 눌러주세요.
+                </div>
+                <button class="btn-sold-out" id="btnMarkSold" data-post-id="${p.id}">
+                    <i class="fas fa-check-circle"></i> 판매완료 (누르면 연락처가 사라집니다)
+                </button>
             </div>` : '';
         const imageHtml = p.image_url ? `
             <div class="detail-product-img">
@@ -2341,7 +2409,10 @@
             </div>` : '';
 
         document.getElementById('detailContent').innerHTML = `
-            <div class="detail-title">${escHtml(p.title || '')}</div>
+            <div class="detail-title">
+                ${escHtml(p.title || '')}
+                ${isSold ? '<span class="sold-out-badge"><i class="fas fa-check"></i> 판매완료</span>' : ''}
+            </div>
             <div class="detail-meta">
                 <span><i class="fas fa-user"></i> ${escHtml(p.author || '익명')}</span>
                 ${p.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(p.location)}</span>` : ''}
@@ -2354,7 +2425,33 @@
             <div class="detail-body">${escHtml((p.content || '').replace(/<[^>]+>/g, ''))}</div>
             ${tags ? `<div class="detail-tags">${tags}</div>` : ''}
             ${contactHtml}
+            ${soldOutSectionHtml}
         `;
+
+        // 판매완료 버튼 이벤트 바인딩
+        const btnSold = document.getElementById('btnMarkSold');
+        if (btnSold) {
+            btnSold.addEventListener('click', async () => {
+                if (!confirm('판매완료로 변경하면 연락처가 숨겨집니다.\n정말 판매완료 처리하시겠습니까?')) return;
+                btnSold.disabled = true;
+                btnSold.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 처리 중...';
+                try {
+                    await SupabaseDB.update('community_posts', p.id, { status: 'sold' });
+                    // 로컬 state도 업데이트
+                    const idx = state.posts.findIndex(x => x.id === p.id);
+                    if (idx !== -1) state.posts[idx].status = 'sold';
+                    showToast('✅ 판매완료 처리되었습니다!');
+                    // 상세보기 새로고침
+                    openDetail(p.id);
+                    // 목록 카드도 갱신
+                    loadPosts();
+                } catch (err) {
+                    showToast('❌ 처리 실패: ' + (err.message || '다시 시도해주세요.'));
+                    btnSold.disabled = false;
+                    btnSold.innerHTML = '<i class="fas fa-check-circle"></i> 판매완료 (누르면 연락처가 사라집니다)';
+                }
+            });
+        }
 
         document.getElementById('detailModal').classList.add('open');
         // 조회수 증가
