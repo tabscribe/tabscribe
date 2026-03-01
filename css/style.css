@@ -5887,7 +5887,7 @@ body {
 /* 문의 유형 선택 탭 */
 .inquiry-type-tabs {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
 }
 .inquiry-type-tab {
@@ -6050,7 +6050,7 @@ body {
 }
 @media (max-width: 500px) {
     .inquiry-popup { border-radius: 16px; }
-    .inquiry-type-tabs { grid-template-columns: repeat(2,1fr); }
+    .inquiry-type-tabs { grid-template-columns: repeat(3,1fr); }
     .inquiry-type-tab { padding: 10px 6px; }
 }
 

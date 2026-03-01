@@ -3,8 +3,8 @@
  * Supabase JS v2 CDN 버전 사용
  */
 
-const SUPABASE_URL  = 'https://aubagaamktdmtvfabcbd.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YmFnYWFta3RkbXR2ZmFiY2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxOTc5NDksImV4cCI6MjA4Nzc3Mzk0OX0.XoKiaw8nCJc1Hq9OjiURrGi_ZA-6sU4xhqqpDGcC2IM';
+if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL  = 'https://aubagaamktdmtvfabcbd.supabase.co';
+if (typeof SUPABASE_ANON === 'undefined') var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YmFnYWFta3RkbXR2ZmFiY2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxOTc5NDksImV4cCI6MjA4Nzc3Mzk0OX0.XoKiaw8nCJc1Hq9OjiURrGi_ZA-6sU4xhqqpDGcC2IM';
 
 // Supabase 클라이언트 초기화 (supabase-js v2 CDN 로드 후 사용)
 let _supabase = null;
