@@ -6,10 +6,17 @@
  * 모든 fetch 호출을 이 헬퍼로 통일
  */
 
-var SUPABASE_URL  = 'https://aubagaamktdmtvfabcbd.supabase.co';
-var SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YmFnYWFta3RkbXR2ZmFiY2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxOTc5NDksImV4cCI6MjA4Nzc3Mzk0OX0.XoKiaw8nCJc1Hq9OjiURrGi_ZA-6sU4xhqqpDGcC2IM';
+// 중복 선언 방지: auth.js가 먼저 로드된 경우 재사용
+if (typeof SUPABASE_URL === 'undefined') var SUPABASE_URL  = 'https://aubagaamktdmtvfabcbd.supabase.co';
+if (typeof SUPABASE_KEY === 'undefined') {
+    // auth.js가 SUPABASE_ANON으로 선언한 경우 그것을 사용
+    var SUPABASE_KEY = (typeof SUPABASE_ANON !== 'undefined')
+        ? SUPABASE_ANON
+        : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YmFnYWFta3RkbXR2ZmFiY2JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxOTc5NDksImV4cCI6MjA4Nzc3Mzk0OX0.XoKiaw8nCJc1Hq9OjiURrGi_ZA-6sU4xhqqpDGcC2IM';
+}
 
-const SB_HEADERS = {
+// SB_HEADERS는 항상 최신 SUPABASE_KEY로 생성
+var SB_HEADERS = {
     'Content-Type':  'application/json',
     'apikey':        SUPABASE_KEY,
     'Authorization': `Bearer ${SUPABASE_KEY}`,
