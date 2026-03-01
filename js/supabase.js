@@ -153,3 +153,67 @@ class SupabaseDB {
 }
 
 window.SupabaseDB = SupabaseDB;
+
+/* ─────────────────────────────────────────
+   Supabase Storage 이미지 업로드 헬퍼
+   버킷: community-images (public)
+   anon key로 업로드 허용 필요 (Storage Policy)
+───────────────────────────────────────── */
+const STORAGE_BUCKET = 'community-images';
+
+async function uploadImageToSupabase(file) {
+    // 파일 크기 제한: 5MB
+    if (file.size > 5 * 1024 * 1024) {
+        throw new Error('파일 크기는 5MB 이하만 가능합니다.');
+    }
+    // 허용 형식
+    const allowed = ['image/jpeg','image/jpg','image/png','image/gif','image/webp'];
+    if (!allowed.includes(file.type)) {
+        throw new Error('JPG, PNG, GIF, WebP 이미지만 업로드 가능합니다.');
+    }
+
+    // 고유 파일명 생성
+    const ext  = file.name.split('.').pop().toLowerCase();
+    const name = `${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const path = `posts/${name}`;
+
+    const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`;
+    const res = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+            'apikey':        SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type':  file.type,
+            'x-upsert':      'true',
+        },
+        body: file,
+    });
+
+    if (!res.ok) {
+        // Storage 버킷이 없거나 정책 미설정 시 → Base64 fallback
+        const errText = await res.text().catch(() => '');
+        console.warn('[Storage] 업로드 실패, Base64 fallback:', res.status, errText);
+        return await fileToBase64DataUrl(file);
+    }
+
+    // Public URL 반환
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+    return publicUrl;
+}
+
+/* Base64 DataURL fallback (Storage 미설정 환경용) */
+function fileToBase64DataUrl(file) {
+    return new Promise((resolve, reject) => {
+        // Base64 시 DB 저장 용량 고려해 1.5MB 이하만 허용
+        if (file.size > 1.5 * 1024 * 1024) {
+            reject(new Error('스토리지 연결 전까지 이미지는 1.5MB 이하만 가능합니다.'));
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload  = e => resolve(e.target.result);
+        reader.onerror = () => reject(new Error('파일 읽기 실패'));
+        reader.readAsDataURL(file);
+    });
+}
+
+window.uploadImageToSupabase = uploadImageToSupabase;

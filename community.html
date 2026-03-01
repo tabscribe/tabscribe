@@ -325,6 +325,74 @@
             transform: translateY(-1px);
         }
 
+        /* ── 이미지 업로드 드롭존 ── */
+        .img-upload-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: border-color .18s, background .18s;
+            overflow: hidden;
+            min-height: 100px;
+        }
+        .img-upload-zone:hover,
+        .img-upload-zone.drag-over {
+            border-color: var(--accent);
+            background: #fff7ed;
+        }
+        .img-upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 20px;
+            user-select: none;
+        }
+        .img-upload-preview {
+            position: relative;
+            width: 100%;
+        }
+        .img-upload-preview img {
+            width: 100%;
+            max-height: 240px;
+            object-fit: contain;
+            background: #f1f5f9;
+            display: block;
+            border-radius: 10px;
+        }
+        .img-remove-btn {
+            position: absolute;
+            top: 8px; right: 8px;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: rgba(0,0,0,.55);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: .8rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background .15s;
+            z-index: 2;
+        }
+        .img-remove-btn:hover { background: rgba(220,38,38,.85); }
+        .img-upload-info {
+            font-size: .72rem;
+            color: #64748b;
+            padding: 6px 10px 8px;
+            text-align: center;
+        }
+        .img-uploading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 20px;
+            font-size: .85rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .img-uploading .fa-spinner { animation: spin .8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         /* ── 게시글 카드 공통 사진 썸네일 ── */
         .post-card-thumb {
             flex-shrink: 0;
@@ -1619,10 +1687,24 @@
                 </div>
             </div>
             <div class="form-group" id="imageUrlGroup">
-                <label>사진 URL <span style="color:#9ca3af;font-weight:500;font-size:.78rem;">(선택 — imgur · imgbb 등 이미지 직링크, 최대 1장)</span></label>
-                <input type="url" id="formImageUrl" placeholder="https://i.imgur.com/example.jpg" />
-                <div id="imagePreviewWrap" style="display:none;margin-top:8px;border-radius:10px;overflow:hidden;">
-                    <img id="imagePreview" src="" alt="미리보기" style="width:100%;max-height:220px;object-fit:contain;background:#f8fafc;border-radius:10px;border:1.5px solid #e2e8f0;display:block;" />
+                <label>
+                    사진 첨부 <span style="color:#9ca3af;font-weight:500;font-size:.78rem;">(선택 · JPG/PNG/GIF/WebP · 최대 5MB)</span>
+                </label>
+                <!-- 업로드 드롭존 -->
+                <div class="img-upload-zone" id="imgUploadZone">
+                    <input type="file" id="formImageFile" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" hidden>
+                    <div class="img-upload-placeholder" id="imgUploadPlaceholder">
+                        <i class="fas fa-image" style="font-size:2rem;color:#cbd5e1;display:block;margin-bottom:8px;"></i>
+                        <span style="font-size:.85rem;color:#64748b;font-weight:600;">클릭하거나 이미지를 끌어다 놓으세요</span>
+                        <span style="font-size:.74rem;color:#9ca3af;margin-top:4px;display:block;">JPG · PNG · GIF · WebP · 최대 5MB</span>
+                    </div>
+                    <div class="img-upload-preview" id="imgUploadPreview" style="display:none;">
+                        <img id="imgPreviewImg" src="" alt="미리보기">
+                        <button type="button" class="img-remove-btn" id="imgRemoveBtn" title="사진 제거">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="img-upload-info" id="imgUploadInfo"></div>
+                    </div>
                 </div>
             </div>
             <div class="form-group" id="priceGroup" style="display:none;">
@@ -2312,18 +2394,37 @@
         document.getElementById('formCategory').addEventListener('change', onCategoryChange);
         document.getElementById('submitPost').addEventListener('click', submitPost);
 
-        // 이미지 URL 미리보기
-        document.getElementById('formImageUrl').addEventListener('input', function() {
-            const url = this.value.trim();
-            const wrap = document.getElementById('imagePreviewWrap');
-            const img  = document.getElementById('imagePreview');
-            if (url) {
-                img.src = url;
-                img.onerror = () => { wrap.style.display = 'none'; };
-                img.onload  = () => { wrap.style.display = 'block'; };
-            } else {
-                wrap.style.display = 'none';
+        // ── 이미지 업로드 이벤트 ──
+        const zone      = document.getElementById('imgUploadZone');
+        const fileInput = document.getElementById('formImageFile');
+
+        // 클릭으로 파일 선택
+        zone.addEventListener('click', () => {
+            if (!document.getElementById('imgUploadPreview').style.display ||
+                document.getElementById('imgUploadPreview').style.display === 'none') {
+                fileInput.click();
             }
+        });
+
+        // 파일 선택 시 미리보기
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0]) handleImageFile(fileInput.files[0]);
+        });
+
+        // 드래그&드롭
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            const f = e.dataTransfer.files[0];
+            if (f && f.type.startsWith('image/')) handleImageFile(f);
+        });
+
+        // 사진 제거 버튼
+        document.getElementById('imgRemoveBtn').addEventListener('click', e => {
+            e.stopPropagation();
+            clearImageUpload();
         });
     }
 
@@ -2353,13 +2454,52 @@
         resetWriteForm();
     }
 
+    // ── 이미지 파일 선택 처리 ──
+    let _pendingImageFile = null; // 업로드 대기 파일 (submit 시 실제 업로드)
+
+    function handleImageFile(file) {
+        const allowed = ['image/jpeg','image/jpg','image/png','image/gif','image/webp'];
+        if (!allowed.includes(file.type)) {
+            showToast('⚠️ JPG, PNG, GIF, WebP 이미지만 가능합니다.');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('⚠️ 이미지 크기는 5MB 이하만 가능합니다.');
+            return;
+        }
+        _pendingImageFile = file;
+
+        // 미리보기
+        const reader = new FileReader();
+        reader.onload = e => {
+            const placeholder = document.getElementById('imgUploadPlaceholder');
+            const preview     = document.getElementById('imgUploadPreview');
+            const previewImg  = document.getElementById('imgPreviewImg');
+            const info        = document.getElementById('imgUploadInfo');
+
+            placeholder.style.display = 'none';
+            previewImg.src = e.target.result;
+            info.textContent = `${file.name}  (${(file.size/1024).toFixed(0)}KB)`;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearImageUpload() {
+        _pendingImageFile = null;
+        document.getElementById('formImageFile').value = '';
+        document.getElementById('imgUploadPlaceholder').style.display = 'flex';
+        document.getElementById('imgUploadPreview').style.display = 'none';
+        document.getElementById('imgPreviewImg').src = '';
+    }
+
     function resetWriteForm() {
-        ['formCategory','formTitle','formAuthor','formLocation','formPrice','formContact','formContent','formTags','formImageUrl']
+        ['formCategory','formTitle','formAuthor','formLocation','formPrice','formContact','formContent','formTags']
             .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
         document.getElementById('subCatGroup').style.display = 'none';
         document.getElementById('priceGroup').style.display = 'none';
         document.getElementById('contactGroup').style.display = 'none';
-        document.getElementById('imagePreviewWrap').style.display = 'none';
+        clearImageUpload();
     }
 
     function onCategoryChange() {
@@ -2429,13 +2569,27 @@
         const price   = document.getElementById('priceGroup').style.display !== 'none'
             ? parseInt(document.getElementById('formPrice').value) || 0 : 0;
         const contact = document.getElementById('formContact').value.trim();
-        const imageUrl= document.getElementById('formImageUrl').value.trim();
         const tagsRaw = document.getElementById('formTags').value.trim();
         const tags    = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
         const btn = document.getElementById('submitPost');
         btn.disabled = true;
-        btn.textContent = '등록 중...';
+
+        // ── 이미지 업로드 처리 ──
+        let imageUrl = null;
+        if (_pendingImageFile) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 사진 업로드 중...';
+            try {
+                imageUrl = await uploadImageToSupabase(_pendingImageFile);
+            } catch (err) {
+                showToast(`⚠️ ${err.message}`);
+                btn.disabled = false;
+                btn.textContent = '등록하기';
+                return;
+            }
+        }
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 등록 중...';
 
         try {
             await SupabaseDB.create('community_posts', {
@@ -2467,8 +2621,6 @@
             btn.textContent = '등록하기';
         }
     }
-
-    // ─── 유틸 ───
     function escHtml(str) {
         return String(str)
             .replace(/&/g, '&amp;')
