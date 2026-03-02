@@ -264,6 +264,7 @@ function resetAll() {
     state.isAnalyzing       = false;
     state.isPlaying         = false;
     state.manualChordEdits  = {};
+    state.syncOffset        = 0;
 
     _lastScrollRow = -1; _lastBarIdx = -1;
     dom.uploadSection.classList.remove('hidden');
@@ -434,10 +435,9 @@ function startRenderLoop() {
         }
 
         if (state.isAnalyzed && dom.toggleSync.checked && tabRenderer) {
-            // 악보 싱크 보정: FFT 윈도우 중앙 기준으로 분석된 시간이
-            // 실제 코드 시작보다 약 100ms 뒤에 찍히므로 미리 보정
-            const SYNC_AHEAD = 0.10; // 초 단위 (100ms)
-            const syncTime = Math.max(0, currentTime + SYNC_AHEAD);
+            // bars의 startTime은 beatOffset 보정이 적용된 값
+            // 재생 currentTime도 동일하게 보정해야 정확히 일치
+            const syncTime = Math.max(0, currentTime + (state.syncOffset || 0));
 
             const barIdx = tabRenderer.getCurrentBarIndexByTime(syncTime);
             if (barIdx !== _lastBarIdx) {
@@ -451,8 +451,8 @@ function startRenderLoop() {
         }
         // 코드 박스 동기화
         if (state.isAnalyzed && _cbState.bars.length) {
-            const SYNC_AHEAD = 0.10;
-            updateChordBoxByTime(Math.max(0, currentTime + SYNC_AHEAD));
+            const syncTime = Math.max(0, currentTime + (state.syncOffset || 0));
+            updateChordBoxByTime(syncTime);
         }
         state.animFrameId = requestAnimationFrame(loop);
     }
@@ -622,6 +622,9 @@ async function startAnalysis() {
         state.tabData      = tabData;
         state.bars         = bars;
         state.analysisData = noteSequence;
+        // 악보 싱크 보정값: extractBarChords 내부에서 계산된 beatOffset 저장
+        // bars의 startTime은 이 값이 반영된 상태 → 재생시간 비교 시 동일하게 더해줘야 함
+        state.syncOffset   = tabConverter.lastBeatOffset || 0;
 
         // 분석 도중 파일 변경됐으면 중단
         if (!state.isAnalyzing) return;

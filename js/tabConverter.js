@@ -50,8 +50,9 @@ class TabConverter {
         const barDur  = beatDur * beatsPerBar;
         const MAX_SLOTS = 4;  // 한 마디 최대 코드 수
 
-        // BPM 오프셋 보정
+        // BPM 오프셋 보정 — 외부에서 참조할 수 있도록 인스턴스에 저장
         const beatOffset = this._estimateBeatOffset(chords, bpm);
+        this.lastBeatOffset = beatOffset;  // ← main.js에서 읽을 수 있도록 저장
 
         // ── 전체 코드를 비트 단위 버킷으로 집계 ──
         // 버킷 단위: beatDur (1비트)
