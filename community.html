@@ -2262,7 +2262,8 @@
             renderPosts(posts);
             renderPagination();
         } catch (e) {
-            container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>데이터를 불러오지 못했습니다.</p></div>`;
+            console.error('[loadPosts] 에러:', e);
+            container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>데이터를 불러오지 못했습니다.<br><small style="color:#ef4444;font-size:.75rem;">${e.message}</small></p></div>`;
         }
     }
 

@@ -224,10 +224,65 @@ CREATE POLICY "bandstage_videos_delete_all"
 -- ============================================================
 
 -- ============================================================
--- [추가] community_posts 테이블에 필요한 컬럼 추가
--- (이미 있으면 에러 없이 무시됨)
+-- [community_posts] 커뮤니티 게시물 테이블 생성 + RLS
 -- ============================================================
-ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS subcategory TEXT DEFAULT '';
+CREATE TABLE IF NOT EXISTS public.community_posts (
+  id          TEXT PRIMARY KEY,
+  category    TEXT NOT NULL,
+  subcategory TEXT DEFAULT '',
+  title       TEXT NOT NULL,
+  author      TEXT NOT NULL,
+  content     TEXT,
+  location    TEXT DEFAULT '',
+  price       INTEGER,
+  contact     TEXT,
+  image_url   TEXT,
+  image_urls  TEXT[],
+  tags        TEXT[],
+  views       INTEGER DEFAULT 0,
+  likes       INTEGER DEFAULT 0,
+  status      TEXT DEFAULT 'active',
+  created_at  BIGINT DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000,
+  updated_at  BIGINT DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+ALTER TABLE public.community_posts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "cp_select_all" ON public.community_posts;
+DROP POLICY IF EXISTS "cp_insert_all" ON public.community_posts;
+DROP POLICY IF EXISTS "cp_update_all" ON public.community_posts;
+DROP POLICY IF EXISTS "cp_delete_all" ON public.community_posts;
+
+CREATE POLICY "cp_select_all" ON public.community_posts FOR SELECT USING (true);
+CREATE POLICY "cp_insert_all" ON public.community_posts FOR INSERT WITH CHECK (true);
+CREATE POLICY "cp_update_all" ON public.community_posts FOR UPDATE USING (true);
+CREATE POLICY "cp_delete_all" ON public.community_posts FOR DELETE USING (true);
+
+-- ============================================================
+-- [community_comments] 댓글 테이블 생성 + RLS
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.community_comments (
+  id          TEXT PRIMARY KEY,
+  post_id     TEXT NOT NULL,
+  parent_id   TEXT DEFAULT NULL,
+  author      TEXT NOT NULL,
+  content     TEXT NOT NULL,
+  created_at  BIGINT DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000,
+  updated_at  BIGINT DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+ALTER TABLE public.community_comments ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "cc_select_all" ON public.community_comments;
+DROP POLICY IF EXISTS "cc_insert_all" ON public.community_comments;
+DROP POLICY IF EXISTS "cc_update_all" ON public.community_comments;
+DROP POLICY IF EXISTS "cc_delete_all" ON public.community_comments;
+
+CREATE POLICY "cc_select_all" ON public.community_comments FOR SELECT USING (true);
+CREATE POLICY "cc_insert_all" ON public.community_comments FOR INSERT WITH CHECK (true);
+CREATE POLICY "cc_update_all" ON public.community_comments FOR UPDATE USING (true);
+CREATE POLICY "cc_delete_all" ON public.community_comments FOR DELETE USING (true);
+
 ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS image_url   TEXT;
 ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS image_urls  TEXT[];
 
