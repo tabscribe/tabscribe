@@ -422,6 +422,8 @@ function startRenderLoop() {
             return;
         }
         const currentTime = audioEngine.getCurrentTime();
+
+        // 진행바 · 시간 표시는 실제 재생 시간 그대로
         updateProgressUI(currentTime);
 
         _vizFrameSkip++;
@@ -432,19 +434,25 @@ function startRenderLoop() {
         }
 
         if (state.isAnalyzed && dom.toggleSync.checked && tabRenderer) {
-            const barIdx = tabRenderer.getCurrentBarIndexByTime(currentTime);
+            // 악보 싱크 보정: FFT 윈도우 중앙 기준으로 분석된 시간이
+            // 실제 코드 시작보다 약 100ms 뒤에 찍히므로 미리 보정
+            const SYNC_AHEAD = 0.10; // 초 단위 (100ms)
+            const syncTime = Math.max(0, currentTime + SYNC_AHEAD);
+
+            const barIdx = tabRenderer.getCurrentBarIndexByTime(syncTime);
             if (barIdx !== _lastBarIdx) {
                 _lastBarIdx = barIdx;
-                tabRenderer.updateTime(currentTime);
+                tabRenderer.updateTime(syncTime);
             } else {
-                tabRenderer.updatePlayheadOnly(currentTime);
+                tabRenderer.updatePlayheadOnly(syncTime);
             }
-            scrollToCurrentBar(currentTime);
-            highlightCurrentChord(currentTime);
+            scrollToCurrentBar(syncTime);
+            highlightCurrentChord(syncTime);
         }
-        // 코드 박스 동기화 (항상 업데이트)
+        // 코드 박스 동기화
         if (state.isAnalyzed && _cbState.bars.length) {
-            updateChordBoxByTime(currentTime);
+            const SYNC_AHEAD = 0.10;
+            updateChordBoxByTime(Math.max(0, currentTime + SYNC_AHEAD));
         }
         state.animFrameId = requestAnimationFrame(loop);
     }
