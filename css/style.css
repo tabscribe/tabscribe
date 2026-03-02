@@ -5102,6 +5102,30 @@ body {
     white-space: nowrap;
 }
 .nav-btn--logout:hover { background: #e5e7eb !important; color: #374151 !important; }
+
+/* 관리자 버튼 */
+.nav-admin-btn {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%) !important;
+    color: #e85d04 !important;
+    border: 1.5px solid #fdba74 !important;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    transition: all .18s;
+    white-space: nowrap;
+}
+.nav-admin-btn:hover {
+    background: linear-gradient(135deg, #fed7aa 0%, #fb923c 100%) !important;
+    color: #fff !important;
+    border-color: #f97316 !important;
+}
+
 .header-profile-btn {
     display: inline-flex !important;
     align-items: center;

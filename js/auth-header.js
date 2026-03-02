@@ -77,21 +77,33 @@ function renderHeaderAuth(session, profile) {
   const nickSpan    = document.getElementById('headerNickname');
   const mobileLogin = document.getElementById('mobileLoginBtn');
   const mobileLogout= document.getElementById('mobileLogoutBtn');
+  const adminBtn    = document.getElementById('headerAdminBtn');
+  const mobileAdmin = document.getElementById('mobileAdminBtn');
+
+  const ADMIN_EMAIL = 'jihwan8012@naver.com';
 
   if (session) {
     const nick = profile?.nickname || session.user.email.split('@')[0];
+    const isAdmin = session.user.email === ADMIN_EMAIL && profile?.is_admin === true;
+
     if (loginBtn)    { loginBtn.style.display    = 'none'; }
     if (profileBtn)  { profileBtn.style.display  = 'inline-flex'; }
     if (logoutBtn)   { logoutBtn.style.display   = 'inline-flex'; }
     if (nickSpan)    { nickSpan.textContent       = nick; }
     if (mobileLogin) { mobileLogin.style.display  = 'none'; }
     if (mobileLogout){ mobileLogout.style.display = 'block'; }
+
+    // 관리자 버튼
+    if (adminBtn)    { adminBtn.style.display    = isAdmin ? 'inline-flex' : 'none'; }
+    if (mobileAdmin) { mobileAdmin.style.display = isAdmin ? 'block' : 'none'; }
   } else {
     if (loginBtn)    { loginBtn.style.display    = 'inline-flex'; }
     if (profileBtn)  { profileBtn.style.display  = 'none'; }
     if (logoutBtn)   { logoutBtn.style.display   = 'none'; }
     if (mobileLogin) { mobileLogin.style.display  = 'block'; }
     if (mobileLogout){ mobileLogout.style.display = 'none'; }
+    if (adminBtn)    { adminBtn.style.display    = 'none'; }
+    if (mobileAdmin) { mobileAdmin.style.display = 'none'; }
   }
 }
 

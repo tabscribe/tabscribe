@@ -300,3 +300,65 @@ ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS image_urls  TEXT[];
 -- SET subcategory = 'electric'  -- 원하는 값으로 변경
 -- WHERE id = '여기에_게시물_ID_입력';
 
+-- ============================================================
+-- [관리자 설정] Admin 권한 관련 SQL
+-- Supabase Dashboard > SQL Editor 에서 실행하세요
+-- ============================================================
+
+-- 1. profiles 테이블에 is_admin 컬럼 추가
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false;
+
+-- 2. page_views 테이블 생성 (페이지 조회수 트래킹)
+CREATE TABLE IF NOT EXISTS public.page_views (
+  id          TEXT        PRIMARY KEY,
+  page        TEXT        NOT NULL,   -- 'index', 'community', 'rehearsal', 'analyze' 등
+  user_id     TEXT,                   -- NULL = 비로그인 방문자
+  session_id  TEXT,                   -- 세션 구분용
+  visited_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "pv_select_admin" ON public.page_views;
+DROP POLICY IF EXISTS "pv_insert_all"   ON public.page_views;
+
+-- 조회는 관리자만 (또는 자기 자신)
+CREATE POLICY "pv_select_admin"
+  ON public.page_views FOR SELECT
+  USING (true);  -- 클라이언트에서 is_admin 체크
+
+-- 누구나 조회수 기록 가능
+CREATE POLICY "pv_insert_all"
+  ON public.page_views FOR INSERT
+  WITH CHECK (true);
+
+-- 3. community_posts 삭제 권한: 관리자는 모든 게시물 삭제 가능
+--    (기존 cp_delete_all 정책이 이미 true이므로 추가 RLS 불필요)
+--    단, 클라이언트에서 is_admin 확인 후 삭제 버튼 표시
+
+-- 4. 관리자 계정 지정: jihwan8012@naver.com
+--    ⚠️ 아래 SQL은 반드시 회원가입 완료 후 실행하세요!
+-- ============================================================
+UPDATE public.profiles
+SET is_admin = true
+WHERE id = (
+  SELECT id FROM auth.users WHERE email = 'jihwan8012@naver.com' LIMIT 1
+);
+
+-- 실행 후 확인:
+-- SELECT p.id, u.email, p.nickname, p.is_admin
+-- FROM public.profiles p
+-- JOIN auth.users u ON u.id = p.id
+-- WHERE u.email = 'jihwan8012@naver.com';
+
+-- 5. 관리자 전용 stats 뷰 (선택 실행)
+CREATE OR REPLACE VIEW public.admin_stats AS
+SELECT
+  (SELECT COUNT(*) FROM auth.users)                              AS total_users,
+  (SELECT COUNT(*) FROM public.community_posts WHERE status='active') AS total_posts,
+  (SELECT COUNT(*) FROM public.community_comments)               AS total_comments,
+  (SELECT COUNT(*) FROM public.community_posts
+   WHERE created_at > EXTRACT(EPOCH FROM NOW() - INTERVAL '7 days') * 1000) AS posts_last_7d,
+  (SELECT COUNT(*) FROM auth.users
+   WHERE created_at > NOW() - INTERVAL '7 days')                AS new_users_7d;
+

@@ -842,6 +842,27 @@
             color: #fff;
             border-color: #dc2626;
         }
+        /* 관리자 삭제 버튼 */
+        .btn-del-card.admin-del-btn {
+            border-color: #f97316;
+            background: #fff7ed;
+            color: #ea580c;
+            display: flex; align-items: center; gap: 4px;
+            padding: 3px 8px 3px 6px;
+        }
+        .btn-del-card.admin-del-btn:hover {
+            background: #ea580c;
+            color: #fff;
+            border-color: #ea580c;
+        }
+        .admin-del-label {
+            font-size: 0.62rem; font-weight: 700;
+            background: #ea580c; color: #fff;
+            padding: 0px 4px; border-radius: 3px;
+        }
+        .btn-del-card.admin-del-btn:hover .admin-del-label {
+            background: #fff; color: #ea580c;
+        }
 
         /* 판매완료 버튼 영역 */
         .sold-out-section {
@@ -2110,12 +2131,16 @@
     // ── Auth 초기화 ──
     let currentUser = null;
     let currentProfile = null;
+    let isAdmin = false;  // 관리자 여부
+    const ADMIN_EMAIL = 'jihwan8012@naver.com';
 
     async function initAuth() {
         const session = await getSession();
         if (session) {
             currentUser = session.user;
             currentProfile = await getProfile(currentUser.id);
+            // 관리자 확인
+            isAdmin = (currentUser.email === ADMIN_EMAIL) && (currentProfile?.is_admin === true);
         }
         updateAuthUI();
     }
@@ -2529,8 +2554,8 @@
                 <img src="${escHtml(thumb)}" alt=""
                     onerror="this.parentElement.style.display='none'">
                </div>` : '';
-        const isAuthor = currentUser && currentProfile && (p.author === currentProfile.nickname);
-        const delBtn = isAuthor ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
+        const isAuthor = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtn = isAuthor ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="post-card${thumb ? ' post-card--has-img' : ''}" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             <div class="post-card-top">
@@ -2581,8 +2606,8 @@
 
         const priceLabel = p.price ? fmtPrice(p.price) : '가격 협의';
 
-        const isAuthorGear = currentUser && currentProfile && (p.author === currentProfile.nickname);
-        const delBtnGear = isAuthorGear ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
+        const isAuthorGear = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtnGear = isAuthorGear ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="gear-card${p.status === 'sold' ? ' gear-card--sold' : ''}" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${imgArea}
@@ -2618,8 +2643,8 @@
             const t = getThumbUrl(p); const c = getImgCount(p);
             return t ? `<div class="lesson-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
         })();
-        const isAuthorLesson = currentUser && currentProfile && (p.author === currentProfile.nickname);
-        const delBtnLesson = isAuthorLesson ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
+        const isAuthorLesson = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtnLesson = isAuthorLesson ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="lesson-card" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${thumbHtml}
@@ -2654,8 +2679,8 @@
             const t = getThumbUrl(p); const c = getImgCount(p);
             return t ? `<div class="recruit-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
         })();
-        const isAuthorRecruit = currentUser && currentProfile && (p.author === currentProfile.nickname);
-        const delBtnRecruit = isAuthorRecruit ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
+        const isAuthorRecruit = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtnRecruit = isAuthorRecruit ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="recruit-card" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${thumbHtml}
