@@ -2048,7 +2048,6 @@
 
     const SUBCATEGORY_OPTIONS = {
         band_recruit: [
-            { value: 'all', label: '전체' },
             { value: 'guitarist', label: '기타리스트 모집' },
             { value: 'bassist', label: '베이시스트 모집' },
             { value: 'drummer', label: '드러머 모집' },
@@ -2057,7 +2056,6 @@
             { value: 'band_join', label: '밴드 찾습니다' },
         ],
         lesson: [
-            { value: 'all', label: '전체' },
             { value: 'guitar', label: '기타 레슨' },
             { value: 'bass', label: '베이스 레슨' },
             { value: 'drum', label: '드럼 레슨' },
@@ -2065,7 +2063,6 @@
             { value: 'keyboard', label: '건반 레슨' },
         ],
         used_gear: [
-            { value: 'all', label: '전체' },
             { value: 'acoustic', label: '어쿠스틱 기타' },
             { value: 'electric', label: '일렉 기타' },
             { value: 'bass', label: '베이스 기타' },
@@ -2239,8 +2236,10 @@
                 posts = posts.filter(p => p.category === state.category);
             }
             if (state.subcategory && state.subcategory !== 'all') {
+                // 특정 서브카테고리 선택 시: 정확히 일치하는 것만 표시
                 posts = posts.filter(p => p.subcategory === state.subcategory);
             }
+            // subcategory === 'all' 이면 해당 카테고리 전체 표시 (서브카테고리 무관)
 
             // 정렬
             if (state.sort === 'views') {
@@ -2857,7 +2856,8 @@
         const opts = SUBCATEGORY_OPTIONS[cat];
         if (opts && opts.length > 0) {
             const subSel = document.getElementById('formSubcategory');
-            subSel.innerHTML = opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+            subSel.innerHTML = '<option value="">-- 세부 카테고리 선택 (선택 안 하면 전체로 등록) --</option>' +
+                opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
             subGrp.style.display = 'block';
         } else {
             subGrp.style.display = 'none';
