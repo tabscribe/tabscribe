@@ -2638,6 +2638,8 @@
                     await SupabaseDB.delete('community_posts', p.id);
                     // 로컬 state에서 제거
                     state.posts = state.posts.filter(x => x.id !== p.id);
+                    newBtn.disabled = false;
+                    newBtn.innerHTML = '<i class="fas fa-trash-alt"></i> 삭제';
                     document.getElementById('detailModal').classList.remove('open');
                     showToast('🗑️ 게시물이 삭제되었습니다.');
                     loadPosts();

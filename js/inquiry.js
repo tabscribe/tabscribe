@@ -226,6 +226,12 @@
         document.getElementById('inquiryPhone').value = '';
         document.getElementById('inquiryFormArea').style.display = '';
         document.getElementById('inquirySuccess').classList.remove('show');
+        // 전송 버튼 상태 복구
+        const submitBtn = document.getElementById('inquirySubmitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 보내기';
+        }
     }
 
     /* ── 유형 선택 ── */
