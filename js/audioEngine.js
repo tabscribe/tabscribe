@@ -92,25 +92,46 @@ class AudioEngine {
         this.duration = this.audioEl.duration || 0;
         this.isPlaying = false;
 
-        // AudioContext 초기화 (아직 없으면)
-        this._initContext();
-        // MediaElementSource 연결
-        this._connectMediaElement();
-
-        // 분석용 ArrayBuffer도 별도로 읽어둠 (analyzeFullBuffer용)
-        this.audioBuffer = null; // 아래에서 비동기로 디코딩
+        // 분석용 ArrayBuffer 먼저 디코딩 → 샘플레이트 확인
+        // AudioContext는 음원과 동일한 샘플레이트로 생성해야 피치/속도 왜곡 없음
+        this.audioBuffer = null;
         try {
             const arrayBuffer = await this._readFileAsArrayBuffer(file);
+
+            // 임시 AudioContext로 디코딩해서 샘플레이트 파악
+            const AC = window.AudioContext || window.webkitAudioContext;
+            const tmpCtx = new AC();
             this.audioBuffer = await new Promise((resolve, reject) => {
-                this.audioContext.decodeAudioData(
-                    arrayBuffer,
-                    buf => resolve(buf),
-                    err => reject(err)
-                );
+                tmpCtx.decodeAudioData(arrayBuffer, buf => resolve(buf), err => reject(err));
             });
+            const fileSampleRate = this.audioBuffer.sampleRate;
+            tmpCtx.close().catch(() => {});
+
+            // 기존 AudioContext가 없거나 샘플레이트가 다르면 새로 생성
+            if (!this.audioContext || this.audioContext.sampleRate !== fileSampleRate) {
+                if (this.audioContext) {
+                    // 기존 sourceNode 연결 해제 후 context 교체
+                    this.sourceNode = null;
+                    this.audioContext.close().catch(() => {});
+                }
+                this.audioContext = new AC({ sampleRate: fileSampleRate });
+                this.analyserNode = this.audioContext.createAnalyser();
+                this.analyserNode.fftSize = this.fftSize;
+                this.analyserNode.smoothingTimeConstant = 0.3;
+                this.gainNode = this.audioContext.createGain();
+                this.gainNode.gain.value = this.volume;
+                this.analyserNode.connect(this.gainNode);
+                this.gainNode.connect(this.audioContext.destination);
+                this.sourceNode = null; // context 바뀌었으므로 재연결 필요
+            }
         } catch(e) {
             console.warn('[AudioEngine] 분석용 버퍼 디코딩 실패 (재생에는 영향 없음):', e);
+            // AudioContext가 없으면 기본으로 생성
+            this._initContext();
         }
+
+        // MediaElementSource 연결 (context가 준비된 후)
+        this._connectMediaElement();
 
         return this.audioBuffer;
     }
