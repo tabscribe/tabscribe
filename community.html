@@ -1860,8 +1860,9 @@
                 </select>
             </div>
             <div class="form-group" id="subCatGroup" style="display:none;">
-                <label>세부 카테고리</label>
+                <label id="subCatLabel">세부 카테고리 <span id="subCatRequired" style="color:#ef4444;font-size:.85rem;">* (필수 선택)</span></label>
                 <select id="formSubcategory"></select>
+                <p id="subCatHint" style="font-size:.78rem;color:#ef4444;margin-top:4px;display:none;">⚠️ 세부 카테고리를 선택해야 해당 메뉴에서 게시물이 보입니다.</p>
             </div>
             <div class="form-group">
                 <label>제목 *</label>
@@ -2237,7 +2238,12 @@
             }
             if (state.subcategory && state.subcategory !== 'all') {
                 // 특정 서브카테고리 선택 시: 정확히 일치하는 것만 표시
-                posts = posts.filter(p => p.subcategory === state.subcategory);
+                // DB에 저장된 값이 null/undefined/빈문자열 인 경우도 처리
+                console.log('[loadPosts] 서브카테고리 필터:', state.subcategory, '/ 전체 게시물 subcategory 값:', posts.map(p => p.subcategory));
+                posts = posts.filter(p => {
+                    const pSub = (p.subcategory || '').trim();
+                    return pSub === state.subcategory;
+                });
             }
             // subcategory === 'all' 이면 해당 카테고리 전체 표시 (서브카테고리 무관)
 
@@ -2858,9 +2864,16 @@
         const opts = SUBCATEGORY_OPTIONS[cat];
         if (opts && opts.length > 0) {
             const subSel = document.getElementById('formSubcategory');
-            subSel.innerHTML = '<option value="">-- 세부 카테고리 선택 (선택 안 하면 전체로 등록) --</option>' +
+            // 중고장터는 필수, 나머지는 선택
+            const isRequired = (cat === 'used_gear');
+            subSel.innerHTML = `<option value="">-- 세부 카테고리 ${isRequired ? '선택 (필수)' : '선택 (선택사항)'} --</option>` +
                 opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
             subGrp.style.display = 'block';
+            // 필수 안내 표시 여부
+            const reqEl = document.getElementById('subCatRequired');
+            const hintEl = document.getElementById('subCatHint');
+            if (reqEl) reqEl.style.display = isRequired ? 'inline' : 'none';
+            if (hintEl) hintEl.style.display = isRequired ? 'block' : 'none';
         } else {
             subGrp.style.display = 'none';
         }
@@ -2899,6 +2912,12 @@
         if (cat === 'used_gear') {
             const price = document.getElementById('formPrice').value;
             const contact = document.getElementById('formContact').value.trim();
+            const subSelCheck = document.getElementById('formSubcategory');
+            if (!subSelCheck || !subSelCheck.value) {
+                showToast('⚠️ 중고장터는 세부 카테고리(일렉기타, 베이스 등)를 선택해주세요.\n선택해야 해당 메뉴에서 게시물이 보입니다!');
+                document.getElementById('formSubcategory')?.focus();
+                return;
+            }
             if (!price || parseInt(price) <= 0) {
                 showToast('⚠️ 중고장터는 판매 가격을 입력해주세요.');
                 return;
@@ -2910,8 +2929,9 @@
         }
 
         const subSel = document.getElementById('formSubcategory');
-        const subcat = subSel && document.getElementById('subCatGroup').style.display !== 'none'
-            ? subSel.value : '';
+        // subCatGroup이 표시 중이고 실제 값이 선택되었을 때만 서브카테고리 저장
+        const subcat = (subSel && document.getElementById('subCatGroup').style.display !== 'none' && subSel.value)
+            ? subSel.value.trim() : '';
         const location= document.getElementById('formLocation').value.trim();
         const price   = document.getElementById('priceGroup').style.display !== 'none'
             ? parseInt(document.getElementById('formPrice').value) || 0 : 0;
@@ -2941,6 +2961,7 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 등록 중...';
 
         try {
+            console.log('[submitPost] 저장 데이터:', { category: cat, subcategory: subcat });
             await SupabaseDB.create('community_posts', {
                 category: cat,
                 subcategory: subcat,
@@ -2957,11 +2978,19 @@
 
             closeWriteModal();
             showToast('✅ 게시글이 등록되었습니다!');
-            // 해당 카테고리로 이동
+            // 해당 카테고리(+서브카테고리)로 이동
             state.category = cat;
-            state.subcategory = 'all';
+            state.subcategory = subcat || 'all';
             state.page = 1;
-            updateCategoryTitle(cat, 'all');
+            updateCategoryTitle(cat, state.subcategory);
+            // 사이드바 버튼 active 동기화
+            const targetSub = state.subcategory;
+            const activeBtn = document.querySelector(
+                `.comm-sidebar button[data-cat="${cat}"][data-sub="${targetSub}"]`
+            ) || document.querySelector(
+                `.comm-sidebar button[data-cat="${cat}"][data-sub="all"]`
+            );
+            if (activeBtn) setActiveMenuBtn(activeBtn);
             loadPosts();
             updateTotalCount();
         } catch (err) {

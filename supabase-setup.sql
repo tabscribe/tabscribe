@@ -222,3 +222,26 @@ CREATE POLICY "bandstage_videos_delete_all"
 -- ============================================================
 -- 완료! 위 SQL을 모두 실행한 뒤 회원가입·평가·영상 등록 테스트를 진행하세요.
 -- ============================================================
+
+-- ============================================================
+-- [추가] community_posts 테이블에 필요한 컬럼 추가
+-- (이미 있으면 에러 없이 무시됨)
+-- ============================================================
+ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS subcategory TEXT DEFAULT '';
+ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS image_url   TEXT;
+ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS image_urls  TEXT[];
+
+-- ============================================================
+-- [데이터 수정] 기존에 subcategory가 NULL 또는 빈 문자열로
+-- 저장된 중고장터 게시물을 확인하는 쿼리
+-- (아래 SELECT를 먼저 실행해서 subcategory 값을 확인하세요)
+-- ============================================================
+-- SELECT id, title, category, subcategory FROM public.community_posts
+-- WHERE category = 'used_gear'
+-- ORDER BY created_at DESC;
+
+-- subcategory가 비어있는 중고장터 게시물을 직접 수정하려면:
+-- UPDATE public.community_posts
+-- SET subcategory = 'electric'  -- 원하는 값으로 변경
+-- WHERE id = '여기에_게시물_ID_입력';
+
