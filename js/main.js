@@ -622,9 +622,14 @@ async function startAnalysis() {
         state.tabData      = tabData;
         state.bars         = bars;
         state.analysisData = noteSequence;
-        // 악보 싱크 보정값: extractBarChords 내부에서 계산된 beatOffset 저장
-        // bars의 startTime은 이 값이 반영된 상태 → 재생시간 비교 시 동일하게 더해줘야 함
-        state.syncOffset   = tabConverter.lastBeatOffset || 0;
+        // 악보 싱크 보정값 계산:
+        // ① beatOffset: extractBarChords의 비트 격자 정렬값
+        // ② FFT 윈도우 보정: fftLarge(8192) 윈도우의 중앙이 실제 코드 시점
+        //    time은 윈도우 시작 기준으로 찍히므로 절반(4096 샘플)만큼 앞당겨짐
+        //    4096 / sampleRate ≈ 0.093초 → 악보가 음원보다 93ms 느려 보임
+        const sampleRate   = audioEngine.audioBuffer?.sampleRate || 44100;
+        const fftWindowAdj = 4096 / sampleRate;  // ≈ 0.093초
+        state.syncOffset   = (tabConverter.lastBeatOffset || 0) + fftWindowAdj;
 
         // 분석 도중 파일 변경됐으면 중단
         if (!state.isAnalyzing) return;
