@@ -102,12 +102,12 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .hero-stat-num{font-size:.95rem;font-weight:900;color:var(--purple);}
 .hero-stat-label{font-size:.65rem;color:var(--muted);font-weight:600;margin-top:0;}
 
-/* ── 3컬럼 페이지 레이아웃 ── */
-.page-layout{max-width:1500px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:190px 1fr 190px;gap:22px;align-items:start;}
+/* ── 페이지 레이아웃 ── */
+.page-layout{max-width:1080px;margin:0 auto;padding:28px 24px 80px;}
 .container{min-width:0;}
 
-/* ── 사이드 패널 공통 ── */
-.side-panel{display:flex;flex-direction:column;gap:16px;position:sticky;top:72px;}
+/* ── 사이드 패널 공통 (미사용, 호환성 유지) ── */
+.side-panel{display:none;}
 
 /* 위젯 (정보 패널) */
 .side-widget{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);}
@@ -129,12 +129,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .side-link:hover{background:var(--purple-lt);color:var(--purple);}
 .side-link i{width:14px;text-align:center;flex-shrink:0;}
 
-@media(max-width:1100px){
-  .page-layout{grid-template-columns:180px 1fr 180px;gap:14px;}
-}
 @media(max-width:860px){
-  .page-layout{grid-template-columns:1fr;padding:16px 12px 60px;}
-  .side-panel{display:none;}
+  .page-layout{padding:16px 12px 60px;}
 }
 
 .filter-bar{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
@@ -469,14 +465,14 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
       </div>
     </div>
   </div>
-  <!-- 코드덕쿠 홍보 이미지 배너 -->
-  <a href="community.html?cat=band" class="page-promo-banner">
-    <img src="images/banner-venue.jpg" alt="코드덕쿠 서울 음악 공간 정보">
+  <!-- 광고 배너 -->
+  <a href="https://gopherwood.co.kr/product/detail.html?product_no=528" target="_blank" rel="noopener" class="page-promo-banner">
+    <img src="images/oil-real-single.jpg" alt="고퍼우드 헤리티지 우디 오일">
     <div class="page-promo-banner-overlay">
-      <span class="page-promo-banner-label">✦ Codeducku 서비스 소개</span>
-      <span class="page-promo-banner-title">서울 음악 공간 정보 한눈에!</span>
-      <span class="page-promo-banner-sub">합주실 · 리페어샵 · 악기샵 · 음악학원 · 공연장 — 위치 · 가격 · 예약 정보 제공</span>
-      <span class="page-promo-banner-cta">밴드 구인구직 보기 →</span>
+      <span class="page-promo-banner-label">✦ AD · GOPHERWOOD</span>
+      <span class="page-promo-banner-title">공연 전, 기타 컨디션을 최상으로 — 우디 오일</span>
+      <span class="page-promo-banner-sub">지판 보습 · 크랙 방지 · 빈티지 향 — 공연 전 필수 기타 케어</span>
+      <span class="page-promo-banner-cta">제품 보러 가기 →</span>
     </div>
   </a>
   <div class="filter-bar">

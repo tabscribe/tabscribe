@@ -3,43 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#e85d04">
+    <meta name="theme-color" content="#7c3aed">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="icon" href="images/og-thumbnail.png" type="image/png">
     <link rel="apple-touch-icon" href="images/og-thumbnail.png">
-    <title>코드덕쿠 - 기타리스트를 위한 음악 커뮤니티</title>
+    <title>음원 분석 — 코드덕쿠</title>
 
-    <!-- SEO / 링크 미리보기 OG 태그 -->
-    <meta name="description" content="음원 파일을 등록하면 음원 코드를 자동으로 분석해서 기타 코드를 알려드려요. 합주실·리페어샵·악기샵·공연장 정보와 뮤지션 커뮤니티까지. 코드덕쿠(코드덕후)에서 만나보세요.">
-
-    <!-- Open Graph (카카오톡·페이스북·슬랙 등 링크 미리보기) -->
-    <meta property="og:type"        content="website">
-    <meta property="og:title"       content="코드덕쿠 - 기타리스트를 위한 음악 커뮤니티">
-    <meta property="og:description" content="음원 파일을 등록하면 코드를 자동 분석! 합주실·리페어샵·악기샵·공연장 정보 + 뮤지션 커뮤니티. 코드덕쿠(코덕)에서 무료로 사용해보세요.">
-    <meta property="og:image"       content="https://www.genspark.ai/api/files/s/EsaPAYLv" id="ogImage">
-    <meta property="og:image:width"  content="800">
-    <meta property="og:image:height" content="800">
-    <meta property="og:image:alt"   content="코드덕쿠 Codeducku 로고">
-    <meta property="og:locale"      content="ko_KR">
-    <meta property="og:site_name"   content="코드덕쿠 by COODUCK">
-
-    <!-- Twitter Card (트위터·X 미리보기) -->
-    <meta name="twitter:card"        content="summary_large_image">
-    <meta name="twitter:title"       content="코드덕쿠 - 기타리스트를 위한 음악 커뮤니티">
-    <meta name="twitter:description" content="음원 파일을 등록하면 코드를 자동 분석해드려요. 합주실·리페어샵·악기샵 정보와 뮤지션 커뮤니티. 코드덕쿠.">
-    <meta name="twitter:image"       content="https://www.genspark.ai/api/files/s/EsaPAYLv" id="twitterImage">
-
-    <!-- 검색엔진 최적화 (SEO) 추가 메타태그 -->
+    <meta name="description" content="MP3, WAV, OGG 등 음원 파일을 업로드하면 기타 코드를 자동으로 분석합니다. 브라우저 안에서만 처리되어 파일이 외부로 전송되지 않습니다.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="음원 분석 — 코드덕쿠">
+    <meta property="og:description" content="MP3 파일을 업로드하면 기타 코드를 자동 분석! 어쿠스틱·파워코드·트라이어드·베이스 코드폼 지원. 로컬 처리로 파일 미전송.">
+    <meta property="og:image" content="https://www.genspark.ai/api/files/s/EsaPAYLv">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:site_name" content="코드덕쿠 by COODUCK">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="음원 분석 — 코드덕쿠">
+    <meta name="twitter:description" content="MP3 파일 업로드 → 기타 코드 자동 분석. 파일 미전송. 코드덕쿠.">
+    <meta name="twitter:image" content="https://www.genspark.ai/api/files/s/EsaPAYLv">
     <meta name="robots" content="index, follow">
     <meta name="author" content="COODUCK">
-    <meta name="keywords" content="코드덕쿠, 코드덕후, 코덕, Codeducku, 음악커뮤니티, 뮤지션커뮤니티, 쿠슐랭가이드, 쿠슐랭, 기타 커뮤니티, 기타 코드, 코드 악보, 음원 분석, 기타 초보, 합주실, 리페어샵, 악기샵, 공연장, 음악학원, 밴드 구인, 중고악기">
-    <link rel="canonical" href="https://codeducku.vercel.app/">
-
-    <!-- Google Search Console 소유권 인증 -->
+    <meta name="keywords" content="음원 분석, 기타 코드, 코드 악보, MP3 분석, 기타 코드 자동 생성, 코드덕쿠, Codeducku">
+    <link rel="canonical" href="https://codeducku.vercel.app/analyze.html">
     <meta name="google-site-verification" content="y_LIOep_Kgw8SPVqt4XB5oCKlfscobw2V2fkQV2J6HM" />
-
-    <!-- Naver Search Advisor 소유권 인증 -->
     <meta name="naver-site-verification" content="72f154aec62c295b28b8f27b077b8c961e862892" />
 
     <link rel="stylesheet" href="css/style.css">
@@ -48,21 +34,57 @@
         from { opacity: 0; transform: translateX(-50%) translateY(16px); }
         to   { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
+    /* analyze.html 전용 — 분석 섹션을 항상 표시 */
+    .upload-section { display: block !important; }
+    .intro-section  { display: none !important; }
+    /* playerSection은 main.js가 파일 선택 후 hidden 클래스를 제거해서 표시함 */
+
+    /* 히어로 배너 */
+    .analyze-hero {
+        background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 50%, #0f172a 100%);
+        padding: 28px 24px 20px;
+        text-align: center;
+        border-bottom: 1px solid rgba(124,58,237,.3);
+    }
+    .analyze-hero-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(124,58,237,.25); border: 1px solid rgba(124,58,237,.5);
+        color: #c4b5fd; border-radius: 20px; padding: 4px 14px;
+        font-size: .72rem; font-weight: 800; letter-spacing: .06em;
+        margin-bottom: 10px;
+    }
+    .analyze-hero h1 {
+        font-size: 1.6rem; font-weight: 900; color: #fff;
+        margin-bottom: 6px; line-height: 1.3;
+    }
+    .analyze-hero h1 span { color: #a78bfa; }
+    .analyze-hero p {
+        font-size: .83rem; color: #94a3b8; max-width: 560px;
+        margin: 0 auto 10px; line-height: 1.6;
+    }
+    .analyze-hero-chips {
+        display: flex; flex-wrap: wrap; justify-content: center;
+        gap: 6px; margin-top: 10px;
+    }
+    .analyze-hero-chip {
+        background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+        color: #cbd5e1; border-radius: 20px; padding: 4px 12px;
+        font-size: .7rem; font-weight: 700;
+    }
+    /* 파일 업로드 드롭존을 히어로 아래 잘 보이게 */
+    .main { padding-top: 0; }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="js/ads.js"></script>
-    <!-- EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <!-- 문의하기 팝업 -->
     <script src="js/inquiry.js"></script>
 </head>
-<body class="is-home">
+<body>
     <!-- Header -->
     <header class="header">
         <div class="header-inner">
-            <!-- 상단줄: 로고 + 로그인 박스 -->
             <div class="header-top-row">
                 <a href="index.html" class="logo" aria-label="코드덕쿠 홈으로 이동">
                     <i class="fas fa-guitar"></i>
@@ -71,12 +93,10 @@
                         <span class="logo-ko">코드덕쿠</span>
                     </div>
                 </a>
-                <!-- 포트폴리오 소개 버튼 — 로고 바로 옆 -->
                 <a href="portfolio.html" class="nav-portfolio-btn" id="navPortfolioBtn" title="코드덕쿠를 소개합니다">
                     <i class="fas fa-address-card"></i>
                     <span>코드덕쿠 소개</span>
                 </a>
-                <!-- Auth 버튼 오른쪽 상단 -->
                 <div class="header-login-box">
                     <div class="header-auth-btns" id="headerAuthArea">
                         <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn">
@@ -89,18 +109,15 @@
                         <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()">
                             <i class="fas fa-sign-out-alt"></i> 로그아웃
                         </button>
-                        <!-- 관리자 버튼: JS로 표시/숨김 -->
                         <a href="admin.html" class="nav-btn nav-admin-btn" id="headerAdminBtn" style="display:none">
                             <i class="fas fa-shield-halved"></i> 관리자
                         </a>
                     </div>
                 </div>
-                <!-- 햄버거 버튼 (모바일) -->
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
                     <span></span><span></span><span></span>
                 </button>
             </div>
-            <!-- 하단줄: 챕터 네비게이션 -->
             <nav class="header-nav" id="headerNav">
                 <div class="header-nav-row1">
                     <div class="nav-info-group">
@@ -112,7 +129,7 @@
                     </div>
                     <div class="nav-service-group">
                         <a href="score.html" class="nav-btn"><i class="fas fa-file-pdf"></i> 악보공유</a>
-                        <a href="analyze.html" class="nav-btn"><i class="fas fa-waveform-path"></i> 음원분석</a>
+                        <a href="analyze.html" class="nav-btn active"><i class="fas fa-waveform-path"></i> 음원분석</a>
                     </div>
                 </div>
                 <div class="header-nav-row2">
@@ -144,7 +161,7 @@
             <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
             <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#7c3aed;letter-spacing:.04em;">🎵 코덕서비스</div>
             <a href="score.html" class="mobile-menu-item"><i class="fas fa-file-pdf" style="color:#6d28d9"></i> 악보공유</a>
-            <a href="analyze.html" class="mobile-menu-item"><i class="fas fa-waveform-path" style="color:#7c3aed"></i> 음원분석</a>
+            <a href="analyze.html" class="mobile-menu-item" style="font-weight:800;color:#7c3aed;"><i class="fas fa-waveform-path" style="color:#7c3aed"></i> 음원분석</a>
             <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
             <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#ea580c;letter-spacing:.04em;">💬 커뮤니티</div>
             <a href="community.html" class="mobile-menu-item"><i class="fas fa-comment-dots" style="color:#f97316"></i> 자유게시판</a>
@@ -167,250 +184,66 @@
         </div>
     </header>
 
+    <!-- 히어로 배너 -->
+    <div class="analyze-hero">
+        <div class="analyze-hero-badge">
+            <i class="fas fa-waveform-path"></i> BETA · 음원 분석
+        </div>
+        <h1>내 음원 파일 <span>분석하기</span></h1>
+        <p>음원을 업로드하면 자동으로 기타 코드를 감지합니다.<br>브라우저 안에서만 처리되어 파일이 외부로 전송되지 않습니다.</p>
+        <div class="analyze-hero-chips">
+            <span class="analyze-hero-chip"><i class="fas fa-music"></i> MP3 · WAV · OGG · FLAC · M4A</span>
+            <span class="analyze-hero-chip"><i class="fas fa-lock"></i> 로컬 처리 · 파일 미전송</span>
+            <span class="analyze-hero-chip"><i class="fas fa-guitar"></i> 어쿠스틱 · 파워 · 트라이어드 · 베이스</span>
+        </div>
+    </div>
+
     <main class="main">
-        <!-- iOS Safari용 hidden <audio> 태그 — ObjectURL 재생 전용 -->
+        <!-- iOS Safari용 hidden <audio> 태그 -->
         <audio id="audioPlayer" playsinline webkit-playsinline preload="metadata" style="display:none;"></audio>
-        <!-- Upload Section (JS hidden 토글 래퍼 — 광고는 intro-section으로 이동) -->
-        <section class="upload-section" id="uploadSection" style="display:none;"></section>
 
-        <!-- ═══════════════════════════════════════════
-             사이트 소개 섹션 (업로드 섹션 바로 아래)
-        ════════════════════════════════════════════ -->
-        <section class="intro-section" id="introSection">
-            <div class="intro-layout">
-
-            <div class="intro-inner">
-
-                <!-- 섹션 헤더 -->
-                <div class="intro-header">
-                    <div class="intro-header-badge"><i class="fas fa-guitar"></i> Codeducku</div>
-                    <h2 class="intro-header-title">기타 초보자를 위한 공간</h2>
-                    <p class="intro-header-sub">코드부터 정보까지, 필요한 모든 것을 한곳에서</p>
+        <!-- Upload Section — fileInput·dropZone은 main.js에서 필수 참조 -->
+        <section class="upload-section" id="uploadSection">
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-inner">
+                    <i class="fas fa-cloud-upload-alt drop-icon"></i>
+                    <p class="drop-text">파일을 여기에 끌어다 놓거나</p>
+                    <label for="fileInput" class="btn-upload">
+                        <i class="fas fa-folder-open"></i> 파일 선택
+                    </label>
+                    <input type="file" id="fileInput"
+                        accept=".mp3,.m4a,.aac,.wav,.ogg,.flac,audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav,audio/ogg,audio/flac,audio/*"
+                        hidden>
+                    <p class="drop-hint">MP3, M4A, WAV, OGG, FLAC 지원</p>
+                    <p class="ios-hint" id="iosHint" style="display:none;">
+                        <i class="fas fa-apple-alt"></i>
+                        iPhone/iPad: <strong>MP3 또는 M4A</strong> 파일을 권장합니다.<br>
+                        OGG·FLAC은 Safari에서 지원되지 않을 수 있습니다.
+                    </p>
                 </div>
-
-                <!-- 음원 분석 섹션 타이틀 -->
-                <div class="intro-analyze-head">
-                    <div class="intro-analyze-head-left">
-                        <div class="intro-analyze-badge">
-                            <span class="intro-analyze-badge-dot"></span>
-                            BETA
-                        </div>
-                        <h2 class="intro-analyze-title">
-                            내 음원 파일 <span>분석하기</span>
-                        </h2>
-                    </div>
-                    <p class="intro-analyze-sub">음원을 업로드하면 자동으로 기타 코드를 감지합니다 — 브라우저 안에서만 처리되어 파일이 외부로 전송되지 않습니다</p>
-                </div>
-
-                <!-- 2열: 왼쪽 안내문 + 오른쪽 파일선택 -->
-                <div class="intro-upload-row">
-
-                    <!-- 왼쪽: 안내 패널 -->
-                    <div class="intro-info-panel">
-                        <div>
-                            <div class="intro-info-badges" style="margin-bottom:14px;">
-                                <span class="intro-info-badge"><i class="fas fa-music"></i> MP3 · WAV · OGG · FLAC · M4A</span>
-                            </div>
-                            <h3 class="intro-info-title">MP3 파일을 <span class="accent-orange">분석해 보세요</span></h3>
-                        </div>
-                        <p class="intro-info-desc">
-                            음악 파일을 업로드하면 자동으로 <strong>기타 코드 악보</strong>를 생성합니다.<br>
-                            어쿠스틱 · 파워코드 · 트라이어드 · 베이스 코드폼을 지원하며,
-                            분석 결과를 보며 직접 수정도 가능합니다.
-                        </p>
-                        <div class="intro-info-badges">
-                            <span class="intro-info-badge"><i class="fas fa-guitar"></i> 어쿠스틱</span>
-                            <span class="intro-info-badge"><i class="fas fa-bolt"></i> 파워코드</span>
-                            <span class="intro-info-badge"><i class="fas fa-fire"></i> 트라이어드</span>
-                            <span class="intro-info-badge"><i class="fas fa-wave-square"></i> 베이스</span>
-                        </div>
-                        <div class="intro-info-notice">
-                            <i class="fas fa-mobile-alt"></i>
-                            휴대폰에서는 DRM이 걸린 파일은 업로드가 불가능할 수 있습니다.
-                        </div>
-                    </div>
-
-                    <!-- 오른쪽: 파일선택 카드 -->
-                    <div class="intro-upload-card">
-                        <div class="upload-icon-wrap">
-                            <i class="fas fa-music"></i>
-                        </div>
-                        <div class="drop-zone" id="dropZone">
-                            <div class="drop-zone-inner">
-                                <i class="fas fa-cloud-upload-alt drop-icon"></i>
-                                <p class="drop-text">파일을 여기에 끌어다 놓거나</p>
-                                <label for="fileInput" class="btn-upload">
-                                    <i class="fas fa-folder-open"></i> 파일 선택
-                                </label>
-                                <!-- iOS Safari: audio/* 단독 사용 시 Files 앱도 열림. MIME + 확장자 모두 명시 -->
-                                <input type="file" id="fileInput"
-                                    accept=".mp3,.m4a,.aac,.wav,.ogg,.flac,audio/mpeg,audio/mp4,audio/x-m4a,audio/aac,audio/wav,audio/ogg,audio/flac,audio/*"
-                                    hidden>
-                                <p class="drop-hint">MP3, M4A, WAV, OGG, FLAC 지원</p>
-                                <!-- iOS 전용 안내 (JS로 표시) -->
-                                <p class="ios-hint" id="iosHint" style="display:none;">
-                                    <i class="fas fa-apple-alt"></i>
-                                    iPhone/iPad: <strong>MP3 또는 M4A</strong> 파일을 권장합니다.<br>
-                                    OGG·FLAC은 Safari에서 지원되지 않을 수 있습니다.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div><!-- /intro-upload-row -->
-
-                <!-- 광고 배너 행 (intro-inner 전체 너비) -->
-                <div class="intro-ad-row">
-                    <a href="https://gopherwood.co.kr" target="_blank" class="intro-ad-slot promo-hero" title="GOPHERWOOD Heritage Woody Oil" style="text-decoration:none;border-radius:14px;">
-                        <div class="promo-hero-img-wrap" style="min-width:220px;">
-                            <img src="images/oil-banner-hero.jpg" alt="Heritage Woody Oil" class="promo-hero-img">
-                        </div>
-                        <div class="promo-hero-body">
-                            <div class="promo-brand">GOPHERWOOD</div>
-                            <div class="promo-hero-title">
-                                기타를 위한 <em>헤리티지 우디 오일</em><br>
-                                <span style="font-size:0.95rem;font-weight:700;color:#e0ccaa;">당신의 기타가 오래도록 빛나도록</span>
-                            </div>
-                            <div class="promo-hero-desc">
-                                100% 국내 생산 · 알코올 프리 · 빈티지 향수 향기<br>
-                                클린&amp;폴리시 + 수분 보호 + 프리미엄 프래그런스, 한 번에
-                            </div>
-                            <div class="promo-tags">
-                                <span class="promo-tag promo-tag--gold">✦ PREMIUM CONDITIONING</span>
-                                <span class="promo-tag promo-tag--green">✦ ALCOHOL FREE</span>
-                                <span class="promo-tag promo-tag--white">✦ VINTAGE GUITAR PERFUME</span>
-                                <span class="promo-tag promo-tag--white">✦ MADE IN KOREA</span>
-                            </div>
-                            <div class="promo-hero-cta">자세히 보기 →</div>
-                        </div>
-                    </a>
-                </div><!-- /intro-ad-row -->
-
-                <!-- 카드 3열 그리드 -->
-                <div class="intro-cards">
-
-                    <!-- 카드 1 — 안전합니다 -->
-                    <div class="intro-card intro-card--safe">
-                        <div class="intro-card-icon-wrap">
-                            <span class="intro-card-icon">🔒</span>
-                        </div>
-                        <div class="intro-card-tag">PRIVACY</div>
-                        <h3 class="intro-card-title">안전합니다</h3>
-                        <p class="intro-card-body">
-                            코드덕쿠는 음원 파일을 서버로 전송하지 않습니다.<br>
-                            모든 분석은 <strong>내 PC 안에서만</strong> 이루어지기 때문에
-                            무분별한 파일 전송으로 인한 <em>데이터 유출</em>이나
-                            <em>저작권 분쟁</em>에 대한 걱정 없이 자유롭게 사용하실 수 있습니다.
-                        </p>
-                        <div class="intro-card-chips">
-                            <span class="intro-chip intro-chip--green"><i class="fas fa-check-circle"></i> 로컬 분석</span>
-                            <span class="intro-chip intro-chip--green"><i class="fas fa-shield-alt"></i> 파일 미전송</span>
-                            <span class="intro-chip intro-chip--green"><i class="fas fa-lock"></i> 저작권 안전</span>
-                        </div>
-                    </div>
-
-                    <!-- 카드 2 — 개선 중 -->
-                    <div class="intro-card intro-card--wip">
-                        <div class="intro-card-icon-wrap">
-                            <span class="intro-card-icon">🔧</span>
-                        </div>
-                        <div class="intro-card-tag">IN PROGRESS</div>
-                        <h3 class="intro-card-title">계속 개선 중입니다</h3>
-                        <p class="intro-card-body">
-                            현재 음원 분석 정확도는 아직 개선이 필요한 단계입니다.
-                            정확도를 높이려면 AI 연동이 필요한데,
-                            <strong>개인 운영 사이트</strong>라 비용 부담이 큰 상황입니다.<br><br>
-                            사이트에 수익이 생기면 <em>AI 연동은 물론 다양한 서비스</em>를
-                            추가할 계획입니다. 많은 관심과 이용이 큰 힘이 됩니다! 🙏
-                        </p>
-                        <div class="intro-card-chips">
-                            <span class="intro-chip intro-chip--orange"><i class="fas fa-robot"></i> AI 연동 예정</span>
-                            <span class="intro-chip intro-chip--orange"><i class="fas fa-chart-line"></i> 지속 업데이트</span>
-                        </div>
-                    </div>
-
-                    <!-- 카드 3 — 코드덕쿠란? -->
-                    <div class="intro-card intro-card--about">
-                        <div class="intro-card-icon-wrap">
-                            <span class="intro-card-icon">🎸</span>
-                        </div>
-                        <div class="intro-card-tag">ABOUT</div>
-                        <h3 class="intro-card-title">코드덕쿠란?</h3>
-                        <p class="intro-card-body">
-                            기타·밴드 입문 시절, 코드 잡는 법, 합주실 예약,
-                            악기 리페어샵 찾기… 정보를 구하기가 너무 막막했습니다.
-                            지금은 정보가 너무 많아 오히려 <strong>더 못 찾는 상황</strong>을 자주 봅니다.<br><br>
-                            그래서 <em>초보자를 위한 정보 공유 &amp; 커뮤니티 사이트</em>를
-                            만들었습니다. 아직 부족하지만 자주 방문해 주시고
-                            커뮤니티에서 교류해 주신다면, 재미있고 유익한 공간으로
-                            꼭 성장시키겠습니다. 💪
-                        </p>
-                        <div class="intro-card-chips">
-                            <span class="intro-chip intro-chip--blue"><i class="fas fa-users"></i> 커뮤니티</span>
-                            <span class="intro-chip intro-chip--blue"><i class="fas fa-map-marker-alt"></i> 합주실·리페어샵</span>
-                            <span class="intro-chip intro-chip--blue"><i class="fas fa-music"></i> 코드 정보</span>
-                        </div>
-                    </div>
-
-                </div><!-- /intro-cards -->
-
-                <!-- 광고 배너 -->
-                <a href="https://cooduck.co.kr/" target="_blank" rel="noopener" class="page-promo-banner" style="margin-top:16px;">
-                  <img src="images/oil-banner-hero.jpg" alt="쿠덕 기타 오일 유지보수">
-                  <div class="page-promo-banner-overlay">
-                    <span class="page-promo-banner-label">✦ AD · 쿠덕 (COODUCK)</span>
-                    <span class="page-promo-banner-title">내 기타, 오래도록 — 쿠덕 우디 오일</span>
-                    <span class="page-promo-banner-sub">비임상 검증 · 파라핀 오일 베이스 · 지판 보습 & 크랙 방지 · 국내 제조</span>
-                    <span class="page-promo-banner-cta">제품 보러 가기 →</span>
-                  </div>
-                </a>
-
-                <!-- 하단 CTA 바 -->
-                <div class="intro-cta-bar">
-                    <a href="community.html" class="intro-cta-btn intro-cta-btn--primary">
-                        <i class="fas fa-users"></i> 커뮤니티 가기
-                    </a>
-                    <a href="rehearsal.html" class="intro-cta-btn intro-cta-btn--secondary">
-                        <i class="fas fa-music"></i> 합주실 찾기
-                    </a>
-                    <a href="repair.html" class="intro-cta-btn intro-cta-btn--secondary">
-                        <i class="fas fa-tools"></i> 리페어샵 찾기
-                    </a>
-                    <a href="instrument.html" class="intro-cta-btn intro-cta-btn--secondary">
-                        <i class="fas fa-guitar"></i> 악기샵 찾기
-                    </a>
-                </div>
-
-            </div><!-- /intro-inner -->
-
-            </div><!-- /intro-layout -->
+            </div>
         </section>
-        <!-- /소개 섹션 -->
 
-        <!-- Player & Analysis Section (hidden until file loaded) -->
+        <!-- intro-section은 이 페이지에서 숨김 처리 -->
+        <section class="intro-section" id="introSection" style="display:none;"></section>
+
+        <!-- Player & Analysis Section -->
         <section class="player-section hidden" id="playerSection">
 
-            <!-- 플레이어 레이아웃 -->
             <div class="player-layout">
-
-            <!-- 중앙 컨텐츠 -->
             <div class="player-content">
 
-            <!-- ★ 컴팩트 플레이어 바 (파일명 + 재생컨트롤 + BPM/Key 한 줄) -->
+            <!-- 컴팩트 플레이어 바 -->
             <div class="compact-player-bar" id="compactPlayerBar">
                 <div class="cpb-left">
-                    <!-- 재생 버튼 -->
                     <button class="btn-play" id="btnPlay" title="재생/정지 (Space)">
                         <i class="fas fa-play" id="playIcon"></i>
                     </button>
-                    <!-- 파일명 -->
                     <div class="cpb-file">
                         <i class="fas fa-file-audio cpb-file-icon"></i>
                         <span class="file-name" id="fileName">파일명.mp3</span>
                     </div>
                 </div>
-
-                <!-- 진행바 + 시간 -->
                 <div class="cpb-progress">
                     <span class="time-current" id="timeCurrent">0:00</span>
                     <div class="progress-bar-wrap" id="progressBarWrap">
@@ -421,8 +254,6 @@
                     </div>
                     <span class="time-total" id="timeTotal">0:00</span>
                 </div>
-
-                <!-- 정보 칩 (BPM / Key / 박자 / 코드) — 분석 후 표시 -->
                 <div class="cpb-info-chips" id="cpbInfoChips" style="display:none;">
                     <div class="cpb-chip">
                         <span class="cpb-chip-lbl">BPM</span>
@@ -441,8 +272,6 @@
                         <strong id="mainChords" class="cpb-chip-val" style="font-size:.7rem;">--</strong>
                     </div>
                 </div>
-
-                <!-- 볼륨 + 파일변경 -->
                 <div class="cpb-right">
                     <div class="volume-wrap">
                         <i class="fas fa-volume-up vol-icon"></i>
@@ -455,15 +284,14 @@
                 </div>
             </div>
 
-            <!-- 파형 시각화 (컴팩트, 클릭으로 시킹) -->
+            <!-- 파형 시각화 -->
             <div class="waveform-bar" id="waveformBar">
                 <canvas id="waveformCanvas" class="waveform-canvas"></canvas>
                 <canvas id="vizCanvas" class="viz-canvas"></canvas>
             </div>
 
-            <!-- ★ 코드 박스 (분석 완료 후 표시) ★ -->
+            <!-- 코드 박스 -->
             <div class="chord-box-section hidden" id="chordBoxSection">
-                <!-- 헤더 -->
                 <div class="chord-box-header">
                     <div class="chord-box-title">
                         <i class="fas fa-th-large"></i>
@@ -476,30 +304,24 @@
                             <input type="checkbox" id="chordBoxSyncToggle" checked>
                             <span>재생 동기화</span>
                         </label>
-                        <button class="cb-edit-toggle-btn" id="cbEditToggleBtn" title="편집 모드 ON: 칸 클릭으로 코드 추가/삭제 | OFF: 클릭으로 해당 위치 이동">
+                        <button class="cb-edit-toggle-btn" id="cbEditToggleBtn" title="편집 모드 ON/OFF">
                             <i class="fas fa-pen"></i>
                             <span>편집</span>
                             <span class="cb-edit-badge" id="cbEditBadge">OFF</span>
                         </button>
                     </div>
                 </div>
-                <!-- 코드 박스 스크롤 영역 -->
                 <div class="chord-box-scroll-wrap">
-                    <div class="chord-box-track" id="chordBoxTrack">
-                        <!-- JS로 마디별 4칸씩 생성 -->
-                    </div>
+                    <div class="chord-box-track" id="chordBoxTrack"></div>
                 </div>
-                <!-- 코드 폼 프리뷰 영역 — 7카드 슬라이드 -->
                 <div class="chord-box-preview" id="chordBoxPreview">
                     <div class="cbp-stage-wrap">
-                        <div class="cbp-stage" id="cbpStage">
-                            <!-- JS로 7개 카드 생성 (pos -2 ~ +4) -->
-                        </div>
+                        <div class="cbp-stage" id="cbpStage"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Analysis Button -->
+            <!-- 분석 버튼 -->
             <div class="analysis-btn-wrap" id="analysisBtnWrap">
                 <button class="btn-analyze" id="btnAnalyze">
                     <i class="fas fa-magic"></i> 코드 악보 분석 시작
@@ -507,7 +329,7 @@
                 <p class="analysis-hint">파일 길이에 따라 분석에 시간이 걸릴 수 있습니다</p>
             </div>
 
-            <!-- Progress -->
+            <!-- 진행 상태 -->
             <div class="analysis-progress hidden" id="analysisProgress">
                 <div class="progress-steps">
                     <div class="step" id="step1">
@@ -540,9 +362,9 @@
                 <p class="progress-text" id="progressText">음원 분석 중...</p>
             </div>
 
-            <!-- Tab Score Section -->
+            <!-- 악보 섹션 -->
             <div class="tab-section hidden" id="tabSection">
-                <!-- 악기 선택 (슬림 가로 탭형) -->
+                <!-- 악기 선택 -->
                 <div class="instrument-selector">
                     <div class="instrument-btns">
                         <button class="btn-instrument active" data-instrument="acoustic">
@@ -576,17 +398,19 @@
                     </div>
                 </div>
 
-                <!-- ★ 코드 전조 패널 — 접기/펼치기 컴팩트 ★ -->
+                <!-- 코드 전조 패널 -->
                 <div class="transpose-panel hidden" id="transposePanel">
-                    <!-- 한 줄 컴팩트 헤더 (항상 표시) -->
                     <div class="transpose-header" id="transposeToggleBtn" style="cursor:pointer;" title="전조 패널 열기/닫기">
                         <i class="fas fa-exchange-alt"></i>
                         <span class="transpose-title">코드 전조</span>
                         <span class="tc-chord-inline" id="tcCurrentChord">—</span>
                         <i class="fas fa-chevron-down transpose-chevron" id="transposeChevron" style="margin-left:auto;font-size:0.75rem;color:#94a3b8;transition:transform .2s;"></i>
                     </div>
-                    <!-- 접히는 본문 -->
                     <div class="transpose-body hidden" id="transposeBody">
+                        <div class="transpose-row">
+                            <span class="tc-label">현재 코드</span>
+                            <div class="tc-chord-grid" id="tcOrigChordGrid"></div>
+                        </div>
                         <div class="transpose-row">
                             <span class="tc-label">변경할 코드</span>
                             <div class="tc-chord-grid" id="tcChordGrid"></div>
@@ -603,7 +427,7 @@
                     </div>
                 </div>
 
-                <!-- Chord Diagram (전조 박스 바로 아래) -->
+                <!-- 감지된 코드 다이어그램 -->
                 <div class="chord-guide-section" id="chordSection">
                     <div class="chord-guide-header">
                         <span class="chord-guide-icon">🎵</span>
@@ -618,7 +442,6 @@
                     </div>
                     <div class="chord-diagrams" id="chordDiagrams"></div>
                 </div>
-                <!-- 초보자 가이드는 JS로 chordSection 다음에 삽입됨 -->
 
                 <!-- Tab Display Options -->
                 <div class="tab-options">
@@ -639,7 +462,6 @@
                     </div>
                 </div>
 
-                <!-- stringLegend anchor (기법 표시 박스 삭제됨) -->
                 <div id="stringLegend" style="display:none;"></div>
 
                 <!-- GOPHERWOOD 슬림 배너 -->
@@ -653,48 +475,38 @@
                     <span class="promo-slim-cta">지금 보기 →</span>
                 </a>
 
-                <!-- ★ TAB 편집기 툴바 ★ -->
+                <!-- TAB 편집기 툴바 -->
                 <div class="te-toolbar" id="teToolbar" style="display:none;">
-                    <!-- 편집 모드 토글 -->
                     <button class="te-toolbar-toggle" id="btnEditMode" title="편집 모드 ON/OFF">
                         <i class="fas fa-pen-nib"></i>
                         <span>편집 모드</span>
                         <span class="te-edit-badge" id="teEditBadge">OFF</span>
                     </button>
-
                     <div class="te-toolbar-sep"></div>
-
-                    <!-- 도구 팔레트 (편집 모드 활성 시만 활성화) -->
                     <div class="te-tools" id="teTools">
                         <span class="te-tools-label">도구</span>
-                        <button class="te-tool-btn active" data-tool="fret" title="프렛 번호 입력 — 줄 칸 클릭 시 팝업">
+                        <button class="te-tool-btn active" data-tool="fret" title="프렛 번호 입력">
                             <i class="fas fa-hashtag"></i>프렛
                         </button>
-                        <button class="te-tool-btn" data-tool="chord" title="코드명 입력/수정 — 코드 영역 클릭 시 팝업">
+                        <button class="te-tool-btn" data-tool="chord" title="코드명 입력/수정">
                             <i class="fas fa-music"></i>코드
                         </button>
-                        <button class="te-tool-btn" data-tool="erase" title="지우개 — 클릭으로 삭제">
+                        <button class="te-tool-btn" data-tool="erase" title="지우개">
                             <i class="fas fa-eraser"></i>지우기
                         </button>
                     </div>
-
                     <div class="te-toolbar-sep"></div>
-
-                    <!-- 기법 팔레트 -->
                     <div class="te-techs" id="teTechPalette">
                         <span class="te-tools-label">기법</span>
                         <button class="te-tool-btn te-tech" data-tool="h"  title="해머온 (Hammer-on)">h</button>
                         <button class="te-tool-btn te-tech" data-tool="p"  title="풀오프 (Pull-off)">p</button>
                         <button class="te-tool-btn te-tech" data-tool="b"  title="벤딩 (Bend)">b</button>
                         <button class="te-tool-btn te-tech" data-tool="/"  title="슬라이드 업">/</button>
-                        <button class="te-tool-btn te-tech" data-tool="\\" title="슬라이드 다운">\</button>
+                        <button class="te-tool-btn te-tech" data-tool="\"  title="슬라이드 다운">\</button>
                         <button class="te-tool-btn te-tech" data-tool="~"  title="비브라토 (Vibrato)">~</button>
                         <button class="te-tool-btn te-tech" data-tool="x"  title="뮤트 / 데드노트">×</button>
                     </div>
-
                     <div class="te-toolbar-sep"></div>
-
-                    <!-- 실행 취소 / 다시 실행 / 마디 추가 -->
                     <div class="te-actions">
                         <button class="te-action-btn" id="btnTeUndo" title="실행 취소 (Ctrl+Z)">
                             <i class="fas fa-undo"></i>
@@ -712,8 +524,6 @@
                 <div class="tab-score-wrap" id="tabScoreContainer" style="max-height:var(--tab-scroll-h, 420px);">
                     <canvas id="tabCanvas" class="tab-canvas"></canvas>
                 </div>
-
-                <!-- Chord Diagram (전조 박스 아래로 이동됨) -->
 
                 <!-- GOPHERWOOD 4종 미니 그리드 배너 -->
                 <div class="promo-mini-grid4">
@@ -756,9 +566,7 @@
                 </div>
 
             </div>
-
             </div><!-- /player-content -->
-
             </div><!-- /player-layout -->
 
         </section>
@@ -771,27 +579,14 @@
 
     <!-- 햄버거 메뉴 -->
     <script>
-    /* 커뮤니티 드롭다운 토글 */
-    function toggleCommunityDropdown(e) {
-        e.stopPropagation();
-        const dd = document.getElementById('communityDropdown');
-        if (dd) dd.classList.toggle('open');
-    }
-    document.addEventListener('click', function(e) {
-        const dd = document.getElementById('communityDropdown');
-        if (dd && !dd.contains(e.target)) dd.classList.remove('open');
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('hamburgerBtn');
         const menu = document.getElementById('mobileMenu');
         if (btn && menu) {
             btn.addEventListener('click', function() {
-                const isOpen = menu.classList.toggle('is-open');
-                btn.classList.toggle('is-open', isOpen);
-                btn.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+                btn.classList.toggle('is-open');
+                menu.classList.toggle('is-open');
             });
-            // 메뉴 외부 클릭 시 닫기
             document.addEventListener('click', function(e) {
                 if (!btn.contains(e.target) && !menu.contains(e.target)) {
                     menu.classList.remove('is-open');
