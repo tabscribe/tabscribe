@@ -241,6 +241,7 @@
 <script src="js/ads.js"></script>
 <header class="header">
   <div class="header-inner">
+    <div class="header-top-row">
     <a href="index.html" class="logo">
       <i class="fas fa-guitar logo-icon"></i>
       <div class="logo-textbox">
@@ -249,6 +250,15 @@
       </div>
     </a>
     <span class="logo-badge">재미있는 영상</span>
+    <div class="header-login-box">
+      <div class="header-auth-btns">
+        <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
+        <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none"><i class="fas fa-user-circle"></i><span id="headerNickname"></span></a>
+        <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+      </div>
+    </div>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+    </div>
     <nav class="header-nav" id="headerNav">
       <div class="header-nav-row1">
         <div class="nav-info-group">
@@ -279,12 +289,6 @@
         </div>
       </div>
     </nav>
-    <div class="header-auth-btns">
-      <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
-      <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none"><i class="fas fa-user-circle"></i><span id="headerNickname"></span></a>
-      <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
-    </div>
-    <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
     <a href="index.html" class="mobile-menu-item"><i class="fas fa-home" style="color:#e85d04"></i> 홈</a>

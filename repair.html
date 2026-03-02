@@ -339,7 +339,47 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .header-profile-btn{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:20px;background:linear-gradient(135deg,var(--orange),#e07820);color:#fff;text-decoration:none;font-size:.8rem;font-weight:700;border:none;transition:all .18s;box-shadow:0 2px 8px rgba(212,93,0,.25);}
 .header-profile-btn:hover{background:linear-gradient(135deg,#b84e00,#c96a10);transform:translateY(-1px);}
 .header-profile-btn i{font-size:1rem;}
-@media(max-width:860px){.header-auth-btns{display:none;}}
+@media(max-width:860px){.header-login-box .header-auth-btns{display:flex !important;}}
+/* ── 문의하기 버튼 그룹 ── */
+.nav-inquiry-group{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 6px;background:linear-gradient(135deg,#fdf4ff,#fae8ff);border:1.5px solid #e879f9;border-radius:20px;position:relative;}
+.nav-inquiry-group::before{content:'📬 문의';font-size:.62rem;font-weight:800;color:#a21caf;background:#fae8ff;border:1px solid #e879f9;border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;}
+.nav-inquiry-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.76rem;font-weight:700;cursor:pointer;border:1.5px solid transparent;background:transparent;color:#6b21a8;font-family:inherit;transition:all .18s;white-space:nowrap;}
+.nav-inquiry-btn:hover{background:rgba(255,255,255,.85);border-color:#e879f9;color:#a21caf;}
+@media(max-width:860px){.nav-inquiry-group{display:none;}}
+/* ── 문의 팝업 ── */
+.inquiry-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:9000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);}
+.inquiry-overlay.open{display:flex;}
+.inquiry-popup{background:#fff;border-radius:20px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.22);overflow:hidden;animation:inquirySlideUp .22s ease;}
+@keyframes inquirySlideUp{from{opacity:0;transform:translateY(20px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.inquiry-popup-head{padding:18px 20px 14px;border-bottom:1.5px solid #f3e8ff;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#fdf4ff,#fae8ff);}
+.inquiry-popup-title{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:800;color:#6b21a8;}
+.inquiry-popup-title .inquiry-type-badge{font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:20px;background:#a21caf;color:#fff;}
+.inquiry-close-btn{width:30px;height:30px;border-radius:50%;border:none;background:rgba(162,28,175,.1);color:#a21caf;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;}
+.inquiry-close-btn:hover{background:rgba(162,28,175,.2);}
+.inquiry-popup-body{padding:20px;display:flex;flex-direction:column;gap:14px;}
+.inquiry-type-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.inquiry-type-tab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 4px 8px;border-radius:12px;border:1.5px solid #e5e7eb;background:#f9fafb;cursor:pointer;font-size:.7rem;font-weight:700;color:#6b7280;transition:all .15s;font-family:inherit;}
+.inquiry-type-tab .tab-icon{font-size:1.2rem;line-height:1;}
+.inquiry-type-tab:hover{border-color:#e879f9;background:#fdf4ff;color:#a21caf;}
+.inquiry-type-tab.active{border-color:#a21caf;background:linear-gradient(135deg,#fdf4ff,#fae8ff);color:#6b21a8;box-shadow:0 2px 8px rgba(162,28,175,.15);}
+.inquiry-field{display:flex;flex-direction:column;gap:5px;}
+.inquiry-label{font-size:.74rem;font-weight:700;color:#374151;display:flex;align-items:center;gap:4px;}
+.inquiry-label .required-mark{color:#ef4444;font-size:.8rem;}
+.inquiry-label .optional-mark{color:#9ca3af;font-size:.68rem;font-weight:500;}
+.inquiry-input,.inquiry-textarea{width:100%;padding:9px 13px;border:1.5px solid #e5e7eb;border-radius:10px;font-size:.86rem;font-family:inherit;color:#1f2937;background:#fff;transition:border-color .18s,box-shadow .18s;outline:none;box-sizing:border-box;}
+.inquiry-input:focus,.inquiry-textarea:focus{border-color:#a21caf;box-shadow:0 0 0 3px rgba(162,28,175,.1);}
+.inquiry-textarea{resize:vertical;min-height:90px;line-height:1.5;}
+.inquiry-popup-foot{padding:0 20px 20px;display:flex;gap:8px;}
+.inquiry-cancel-btn{flex:1;padding:11px;border-radius:10px;border:1.5px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:.87rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.inquiry-cancel-btn:hover{background:#f3f4f6;}
+.inquiry-submit-btn{flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#a21caf,#c026d3);color:#fff;font-size:.87rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.inquiry-submit-btn:hover{background:linear-gradient(135deg,#86198f,#a21caf);transform:translateY(-1px);box-shadow:0 4px 14px rgba(162,28,175,.3);}
+.inquiry-submit-btn:disabled{background:#d1d5db;cursor:not-allowed;transform:none;box-shadow:none;}
+.inquiry-success{display:none;flex-direction:column;align-items:center;gap:10px;padding:32px 20px;text-align:center;}
+.inquiry-success.show{display:flex;}
+.inquiry-success-icon{font-size:2.8rem;line-height:1;}
+.inquiry-success-title{font-size:1.1rem;font-weight:800;color:#6b21a8;}
+.inquiry-success-desc{font-size:.84rem;color:#6b7280;line-height:1.6;}
 </style>
 <script src="js/ads.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
