@@ -369,6 +369,7 @@
       </div>
     </div>
   </div>
+
   <!-- 코드덕쿠 홍보 이미지 배너 -->
   <a href="score.html" class="page-promo-banner">
     <img src="images/banner-video-review.jpg" alt="코드덕쿠 악보 공유 서비스">
@@ -379,14 +380,10 @@
       <span class="page-promo-banner-cta">악보 공유 보러 가기 →</span>
     </div>
   </a>
-    <div class="form-row" style="margin-bottom:10px;"> 7c0 이펝터 7c0 앱프 리뷰</span></div>
-      </a>
-      <div class="hof-promo-item hof-promo-item--cta">
-        <span class="hof-promo-icon">🍋</span>
-        <div class="hof-promo-text"><strong>쿠슐랭 가이드</strong><span>마음에 드는 영상에 ❤️를 눌러주세요!</span></div>
-      </div>
-    </div>
-  </div>
+
+  <!-- 영상 등록 폼 (관리자용) -->
+  <div class="video-add-form">
+    <h3><i class="fab fa-youtube"></i> 리뷰 영상 등록</h3>
     <div class="form-row" style="margin-bottom:10px;">
       <input type="text" id="inputTitle" placeholder="영상 제목 *" maxlength="80">
       <input type="text" id="inputUrl" placeholder="유튜브 URL * (예: https://youtu.be/xxxxx)">
@@ -439,12 +436,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/auth-header.js"></script>
+<script src="js/supabase.js"></script>
 <script>
-// ── 스토리지 키 ──
-const STORAGE_KEY = 'codeducku_videos_review';
-const LIKES_KEY   = 'codeducku_likes_review';
+// ── 좋아요는 localStorage (기기별 개인 상태) ──
+const LIKES_KEY    = 'codeducku_likes_review';
+const MY_LIKES_KEY = 'codeducku_my_likes_review';
 
-/* ── 좋아요 저장/로드 ── */
+/* ── 좋아요 로컬 저장/로드 ── */
 function loadLikes() {
   try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
 }
@@ -452,25 +450,25 @@ function saveLikes(obj) { localStorage.setItem(LIKES_KEY, JSON.stringify(obj)); 
 function getLikeCount(videoId) { return loadLikes()[videoId] || 0; }
 function isLikedByMe(videoId) {
   try {
-    const myLikes = JSON.parse(localStorage.getItem('codeducku_my_likes_review')) || {};
+    const myLikes = JSON.parse(localStorage.getItem(MY_LIKES_KEY)) || {};
     return !!myLikes[videoId];
   } catch { return false; }
 }
-function toggleLike(videoId, titleEl) {
-  const myLikesKey = 'codeducku_my_likes_review';
+async function toggleLike(videoId) {
+  const myLikesKey = MY_LIKES_KEY;
   let myLikes = {};
   try { myLikes = JSON.parse(localStorage.getItem(myLikesKey)) || {}; } catch {}
   const likes = loadLikes();
   const was = !!myLikes[videoId];
-  if (was) {
-    delete myLikes[videoId];
-    likes[videoId] = Math.max(0, (likes[videoId] || 1) - 1);
-  } else {
-    myLikes[videoId] = 1;
-    likes[videoId] = (likes[videoId] || 0) + 1;
-  }
+  const newCount = was
+    ? Math.max(0, (likes[videoId] || 1) - 1)
+    : (likes[videoId] || 0) + 1;
+  if (was) { delete myLikes[videoId]; } else { myLikes[videoId] = 1; }
+  likes[videoId] = newCount;
   localStorage.setItem(myLikesKey, JSON.stringify(myLikes));
   saveLikes(likes);
+  // DB 업데이트
+  try { await SupabaseDB.update('review_videos', videoId, { like_count: newCount }); } catch(e) {}
   renderVideos();
   renderVideoHof();
 }
@@ -479,9 +477,8 @@ function toggleLike(videoId, titleEl) {
 function renderVideoHof() {
   const hof = document.getElementById('videoHofContainer');
   if (!hof) return;
-  const videos = loadVideos();
+  const videos = _videoCache;
   const likes = loadLikes();
-  // 좋아요 순 정렬, 좋아요 0인 영상도 포함
   const sorted = [...videos].sort((a, b) => (likes[b.id] || 0) - (likes[a.id] || 0));
   const top = sorted.slice(0, 5);
 
@@ -545,12 +542,64 @@ function scrollToVideoCard(title) {
   setTimeout(() => { target.style.outline = ''; target.style.boxShadow = ''; }, 2000);
 }
 
-function loadVideos() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
+// ── 전역 영상 캐시 ──
+let _videoCache = [];
+
+async function loadVideos() {
+  try {
+    const res = await fetch('tables/review_videos?sort=created_at&order=desc&limit=200');
+    const json = await res.json();
+    _videoCache = json.data || [];
+    // 로컬 좋아요 카운트를 DB 값으로 sync
+    const likesObj = {};
+    _videoCache.forEach(v => { if (v.like_count > 0) likesObj[v.id] = v.like_count; });
+    // 로컬에 없는 항목만 merge (내가 누른것 우선)
+    const local = loadLikes();
+    _videoCache.forEach(v => { if (!(v.id in local)) local[v.id] = v.like_count || 0; });
+    saveLikes(local);
+    return _videoCache;
+  } catch(e) {
+    console.warn('영상 로드 실패:', e);
+    return _videoCache;
+  }
 }
-function saveVideos(arr) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+
+async function addVideo() {
+  const title = document.getElementById('inputTitle').value.trim();
+  const url   = document.getElementById('inputUrl').value.trim();
+  const desc  = document.getElementById('inputDesc').value.trim();
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+  const embedUrl = toEmbedUrl(url);
+  if (!embedUrl) { alert('올바른 유튜브 URL을 입력해주세요.\n예: https://youtu.be/xxxxx'); return; }
+  try {
+    await SupabaseDB.create('review_videos', {
+      title, url, embed_url: embedUrl, desc,
+      like_count: 0,
+      date_label: new Date().toLocaleDateString('ko-KR')
+    });
+    document.getElementById('inputTitle').value = '';
+    document.getElementById('inputUrl').value = '';
+    document.getElementById('inputDesc').value = '';
+    await refreshAll();
+  } catch(e) {
+    alert('등록에 실패했습니다: ' + e.message);
+  }
+}
+
+async function deleteVideo(id) {
+  if (!confirm('이 영상을 삭제할까요?')) return;
+  try {
+    await SupabaseDB.delete('review_videos', id);
+    await refreshAll();
+  } catch(e) {
+    alert('삭제에 실패했습니다: ' + e.message);
+  }
+}
+
+async function refreshAll() {
+  await loadVideos();
+  renderVideoHof();
+  renderVideos();
 }
 
 // 유튜브 URL → embed URL 변환
@@ -574,28 +623,6 @@ function toEmbedUrl(url) {
 function toThumbUrl(embedUrl) {
   const m = embedUrl.match(/embed\/([A-Za-z0-9_-]{11})/);
   return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : null;
-}
-
-function addVideo() {
-  const title = document.getElementById('inputTitle').value.trim();
-  const url   = document.getElementById('inputUrl').value.trim();
-  const desc  = document.getElementById('inputDesc').value.trim();
-  if (!title) { alert('제목을 입력해주세요.'); return; }
-  const embedUrl = toEmbedUrl(url);
-  if (!embedUrl) { alert('올바른 유튜브 URL을 입력해주세요.\n예: https://youtu.be/xxxxx'); return; }
-  const videos = loadVideos();
-  videos.unshift({ id: Date.now(), title, url, embedUrl, desc, date: new Date().toLocaleDateString('ko-KR') });
-  saveVideos(videos);
-  document.getElementById('inputTitle').value = '';
-  document.getElementById('inputUrl').value = '';
-  document.getElementById('inputDesc').value = '';
-  renderVideos();
-}
-
-function deleteVideo(id) {
-  if (!confirm('이 영상을 삭제할까요?')) return;
-  saveVideos(loadVideos().filter(v => v.id !== id));
-  renderVideos();
 }
 
 function handleCardClick(el) {
@@ -627,7 +654,7 @@ function closeVideoModal(e) { if (e.target === e.currentTarget) closeModal(); }
 
 function renderVideos() {
   const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
-  const videos = loadVideos().filter(v => !q || v.title.toLowerCase().includes(q));
+  const videos = _videoCache.filter(v => !q || v.title.toLowerCase().includes(q));
   const grid = document.getElementById('videoGrid');
   document.getElementById('videoCount').textContent = `${videos.length}개의 영상`;
   if (!videos.length) {
@@ -635,10 +662,12 @@ function renderVideos() {
     return;
   }
   grid.innerHTML = videos.map(v => {
-    const thumb = toThumbUrl(v.embedUrl);
-    const safeTitle = v.title.replace(/"/g,'&quot;');
-    const safeEmbed = v.embedUrl;
-    const safeUrl = v.url || v.embedUrl.replace('embed/','watch?v=');
+    // DB 필드명: embed_url, date_label / 구 localStorage: embedUrl, date
+    const embedUrl = v.embed_url || v.embedUrl || '';
+    const thumb = toThumbUrl(embedUrl);
+    const safeTitle = (v.title || '').replace(/"/g,'&quot;');
+    const safeEmbed = embedUrl;
+    const safeUrl = v.url || embedUrl.replace('embed/','watch?v=');
     const likeCount = getLikeCount(v.id);
     const liked = isLikedByMe(v.id);
     return `
@@ -658,7 +687,7 @@ function renderVideos() {
         ${v.desc ? `<p>${v.desc}</p>` : ''}
         <div class="video-meta">
           <span class="video-tag"><i class="fas fa-star"></i> 리뷰영상</span>
-          <span class="video-date">${v.date}</span>
+          <span class="video-date">${v.date_label || v.date || ''}</span>
         </div>
         <div class="video-actions">
           <button class="btn-watch" data-embed="${safeEmbed}" data-title="${safeTitle}" data-url="${safeUrl}" onclick="handleCardClick(this)">
@@ -678,9 +707,10 @@ function renderVideos() {
 }
 
 // 햄버거
-document.addEventListener('DOMContentLoaded', function() {
-  renderVideos();
-  renderVideoHof();
+document.addEventListener('DOMContentLoaded', async function() {
+  // 로딩 표시
+  document.getElementById('videoGrid').innerHTML = `<div class="video-empty"><i class="fas fa-spinner fa-spin" style="color:#dc2626;"></i><p>영상 불러오는 중...</p></div>`;
+  await refreshAll();
   const btn = document.getElementById('hamburgerBtn');
   const menu = document.getElementById('mobileMenu');
   if (btn && menu) {

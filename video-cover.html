@@ -408,9 +408,195 @@
 <script src="js/auth.js"></script>
 <script src="js/auth-header.js"></script>
 <script>
-// ── 스토리지 키 ──
-const STORAGE_KEY = 'codeducku_videos_cover';
-const LIKES_KEY   = 'codeducku_likes_cover';
+// ── DB 테이블명 & 좋아요 키 ──
+const DB_TABLE   = 'cover_videos';
+const LIKES_KEY  = 'codeducku_likes_cover';
+const MY_LIKES_KEY = 'codeducku_my_likes_cover';
+
+// ── 전역 캐시 ──
+let _videoCache = [];
+
+/* ── 좋아요 (로컬 기기 상태) ── */
+function loadLikes() {
+  try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
+}
+function saveLikes(obj) { localStorage.setItem(LIKES_KEY, JSON.stringify(obj)); }
+function getLikeCount(id) { return loadLikes()[id] || 0; }
+function isLikedByMe(id) {
+  try { const m = JSON.parse(localStorage.getItem(MY_LIKES_KEY)) || {}; return !!m[id]; } catch { return false; }
+}
+async function toggleLike(videoId) {
+  let myL = {}; try { myL = JSON.parse(localStorage.getItem(MY_LIKES_KEY)) || {}; } catch {}
+  const likes = loadLikes(); const was = !!myL[videoId];
+  const newCount = was ? Math.max(0,(likes[videoId]||1)-1) : (likes[videoId]||0)+1;
+  if (was) delete myL[videoId]; else myL[videoId] = 1;
+  likes[videoId] = newCount;
+  localStorage.setItem(MY_LIKES_KEY, JSON.stringify(myL)); saveLikes(likes);
+  try { await fetch(`tables/${DB_TABLE}/${videoId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({like_count: newCount}) }); } catch(e) {}
+  renderVideos(); renderVideoHof();
+}
+
+/* ── DB 로드 ── */
+async function loadVideos() {
+  try {
+    const res = await fetch(`tables/${DB_TABLE}?sort=created_at&order=desc&limit=200`);
+    const json = await res.json();
+    _videoCache = json.data || [];
+    const local = loadLikes();
+    _videoCache.forEach(v => { if (!(v.id in local)) local[v.id] = v.like_count || 0; });
+    saveLikes(local);
+    return _videoCache;
+  } catch(e) { console.warn('영상 로드 실패:', e); return _videoCache; }
+}
+
+/* ── DB 등록/삭제 ── */
+async function addVideo() {
+  const title = document.getElementById('inputTitle').value.trim();
+  const url   = document.getElementById('inputUrl').value.trim();
+  const desc  = document.getElementById('inputDesc').value.trim();
+  if (!title) { alert('제목을 입력해주세요.'); return; }
+  const embedUrl = toEmbedUrl(url);
+  if (!embedUrl) { alert('올바른 유튜브 URL을 입력해주세요.\n예: https://youtu.be/xxxxx'); return; }
+  try {
+    await fetch(`tables/${DB_TABLE}`, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ title, url, embed_url: embedUrl, desc, like_count: 0, date_label: new Date().toLocaleDateString('ko-KR') }) });
+    document.getElementById('inputTitle').value = '';
+    document.getElementById('inputUrl').value = '';
+    document.getElementById('inputDesc').value = '';
+    await refreshAll();
+  } catch(e) { alert('등록에 실패했습니다: ' + e.message); }
+}
+async function deleteVideo(id) {
+  if (!confirm('이 영상을 삭제할까요?')) return;
+  try { await fetch(`tables/${DB_TABLE}/${id}`, { method:'DELETE' }); await refreshAll(); }
+  catch(e) { alert('삭제에 실패했습니다.'); }
+}
+async function refreshAll() { await loadVideos(); renderVideoHof(); renderVideos(); }
+
+/* ── HOF 렌더 ── */
+function renderVideoHof() {
+  const hof = document.getElementById('videoHofContainer'); if (!hof) return;
+  const videos = _videoCache; const likes = loadLikes();
+  const sorted = [...videos].sort((a,b)=>(likes[b.id]||0)-(likes[a.id]||0)); const top = sorted.slice(0,5);
+  const rankMedal=['🥇','🥈','🥉','4위','5위'];
+  const rankBg=['background:linear-gradient(135deg,#fef9ec,#fde68a);border:2px solid #f59e0b;','background:linear-gradient(135deg,#f1f5f9,#e2e8f0);border:2px solid #94a3b8;','background:linear-gradient(135deg,#fff7ed,#fed7aa);border:2px solid #f97316;','background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);','background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);'];
+  const rankTitleStyle=['color:#1e293b;','color:#1e293b;','color:#1e293b;','color:#a5b4fc;font-weight:700;','color:#94a3b8;font-weight:600;'];
+  if (!top.length) { hof.innerHTML='<div class="video-hof-wrap"><div class="video-hof-title"><span class="hof-emoji">🍋</span><h3>쿠슐랭 가이드</h3><p>영상을 등록하고 좋아요를 눌러 순위를 만들어보세요!</p></div></div>'; return; }
+  const cards = top.map((v,i)=>{
+    const cnt=likes[v.id]||0; const st=(v.title||'').replace(/'/g,"\\'");
+    if(cnt===0&&i>0) return '<div class="video-hof-empty"><div style="font-size:1.2rem;margin-bottom:5px;opacity:.4;">👑</div><div style="font-size:.7rem;color:#64748b;">선정 중</div></div>';
+    return `<div class="video-hof-card" style="${rankBg[i]}" onclick="scrollToVideoCard('${st}')" title="${v.title}으로 이동"><div class="hof-rank">${rankMedal[i]}</div><div class="hof-card-title" style="${rankTitleStyle[i]}">${v.title}</div><div class="hof-likes"><i class="fas fa-heart"></i> ${cnt}명이 추천했어요</div><div class="hof-arrow"><i class="fas fa-arrow-down"></i> 영상 보기</div></div>`;
+  }).join('');
+  hof.innerHTML=`<div class="video-hof-wrap"><div class="video-hof-title"><span class="hof-emoji">🍋</span><h3>쿠슐랭 가이드 — 추천 TOP 5</h3><p>좋아요 많은 영상 순위에요. 맘에 드는 영상에 ❤️ 를 눌러주세요!</p></div><div class="video-hof-grid">${cards}</div></div>`;
+}
+function scrollToVideoCard(title) {
+  const allCards = document.querySelectorAll('.video-card'); let target=null;
+  for(const c of allCards){const h4=c.querySelector('h4');if(h4&&h4.textContent.trim()===title){target=c;break;}}
+  if(!target)return;
+  const headerH=document.querySelector('.header')?.offsetHeight||72;
+  window.scrollTo({top:window.pageYOffset+target.getBoundingClientRect().top-headerH-16,behavior:'smooth'});
+  target.style.transition='box-shadow .3s,outline .3s'; target.style.outline='2.5px solid #dc2626'; target.style.boxShadow='0 0 0 4px rgba(220,38,38,.25)';
+  setTimeout(()=>{target.style.outline='';target.style.boxShadow='';},2000);
+}
+
+/* ── 유튜브 URL 변환 ── */
+function toEmbedUrl(url) {
+  url = url.trim(); let videoId = null;
+  const patterns = [/youtu\.be\/([A-Za-z0-9_-]{11})/,/youtube\.com\/watch\?.*v=([A-Za-z0-9_-]{11})/,/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/,/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/];
+  for (const p of patterns) { const m = url.match(p); if (m) { videoId = m[1]; break; } }
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+}
+function toThumbUrl(embedUrl) {
+  const m = (embedUrl||'').match(/embed\/([A-Za-z0-9_-]{11})/);
+  return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : null;
+}
+
+/* ── 모달 ── */
+function handleCardClick(el) { openVideoModal(el.dataset.embed, el.dataset.title, el.dataset.url); }
+function openVideoModal(embedUrl, title, originalUrl) {
+  const iframe = document.getElementById('modalIframe');
+  iframe.src = embedUrl + '?enablejsapi=1&rel=0&modestbranding=1';
+  document.getElementById('modalTitle').textContent = title;
+  const ytUrl = originalUrl || embedUrl.replace('embed/', 'watch?v=');
+  document.getElementById('modalYoutubeLink').href = ytUrl;
+  document.getElementById('modalErrorLink').href = ytUrl;
+  document.getElementById('modalError').style.display = 'none';
+  iframe.parentElement.style.display = 'block';
+  document.getElementById('videoModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('modalIframe').src = '';
+  document.body.style.overflow = '';
+}
+function closeVideoModal(e) { if (e.target === e.currentTarget) closeModal(); }
+
+/* ── 영상 카드 렌더 ── */
+function renderVideos() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const videos = _videoCache.filter(v => !q || (v.title||'').toLowerCase().includes(q));
+  const grid = document.getElementById('videoGrid');
+  document.getElementById('videoCount').textContent = `${videos.length}개의 영상`;
+  if (!videos.length) {
+    grid.innerHTML = `<div class="video-empty"><i class="fab fa-youtube"></i><p>등록된 영상이 없습니다</p><span>위 폼에서 유튜브 URL을 등록해보세요!</span></div>`;
+    return;
+  }
+  grid.innerHTML = videos.map(v => {
+    const embedUrl = v.embed_url || v.embedUrl || '';
+    const thumb = toThumbUrl(embedUrl);
+    const safeTitle = (v.title||'').replace(/"/g,'&quot;');
+    const safeUrl = v.url || embedUrl.replace('embed/','watch?v=');
+    const likeCount = getLikeCount(v.id);
+    const liked = isLikedByMe(v.id);
+    return `
+    <div class="video-card">
+      <div class="video-thumb" data-embed="${embedUrl}" data-title="${safeTitle}" data-url="${safeUrl}" onclick="handleCardClick(this)">
+        ${thumb ? `<img src="${thumb}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" alt="${safeTitle}">` : ''}
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,${thumb?'.3':'.7'})">
+          <div style="width:52px;height:52px;background:#dc2626;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(220,38,38,.5);">
+            <i class="fas fa-play" style="color:#fff;font-size:1.2rem;margin-left:4px;"></i>
+          </div>
+        </div>
+      </div>
+      <div class="video-info">
+        <h4>${v.title}</h4>
+        ${v.desc ? `<p>${v.desc}</p>` : ''}
+        <div class="video-meta">
+          <span class="video-tag"><i class="fas fa-music"></i> 카피</span>
+          <span class="video-date">${v.date_label || v.date || ''}</span>
+        </div>
+        <div class="video-actions">
+          <button class="btn-watch" data-embed="${embedUrl}" data-title="${safeTitle}" data-url="${safeUrl}" onclick="handleCardClick(this)">
+            <i class="fab fa-youtube"></i> 영상 보기
+          </button>
+          <button class="btn-like${liked?' liked':''}" onclick="toggleLike('${v.id}')" title="추천하기">
+            <i class="fas fa-heart"></i> ${likeCount > 0 ? likeCount : '추천'}
+          </button>
+          <a href="${safeUrl}" target="_blank" rel="noopener" class="btn-delete-video" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;color:#dc2626;border-color:#fca5a5;background:#fff1f2;" title="YouTube에서 보기">
+            <i class="fab fa-youtube"></i>
+          </a>
+          <button class="btn-delete-video" onclick="deleteVideo('${v.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── 초기화 ── */
+document.addEventListener('DOMContentLoaded', async function() {
+  document.getElementById('videoGrid').innerHTML = `<div class="video-empty"><i class="fas fa-spinner fa-spin" style="color:#dc2626;"></i><p>영상 불러오는 중...</p></div>`;
+  await refreshAll();
+  const btn = document.getElementById('hamburgerBtn');
+  const menu = document.getElementById('mobileMenu');
+  if (btn && menu) {
+    btn.addEventListener('click', () => { btn.classList.toggle('is-open'); menu.classList.toggle('is-open'); });
+    document.addEventListener('click', e => { if (!btn.contains(e.target) && !menu.contains(e.target)) { btn.classList.remove('is-open'); menu.classList.remove('is-open'); }});
+  }
+});
+</script>
+</body>
+</html>
 
 function loadLikes() {
   try { return JSON.parse(localStorage.getItem(LIKES_KEY)) || {}; } catch { return {}; }
