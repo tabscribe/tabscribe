@@ -453,7 +453,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/auth-header.js"></script>
-<script src="js/supabase.js"></script>
 <script>
 // ── 좋아요는 localStorage (기기별 개인 상태) ──
 const LIKES_KEY    = 'codeducku_likes_review';
@@ -485,7 +484,7 @@ async function toggleLike(videoId) {
   localStorage.setItem(myLikesKey, JSON.stringify(myLikes));
   saveLikes(likes);
   // DB 업데이트
-  try { await SupabaseDB.update('review_videos', videoId, { like_count: newCount }); } catch(e) {}
+  try { await fetch(`tables/review_videos/${videoId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({like_count: newCount}) }); } catch(e) {}
   renderVideos();
   renderVideoHof();
 }
@@ -589,11 +588,12 @@ async function addVideo() {
   const embedUrl = toEmbedUrl(url);
   if (!embedUrl) { alert('올바른 유튜브 URL을 입력해주세요.\n예: https://youtu.be/xxxxx'); return; }
   try {
-    await SupabaseDB.create('review_videos', {
-      title, url, embed_url: embedUrl, desc,
-      like_count: 0,
-      date_label: new Date().toLocaleDateString('ko-KR')
+    const res = await fetch('tables/review_videos', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ title, url, embed_url: embedUrl, desc, like_count: 0, date_label: new Date().toLocaleDateString('ko-KR') })
     });
+    if (!res.ok) throw new Error(await res.text());
     document.getElementById('inputTitle').value = '';
     document.getElementById('inputUrl').value = '';
     document.getElementById('inputDesc').value = '';
@@ -606,7 +606,8 @@ async function addVideo() {
 async function deleteVideo(id) {
   if (!confirm('이 영상을 삭제할까요?')) return;
   try {
-    await SupabaseDB.delete('review_videos', id);
+    const res = await fetch(`tables/review_videos/${id}`, { method: 'DELETE' });
+    if (!res.ok && res.status !== 204) throw new Error(await res.text());
     await refreshAll();
   } catch(e) {
     alert('삭제에 실패했습니다: ' + e.message);
