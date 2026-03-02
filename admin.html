@@ -239,6 +239,9 @@
     .stat-card.purple::before { background: var(--purple); }
     .stat-card.yellow::before { background: var(--yellow); }
     .stat-card.red::before    { background: var(--red); }
+    .stat-card.teal::before   { background: #14b8a6; }
+    .stat-card.indigo::before { background: #6366f1; }
+    .stat-card.cyan::before   { background: #06b6d4; }
 
     .stat-label {
       font-size: 0.72rem; color: var(--text2); font-weight: 500;
@@ -306,6 +309,7 @@
     .tbl-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
     .tbl-btn.danger { border-color: rgba(239,68,68,0.4); color: var(--red); }
     .tbl-btn.danger:hover { background: rgba(239,68,68,0.12); }
+    .tbl-btn.active { background: var(--orange); border-color: var(--orange); color: #fff; }
 
     .data-table {
       width: 100%;
@@ -693,6 +697,38 @@
           </div>
         </div>
 
+        <!-- ── 방문자 현황 ── -->
+        <div class="section-title" style="margin-top:4px;">
+          <i class="fa-solid fa-eye"></i> 방문자 현황
+          <span style="font-size:0.7rem;font-weight:400;color:var(--text2);margin-left:8px;">세션 기준 · 중복 제거</span>
+        </div>
+        <div class="stats-grid" id="visitStatsGrid" style="margin-bottom:28px;">
+          <div class="stat-card teal">
+            <div class="stat-label"><i class="fa-solid fa-calendar-day"></i> 오늘 방문자</div>
+            <div class="stat-value" id="stat-visit-today">-</div>
+            <div class="stat-sub" id="stat-visit-today-sub">로딩 중...</div>
+            <i class="fa-solid fa-calendar-day stat-icon"></i>
+          </div>
+          <div class="stat-card indigo">
+            <div class="stat-label"><i class="fa-solid fa-calendar-week"></i> 주간 방문자</div>
+            <div class="stat-value" id="stat-visit-week">-</div>
+            <div class="stat-sub">최근 7일</div>
+            <i class="fa-solid fa-calendar-week stat-icon"></i>
+          </div>
+          <div class="stat-card cyan">
+            <div class="stat-label"><i class="fa-solid fa-calendar"></i> 월간 방문자</div>
+            <div class="stat-value" id="stat-visit-month">-</div>
+            <div class="stat-sub">최근 30일</div>
+            <i class="fa-solid fa-calendar stat-icon"></i>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label"><i class="fa-solid fa-chart-line"></i> 총 페이지뷰</div>
+            <div class="stat-value" id="stat-visit-total">-</div>
+            <div class="stat-sub">전체 누적</div>
+            <i class="fa-solid fa-chart-line stat-icon"></i>
+          </div>
+        </div>
+
         <div class="chart-grid">
           <div class="chart-card">
             <h3><i class="fa-solid fa-chart-pie"></i> 카테고리별 게시물 분포</h3>
@@ -704,6 +740,36 @@
             <h3><i class="fa-solid fa-chart-bar"></i> 최근 7일 게시물 추이</h3>
             <div class="chart-wrap">
               <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 방문자 추이 차트 (전체 너비) -->
+        <div class="chart-card" style="margin-bottom:28px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <h3 style="margin-bottom:0;"><i class="fa-solid fa-users-viewfinder"></i> 일별 방문자 추이 (최근 14일)</h3>
+            <div style="display:flex;gap:8px;">
+              <button class="tbl-btn visitChartPeriod active" data-days="14" onclick="switchVisitChart(14,this)">14일</button>
+              <button class="tbl-btn visitChartPeriod" data-days="30" onclick="switchVisitChart(30,this)">30일</button>
+            </div>
+          </div>
+          <div style="height:240px;position:relative;">
+            <canvas id="visitTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 페이지별 방문 순위 -->
+        <div class="chart-grid" style="margin-bottom:28px;">
+          <div class="chart-card">
+            <h3><i class="fa-solid fa-trophy"></i> 페이지별 방문 순위 (7일)</h3>
+            <div style="height:220px;position:relative;">
+              <canvas id="pageRankChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3><i class="fa-solid fa-clock"></i> 시간대별 방문 분포 (오늘)</h3>
+            <div style="height:220px;position:relative;">
+              <canvas id="hourlyChart"></canvas>
             </div>
           </div>
         </div>
@@ -978,6 +1044,7 @@ async function refreshCurrentSection() {
 async function loadOverview() {
   await Promise.all([
     fetchStats(),
+    fetchVisitorStats(),
     loadRecentPosts()
   ]);
 }
@@ -1036,6 +1103,194 @@ async function fetchStats() {
     console.error('Stats error:', e);
   }
 }
+
+// ============================================================
+// 방문자 통계
+// ============================================================
+let visitTrendChart = null, pageRankChart = null, hourlyChart = null;
+
+async function fetchVisitorStats() {
+  try {
+    const now = Date.now();
+    const todayStart  = new Date(); todayStart.setHours(0,0,0,0);
+    const weekStart   = now - 7  * 86400000;
+    const monthStart  = now - 30 * 86400000;
+
+    // 전체 조회 (최근 30일치만 가져와 클라이언트에서 집계 — 성능 최적화)
+    const res = await fetch(
+      `${SUPABASE_URL_ADM}/rest/v1/page_views?visited_at=gte.${monthStart}&select=session_id,visited_at,page`,
+      { headers: HDR }
+    );
+    const rows = await res.json();
+    if (!Array.isArray(rows)) throw new Error('page_views fetch failed');
+
+    // 총 페이지뷰 (전체)
+    const totalRes = await fetch(
+      `${SUPABASE_URL_ADM}/rest/v1/page_views?select=id`,
+      { headers: { ...HDR, 'Prefer': 'count=exact' }, method: 'HEAD' }
+    );
+    const totalPV = parseInt(totalRes.headers.get('content-range')?.split('/')[1] || '0');
+
+    // 세션 중복 제거 집계 함수
+    const uniqueSessions = (arr) => new Set(arr.map(r => r.session_id)).size;
+
+    const todayRows  = rows.filter(r => r.visited_at >= todayStart.getTime());
+    const weekRows   = rows.filter(r => r.visited_at >= weekStart);
+    const monthRows  = rows; // 이미 30일 필터링
+
+    // 오늘 전일 비교
+    const yestStart  = todayStart.getTime() - 86400000;
+    const yestRows   = rows.filter(r => r.visited_at >= yestStart && r.visited_at < todayStart.getTime());
+    const todayUV    = uniqueSessions(todayRows);
+    const yestUV     = uniqueSessions(yestRows);
+    const todayDiff  = todayUV - yestUV;
+
+    document.getElementById('stat-visit-today').textContent  = todayUV.toLocaleString();
+    document.getElementById('stat-visit-today-sub').textContent =
+      `전일 대비 ${todayDiff >= 0 ? '+' : ''}${todayDiff}명`;
+    document.getElementById('stat-visit-week').textContent   = uniqueSessions(weekRows).toLocaleString();
+    document.getElementById('stat-visit-month').textContent  = uniqueSessions(monthRows).toLocaleString();
+    document.getElementById('stat-visit-total').textContent  = totalPV.toLocaleString();
+
+    // 차트 렌더
+    buildVisitTrendChart(rows, 14);
+    buildPageRankChart(weekRows);
+    buildHourlyChart(todayRows);
+
+  } catch(e) {
+    console.error('Visitor stats error:', e);
+    ['stat-visit-today','stat-visit-week','stat-visit-month','stat-visit-total'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '오류';
+    });
+  }
+}
+
+// 일별 방문자 추이 차트
+function buildVisitTrendChart(allRows, days) {
+  const labels = [], counts = [];
+  const now = Date.now();
+  for (let i = days - 1; i >= 0; i--) {
+    const dayStart = new Date(now - i * 86400000); dayStart.setHours(0,0,0,0);
+    const dayEnd   = new Date(dayStart.getTime() + 86400000);
+    const key = `${dayStart.getMonth()+1}/${dayStart.getDate()}`;
+    labels.push(key);
+    const dayRows = allRows.filter(r => r.visited_at >= dayStart.getTime() && r.visited_at < dayEnd.getTime());
+    counts.push(new Set(dayRows.map(r => r.session_id)).size);
+  }
+
+  if (visitTrendChart) visitTrendChart.destroy();
+  const ctx = document.getElementById('visitTrendChart').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 240);
+  grad.addColorStop(0, 'rgba(6,182,212,0.35)');
+  grad.addColorStop(1, 'rgba(6,182,212,0)');
+  visitTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: '방문자(UV)',
+        data: counts,
+        borderColor: '#06b6d4',
+        backgroundColor: grad,
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#06b6d4',
+        fill: true,
+        tension: 0.4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// 기간 전환 버튼
+function switchVisitChart(days, btn) {
+  document.querySelectorAll('.visitChartPeriod').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // 최근 30일 데이터를 다시 불러와 재렌더
+  fetch(
+    `${SUPABASE_URL_ADM}/rest/v1/page_views?visited_at=gte.${Date.now() - 30*86400000}&select=session_id,visited_at,page`,
+    { headers: HDR }
+  ).then(r => r.json()).then(rows => buildVisitTrendChart(rows, days));
+}
+
+// 페이지별 방문 순위 차트
+function buildPageRankChart(rows) {
+  const counts = {};
+  rows.forEach(r => { counts[r.page] = (counts[r.page] || 0) + 1; });
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  const PAGE_KO = {
+    index:'홈', community:'커뮤니티', rehearsal:'합주실', repair:'리페어샵',
+    instrument:'악기샵', academy:'음악학원', venue:'공연장', score:'악보',
+    analyze:'음원분석', portfolio:'포트폴리오', profile:'프로필',
+    'video-review':'리뷰영상', 'video-cover':'카피영상',
+    'video-fun':'재미영상', 'video-bandstage':'밴드라이브',
+  };
+
+  if (pageRankChart) pageRankChart.destroy();
+  const ctx = document.getElementById('pageRankChart').getContext('2d');
+  pageRankChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sorted.map(([p]) => PAGE_KO[p] || p),
+      datasets: [{
+        data: sorted.map(([,c]) => c),
+        backgroundColor: ['#e85d04','#3b82f6','#22c55e','#a855f7','#f59e0b','#06b6d4','#6366f1','#ef4444'],
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true },
+        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// 시간대별 방문 분포 차트 (오늘)
+function buildHourlyChart(todayRows) {
+  const counts = Array(24).fill(0);
+  todayRows.forEach(r => {
+    const h = new Date(r.visited_at).getHours();
+    counts[h]++;
+  });
+  const labels = Array.from({length:24}, (_,i) => `${i}시`);
+
+  if (hourlyChart) hourlyChart.destroy();
+  const ctx = document.getElementById('hourlyChart').getContext('2d');
+  hourlyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: counts,
+        backgroundColor: 'rgba(99,102,241,0.7)',
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 0 }, grid: { display: false } },
+        y: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
 
 const CAT_LABELS = {
   free: '자유게시판', gear: '장비리뷰', band: '밴드구인',

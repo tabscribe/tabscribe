@@ -308,29 +308,30 @@ ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS image_urls  TEXT[];
 -- 1. profiles 테이블에 is_admin 컬럼 추가
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false;
 
--- 2. page_views 테이블 생성 (페이지 조회수 트래킹)
+-- 2. page_views 테이블 생성 (방문자 트래킹)
+-- ⚠️ 이미 실행했다면 아래 CREATE는 건너뛰고 ALTER만 실행하세요
 CREATE TABLE IF NOT EXISTS public.page_views (
   id          TEXT        PRIMARY KEY,
-  page        TEXT        NOT NULL,   -- 'index', 'community', 'rehearsal', 'analyze' 등
-  user_id     TEXT,                   -- NULL = 비로그인 방문자
-  session_id  TEXT,                   -- 세션 구분용
+  page        TEXT        NOT NULL,       -- 'index', 'community', 'rehearsal' 등
+  user_id     TEXT,                       -- NULL = 비로그인 방문자
+  session_id  TEXT        NOT NULL,       -- 세션 ID (중복 방지)
+  referrer    TEXT,                       -- 유입 경로
+  user_agent  TEXT,                       -- 기기/브라우저 구분용
   visited_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
 );
+
+-- 인덱스 (조회 성능)
+CREATE INDEX IF NOT EXISTS pv_visited_at_idx ON public.page_views (visited_at DESC);
+CREATE INDEX IF NOT EXISTS pv_session_idx    ON public.page_views (session_id);
+CREATE INDEX IF NOT EXISTS pv_page_idx       ON public.page_views (page);
 
 ALTER TABLE public.page_views ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "pv_select_admin" ON public.page_views;
 DROP POLICY IF EXISTS "pv_insert_all"   ON public.page_views;
 
--- 조회는 관리자만 (또는 자기 자신)
-CREATE POLICY "pv_select_admin"
-  ON public.page_views FOR SELECT
-  USING (true);  -- 클라이언트에서 is_admin 체크
-
--- 누구나 조회수 기록 가능
-CREATE POLICY "pv_insert_all"
-  ON public.page_views FOR INSERT
-  WITH CHECK (true);
+CREATE POLICY "pv_select_admin" ON public.page_views FOR SELECT USING (true);
+CREATE POLICY "pv_insert_all"   ON public.page_views FOR INSERT WITH CHECK (true);
 
 -- 3. community_posts 삭제 권한: 관리자는 모든 게시물 삭제 가능
 --    (기존 cp_delete_all 정책이 이미 true이므로 추가 RLS 불필요)
