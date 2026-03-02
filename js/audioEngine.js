@@ -41,6 +41,7 @@ class AudioEngine {
         this.analyserNode.smoothingTimeConstant = 0.3;
         this.gainNode = this.audioContext.createGain();
         this.gainNode.gain.value = this.volume;
+        // 체인: source → analyser → gain → destination
         this.analyserNode.connect(this.gainNode);
         this.gainNode.connect(this.audioContext.destination);
 
@@ -48,16 +49,29 @@ class AudioEngine {
         if (this.audioContext.state === 'suspended') {
             try { await this.audioContext.resume(); } catch(_) {}
         }
+
+        // iOS 무음 디버그 로그
+        console.log('[AudioEngine] init() → state:', this.audioContext.state,
+            'gain:', this.gainNode.gain.value,
+            'sampleRate:', this.audioContext.sampleRate);
     }
 
     // iOS에서 AudioContext가 닫혔거나 broken 상태이면 재생성
     async _ensureContext() {
         if (!this.audioContext || this.audioContext.state === 'closed') {
             await this.init();
+            // context 재생성 시 버퍼를 다시 디코딩해야 함 → 호출측에서 처리
             return;
         }
         if (this.audioContext.state === 'suspended') {
             try { await this.audioContext.resume(); } catch(_) {}
+        }
+        // gain 체인 복구 확인 (context 재생성 후 노드가 끊길 수 있음)
+        if (this.gainNode && this.gainNode.context !== this.audioContext) {
+            this.gainNode = this.audioContext.createGain();
+            this.gainNode.gain.value = this.volume;
+            if (this.analyserNode) this.analyserNode.connect(this.gainNode);
+            this.gainNode.connect(this.audioContext.destination);
         }
     }
 
@@ -184,8 +198,11 @@ class AudioEngine {
     }
 
     setVolume(vol) {
-        this.volume = vol;
-        if (this.gainNode) this.gainNode.gain.value = vol;
+        this.volume = Math.max(0, Math.min(1, vol)); // 0~1 범위 강제
+        if (this.gainNode) {
+            this.gainNode.gain.value = this.volume;
+            console.log('[AudioEngine] setVolume:', this.volume);
+        }
     }
 
     getFrequencyData() {

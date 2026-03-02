@@ -91,8 +91,43 @@ async function getProfile(userId) {
 }
 
 // ───────────────────────────────────────────────
-// 인증 상태 변경 리스너
+// 닉네임 중복 확인 (profiles 테이블 조회)
 // ───────────────────────────────────────────────
+async function checkNicknameDuplicate(nickname) {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/profiles?nickname=eq.${encodeURIComponent(nickname)}&select=id&limit=1`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON,
+        'Authorization': `Bearer ${SUPABASE_ANON}`,
+      }
+    });
+    if (!res.ok) return false; // 오류 시 중복 아닌 것으로 처리
+    const rows = await res.json();
+    return rows.length > 0; // true = 중복
+  } catch { return false; }
+}
+
+// ───────────────────────────────────────────────
+// 이메일 중복 확인 (Supabase Auth signUp 전 사전 체크)
+// profiles 테이블의 email 컬럼으로 확인
+// ───────────────────────────────────────────────
+async function checkEmailDuplicate(email) {
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(email)}&select=id&limit=1`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON,
+        'Authorization': `Bearer ${SUPABASE_ANON}`,
+      }
+    });
+    if (!res.ok) return false;
+    const rows = await res.json();
+    return rows.length > 0; // true = 중복
+  } catch { return false; }
+}
+
+
 function onAuthChange(callback) {
   const sb = getClient();
   if (!sb) return;

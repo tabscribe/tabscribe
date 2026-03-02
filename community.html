@@ -348,18 +348,125 @@
             padding: 28px 20px;
             user-select: none;
         }
-        .img-upload-preview {
+        /* ── 다중 미리보기 그리드 ── */
+        .img-multi-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 12px;
+        }
+        .img-thumb-wrap {
             position: relative;
-            width: 100%;
-        }
-        .img-upload-preview img {
-            width: 100%;
-            max-height: 240px;
-            object-fit: contain;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
             background: #f1f5f9;
-            display: block;
-            border-radius: 10px;
         }
+        .img-thumb-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .img-thumb-order {
+            position: absolute;
+            top: 4px; left: 4px;
+            background: rgba(0,0,0,.6);
+            color: #fff;
+            font-size: .65rem;
+            font-weight: 700;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .img-thumb-remove {
+            position: absolute;
+            top: 4px; right: 4px;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: rgba(220,38,38,.8);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: .65rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background .15s;
+        }
+        .img-thumb-remove:hover { background: rgba(185,28,28,1); }
+        .img-add-more-btn {
+            margin: 0 12px 12px;
+            padding: 8px 14px;
+            border: 1.5px dashed #f97316;
+            border-radius: 8px;
+            background: transparent;
+            color: #f97316;
+            font-size: .82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .15s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .img-add-more-btn:hover { background: #fff7ed; }
+        .img-compress-badge {
+            font-size: .7rem;
+            color: #16a34a;
+            font-weight: 600;
+            padding: 2px 7px;
+            background: #f0fdf4;
+            border-radius: 10px;
+            border: 1px solid #86efac;
+        }
+        /* ── 상세보기 이미지 슬라이더 ── */
+        .detail-img-slider {
+            position: relative;
+            margin-bottom: 14px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+        .detail-img-track {
+            display: flex;
+            transition: transform .3s ease;
+        }
+        .detail-img-slide {
+            min-width: 100%;
+        }
+        .detail-img-slide img {
+            width: 100%;
+            max-height: 340px;
+            object-fit: contain;
+            background: #f8fafc;
+            display: block;
+        }
+        .detail-img-btn {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: rgba(0,0,0,.45);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: .9rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background .15s;
+            z-index: 3;
+        }
+        .detail-img-btn:hover { background: rgba(0,0,0,.7); }
+        .detail-img-prev { left: 8px; }
+        .detail-img-next { right: 8px; }
+        .detail-img-dots {
+            display: flex; justify-content: center; gap: 6px;
+            padding: 8px 0 4px;
+        }
+        .detail-img-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            cursor: pointer;
+            transition: background .15s;
+            border: none;
+        }
+        .detail-img-dot.active { background: #f97316; }
         .img-remove-btn {
             position: absolute;
             top: 8px; right: 8px;
@@ -411,6 +518,20 @@
             transition: transform 0.2s;
         }
         .post-card:hover .post-card-thumb img { transform: scale(1.06); }
+
+        /* 다중 이미지 개수 뱃지 */
+        .thumb-count {
+            position: absolute;
+            bottom: 4px; right: 4px;
+            background: rgba(0,0,0,0.62);
+            color: #fff;
+            font-size: .68rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+        .post-card-thumb { position: relative; }
 
         /* 레슨 카드 사진 */
         .lesson-card-thumb {
@@ -647,6 +768,25 @@
         .detail-contact-value {
             font-weight: 700; color: #1e40af;
             font-size: 0.95rem; letter-spacing: 0.02em;
+        }
+
+        /* 게시물 삭제 버튼 */
+        .btn-delete-post {
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1.5px solid #fca5a5;
+            background: #fff1f2;
+            color: #dc2626;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 5px;
+            transition: all 0.15s;
+        }
+        .btn-delete-post:hover {
+            background: #dc2626;
+            color: #fff;
+            border-color: #dc2626;
         }
 
         /* 판매완료 버튼 영역 */
@@ -1739,23 +1879,22 @@
             </div>
             <div class="form-group" id="imageUrlGroup">
                 <label>
-                    사진 첨부 <span style="color:#9ca3af;font-weight:500;font-size:.78rem;">(선택 · JPG/PNG/GIF/WebP · 최대 5MB)</span>
+                    사진 첨부 <span style="color:#9ca3af;font-weight:500;font-size:.78rem;">(선택 · 최대 5장 · 자동압축)</span>
                 </label>
-                <!-- 업로드 드롭존 -->
+                <!-- 다중 업로드 드롭존 -->
                 <div class="img-upload-zone" id="imgUploadZone">
-                    <input type="file" id="formImageFile" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" hidden>
+                    <input type="file" id="formImageFile" accept="image/*" multiple hidden>
                     <div class="img-upload-placeholder" id="imgUploadPlaceholder">
-                        <i class="fas fa-image" style="font-size:2rem;color:#cbd5e1;display:block;margin-bottom:8px;"></i>
+                        <i class="fas fa-images" style="font-size:2rem;color:#cbd5e1;display:block;margin-bottom:8px;"></i>
                         <span style="font-size:.85rem;color:#64748b;font-weight:600;">클릭하거나 이미지를 끌어다 놓으세요</span>
-                        <span style="font-size:.74rem;color:#9ca3af;margin-top:4px;display:block;">JPG · PNG · GIF · WebP · 최대 5MB</span>
+                        <span style="font-size:.74rem;color:#9ca3af;margin-top:4px;display:block;">최대 5장 · JPG · PNG · WebP · 업로드 시 자동 압축</span>
                     </div>
-                    <div class="img-upload-preview" id="imgUploadPreview" style="display:none;">
-                        <img id="imgPreviewImg" src="" alt="미리보기">
-                        <button type="button" class="img-remove-btn" id="imgRemoveBtn" title="사진 제거">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <div class="img-upload-info" id="imgUploadInfo"></div>
-                    </div>
+                    <!-- 다중 미리보기 그리드 -->
+                    <div class="img-multi-preview" id="imgMultiPreview" style="display:none;"></div>
+                    <!-- 추가 버튼 (5장 미만일 때) -->
+                    <button type="button" class="img-add-more-btn" id="imgAddMoreBtn" style="display:none;">
+                        <i class="fas fa-plus"></i> 사진 추가 (<span id="imgCount">0</span>/5)
+                    </button>
                 </div>
             </div>
             <div class="form-group" id="priceGroup" style="display:none;">
@@ -1786,7 +1925,12 @@
         <div class="modal detail-modal">
             <div class="modal-header">
                 <div id="detailCategoryBadge"></div>
-                <button class="modal-close" id="closeDetailModal">✕</button>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <button class="btn-delete-post" id="btnDeletePost" style="display:none;">
+                        <i class="fas fa-trash-alt"></i> 삭제
+                    </button>
+                    <button class="modal-close" id="closeDetailModal">✕</button>
+                </div>
             </div>
             <!-- 게시글 본문 -->
             <div id="detailContent"></div>
@@ -2247,11 +2391,14 @@
             : `<span class="gear-status-badge status-active">판매중</span>`;
 
         // 이미지 영역: 실제 사진이 있으면 사진, 없으면 이모지 배경
-        const imgArea = p.image_url
+        const gearThumb = getThumbUrl(p);
+        const gearImgCnt = getImgCount(p);
+        const imgArea = gearThumb
             ? `<div class="gear-card-photo">
-                <img src="${escHtml(p.image_url)}" alt="${escHtml(p.title || '')}"
+                <img src="${escHtml(gearThumb)}" alt="${escHtml(p.title || '')}"
                     onerror="this.parentElement.innerHTML='<span class=\\"gear-card-noimg\\">${icon}</span>'">
                 ${statusBadge}
+                ${gearImgCnt ? `<span class="thumb-count">+${gearImgCnt-1}</span>` : ''}
                </div>`
             : `<div class="gear-card-noimg-wrap">
                 <span class="gear-card-noimg-icon">${icon}</span>
@@ -2290,11 +2437,10 @@
         const subLabel = sub ? sub.label : '레슨';
         const icons = { guitar: '🎸', bass: '🎵', drum: '🥁', vocal: '🎤', keyboard: '🎹' };
         const icon = icons[p.subcategory] || '🎓';
-        const thumbHtml = p.image_url
-            ? `<div class="lesson-card-thumb">
-                <img src="${escHtml(p.image_url)}" alt=""
-                    onerror="this.parentElement.style.display='none'">
-               </div>` : '';
+        const thumbHtml = (() => {
+            const t = getThumbUrl(p); const c = getImgCount(p);
+            return t ? `<div class="lesson-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
+        })();
         return `
         <div class="lesson-card" data-post-id="${p.id}">
             ${thumbHtml}
@@ -2324,11 +2470,10 @@
         const tags = Array.isArray(p.tags) ? p.tags.slice(0, 3).map(t =>
             `<span class="recruit-tag">${escHtml(t)}</span>`).join('') : '';
         const locTag = p.location ? `<span class="recruit-location"><i class="fas fa-map-marker-alt"></i> ${escHtml(p.location)}</span>` : '';
-        const thumbHtml = p.image_url
-            ? `<div class="recruit-card-thumb">
-                <img src="${escHtml(p.image_url)}" alt=""
-                    onerror="this.parentElement.style.display='none'">
-               </div>` : '';
+        const thumbHtml = (() => {
+            const t = getThumbUrl(p); const c = getImgCount(p);
+            return t ? `<div class="recruit-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
+        })();
         return `
         <div class="recruit-card" data-post-id="${p.id}">
             ${thumbHtml}
@@ -2402,11 +2547,35 @@
                     <i class="fas fa-check-circle"></i> 판매완료 (누르면 연락처가 사라집니다)
                 </button>
             </div>` : '';
-        const imageHtml = p.image_url ? `
-            <div class="detail-product-img">
-                <img src="${escHtml(p.image_url)}" alt="${escHtml(p.title || '첨부 이미지')}"
-                    onerror="this.parentElement.style.display='none'">
-            </div>` : '';
+        // 이미지 슬라이더 (다중 이미지 지원)
+        const allImgs = (() => {
+            const arr = [];
+            if (Array.isArray(p.image_urls) && p.image_urls.length > 0) {
+                arr.push(...p.image_urls);
+            } else if (p.image_url) {
+                arr.push(p.image_url);
+            }
+            return arr;
+        })();
+        const imageHtml = allImgs.length === 0 ? '' : allImgs.length === 1 ? `
+            <div class="detail-img-slider">
+                <div class="detail-img-track">
+                    <div class="detail-img-slide">
+                        <img src="${escHtml(allImgs[0])}" alt="첨부 이미지"
+                            onerror="this.parentElement.parentElement.parentElement.style.display='none'">
+                    </div>
+                </div>
+            </div>` : `
+            <div class="detail-img-slider" id="detailSlider">
+                <div class="detail-img-track" id="sliderTrack">
+                    ${allImgs.map(u => `<div class="detail-img-slide"><img src="${escHtml(u)}" alt="첨부 이미지" onerror="this.parentElement.style.display='none'"></div>`).join('')}
+                </div>
+                <button class="detail-img-btn detail-img-prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></button>
+                <button class="detail-img-btn detail-img-next" id="sliderNext"><i class="fas fa-chevron-right"></i></button>
+                <div class="detail-img-dots" id="sliderDots">
+                    ${allImgs.map((_,i) => `<button class="detail-img-dot${i===0?' active':''}" data-i="${i}"></button>`).join('')}
+                </div>
+            </div>`;
 
         document.getElementById('detailContent').innerHTML = `
             <div class="detail-title">
@@ -2454,6 +2623,51 @@
         }
 
         document.getElementById('detailModal').classList.add('open');
+
+        // ── 삭제 버튼 (본인 게시물만 노출) ──
+        const btnDelete = document.getElementById('btnDeletePost');
+        if (isAuthor) {
+            btnDelete.style.display = 'flex';
+            // 이전 이벤트 제거를 위해 clone 교체
+            const newBtn = btnDelete.cloneNode(true);
+            btnDelete.parentNode.replaceChild(newBtn, btnDelete);
+            newBtn.addEventListener('click', async () => {
+                if (!confirm('게시물을 삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?')) return;
+                newBtn.disabled = true;
+                newBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 삭제 중...';
+                try {
+                    await SupabaseDB.delete('community_posts', p.id);
+                    // 로컬 state에서 제거
+                    state.posts = state.posts.filter(x => x.id !== p.id);
+                    document.getElementById('detailModal').classList.remove('open');
+                    showToast('🗑️ 게시물이 삭제되었습니다.');
+                    loadPosts();
+                    updateTotalCount();
+                } catch (err) {
+                    showToast('❌ 삭제 실패: ' + (err.message || '다시 시도해주세요.'));
+                    newBtn.disabled = false;
+                    newBtn.innerHTML = '<i class="fas fa-trash-alt"></i> 삭제';
+                }
+            });
+        } else {
+            btnDelete.style.display = 'none';
+        }
+
+        // 슬라이더 초기화 (다중 이미지인 경우)
+        if (allImgs.length > 1) {
+            let sliderIdx = 0;
+            const track = document.getElementById('sliderTrack');
+            const dots  = document.querySelectorAll('#sliderDots .detail-img-dot');
+            const moveTo = i => {
+                sliderIdx = (i + allImgs.length) % allImgs.length;
+                track.style.transform = `translateX(-${sliderIdx * 100}%)`;
+                dots.forEach((d, di) => d.classList.toggle('active', di === sliderIdx));
+            };
+            document.getElementById('sliderPrev').addEventListener('click', () => moveTo(sliderIdx - 1));
+            document.getElementById('sliderNext').addEventListener('click', () => moveTo(sliderIdx + 1));
+            dots.forEach(d => d.addEventListener('click', () => moveTo(+d.dataset.i)));
+        }
+
         // 조회수 증가
         incrementViews(p.id, p.views || 0);
         // 댓글 로드
@@ -2491,21 +2705,26 @@
         document.getElementById('formCategory').addEventListener('change', onCategoryChange);
         document.getElementById('submitPost').addEventListener('click', submitPost);
 
-        // ── 이미지 업로드 이벤트 ──
+        // ── 다중 이미지 업로드 이벤트 ──
         const zone      = document.getElementById('imgUploadZone');
         const fileInput = document.getElementById('formImageFile');
 
-        // 클릭으로 파일 선택
-        zone.addEventListener('click', () => {
-            if (!document.getElementById('imgUploadPreview').style.display ||
-                document.getElementById('imgUploadPreview').style.display === 'none') {
-                fileInput.click();
-            }
+        // 클릭 → placeholder 클릭 시 파일 선택
+        zone.addEventListener('click', e => {
+            if (e.target.closest('.img-thumb-remove') || e.target.closest('.img-add-more-btn')) return;
+            if (_pendingImageFiles.length === 0) fileInput.click();
+        });
+
+        // 추가 버튼
+        document.getElementById('imgAddMoreBtn').addEventListener('click', e => {
+            e.stopPropagation();
+            fileInput.click();
         });
 
         // 파일 선택 시 미리보기
         fileInput.addEventListener('change', () => {
-            if (fileInput.files[0]) handleImageFile(fileInput.files[0]);
+            if (fileInput.files.length > 0) handleImageFiles(Array.from(fileInput.files));
+            fileInput.value = '';
         });
 
         // 드래그&드롭
@@ -2514,14 +2733,8 @@
         zone.addEventListener('drop', e => {
             e.preventDefault();
             zone.classList.remove('drag-over');
-            const f = e.dataTransfer.files[0];
-            if (f && f.type.startsWith('image/')) handleImageFile(f);
-        });
-
-        // 사진 제거 버튼
-        document.getElementById('imgRemoveBtn').addEventListener('click', e => {
-            e.stopPropagation();
-            clearImageUpload();
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            if (files.length > 0) handleImageFiles(files);
         });
     }
 
@@ -2551,43 +2764,78 @@
         resetWriteForm();
     }
 
-    // ── 이미지 파일 선택 처리 ──
-    let _pendingImageFile = null; // 업로드 대기 파일 (submit 시 실제 업로드)
+    // ── 다중 이미지 파일 처리 ──
+    let _pendingImageFiles = []; // 업로드 대기 파일 배열 (최대 5개)
+    const MAX_IMAGES = 5;
 
-    function handleImageFile(file) {
+    function handleImageFiles(newFiles) {
         const allowed = ['image/jpeg','image/jpg','image/png','image/gif','image/webp'];
-        if (!allowed.includes(file.type)) {
-            showToast('⚠️ JPG, PNG, GIF, WebP 이미지만 가능합니다.');
+        let added = 0;
+        for (const file of newFiles) {
+            if (_pendingImageFiles.length >= MAX_IMAGES) {
+                showToast(`⚠️ 사진은 최대 ${MAX_IMAGES}장까지 첨부할 수 있습니다.`); break;
+            }
+            if (!allowed.includes(file.type)) {
+                showToast('⚠️ JPG, PNG, GIF, WebP 이미지만 가능합니다.'); continue;
+            }
+            if (file.size > 15 * 1024 * 1024) {
+                showToast('⚠️ 15MB 이하 이미지만 가능합니다. (자동압축 적용)'); continue;
+            }
+            _pendingImageFiles.push(file);
+            added++;
+        }
+        if (added > 0) renderImagePreviews();
+    }
+
+    function renderImagePreviews() {
+        const placeholder = document.getElementById('imgUploadPlaceholder');
+        const multiPreview = document.getElementById('imgMultiPreview');
+        const addMoreBtn  = document.getElementById('imgAddMoreBtn');
+        const countSpan   = document.getElementById('imgCount');
+
+        if (_pendingImageFiles.length === 0) {
+            placeholder.style.display = 'flex';
+            multiPreview.style.display = 'none';
+            addMoreBtn.style.display = 'none';
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            showToast('⚠️ 이미지 크기는 5MB 이하만 가능합니다.');
-            return;
-        }
-        _pendingImageFile = file;
+        placeholder.style.display = 'none';
+        multiPreview.style.display = 'grid';
+        countSpan.textContent = _pendingImageFiles.length;
+        addMoreBtn.style.display = _pendingImageFiles.length < MAX_IMAGES ? 'flex' : 'none';
 
-        // 미리보기
-        const reader = new FileReader();
-        reader.onload = e => {
-            const placeholder = document.getElementById('imgUploadPlaceholder');
-            const preview     = document.getElementById('imgUploadPreview');
-            const previewImg  = document.getElementById('imgPreviewImg');
-            const info        = document.getElementById('imgUploadInfo');
-
-            placeholder.style.display = 'none';
-            previewImg.src = e.target.result;
-            info.textContent = `${file.name}  (${(file.size/1024).toFixed(0)}KB)`;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+        multiPreview.innerHTML = '';
+        _pendingImageFiles.forEach((file, idx) => {
+            const wrap = document.createElement('div');
+            wrap.className = 'img-thumb-wrap';
+            const order = document.createElement('span');
+            order.className = 'img-thumb-order';
+            order.textContent = idx + 1;
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'img-thumb-remove';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                _pendingImageFiles.splice(idx, 1);
+                renderImagePreviews();
+            });
+            const img = document.createElement('img');
+            img.alt = file.name;
+            const reader = new FileReader();
+            reader.onload = ev => { img.src = ev.target.result; };
+            reader.readAsDataURL(file);
+            wrap.appendChild(img);
+            wrap.appendChild(order);
+            wrap.appendChild(removeBtn);
+            multiPreview.appendChild(wrap);
+        });
     }
 
     function clearImageUpload() {
-        _pendingImageFile = null;
+        _pendingImageFiles = [];
         document.getElementById('formImageFile').value = '';
-        document.getElementById('imgUploadPlaceholder').style.display = 'flex';
-        document.getElementById('imgUploadPreview').style.display = 'none';
-        document.getElementById('imgPreviewImg').src = '';
+        renderImagePreviews();
     }
 
     function resetWriteForm() {
@@ -2672,12 +2920,14 @@
         const btn = document.getElementById('submitPost');
         btn.disabled = true;
 
-        // ── 이미지 업로드 처리 ──
-        let imageUrl = null;
-        if (_pendingImageFile) {
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 사진 업로드 중...';
+        // ── 다중 이미지 업로드 처리 ──
+        let imageUrls = [];
+        if (_pendingImageFiles.length > 0) {
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 사진 압축 및 업로드 중... (0/${_pendingImageFiles.length})`;
             try {
-                imageUrl = await uploadImageToSupabase(_pendingImageFile);
+                imageUrls = await uploadImagesToSupabase(_pendingImageFiles, (cur, total) => {
+                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 사진 업로드 중... (${cur}/${total})`;
+                });
             } catch (err) {
                 showToast(`⚠️ ${err.message}`);
                 btn.disabled = false;
@@ -2695,7 +2945,8 @@
                 title, author, content, location,
                 price: price || null,
                 contact: contact || null,
-                image_url: imageUrl || null,
+                image_url: imageUrls[0] || null,
+                image_urls: imageUrls.length > 0 ? imageUrls : null,
                 tags,
                 views: 0,
                 likes: 0,

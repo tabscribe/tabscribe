@@ -144,6 +144,26 @@
     }
     .form-error.show { display: block; }
 
+    /* 중복 체크 관련 */
+    .form-success {
+      font-size: 0.8rem;
+      color: #16a34a;
+      margin-top: 5px;
+    }
+    .check-badge {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.78rem;
+      font-weight: 700;
+      pointer-events: none;
+    }
+    .check-badge.checking { color: #f59e0b; }
+    .check-badge.ok       { color: #16a34a; }
+    .check-badge.dup      { color: #ef4444; }
+    .form-input.dup-error { border-color: #ef4444 !important; }
+    .form-input.dup-ok    { border-color: #16a34a !important; }
+
     /* ── 성별 라디오 ── */
     .gender-group {
       display: flex;
@@ -424,9 +444,14 @@
           <label class="form-label" for="email">
             이메일 <span class="required">*</span>
           </label>
-          <input type="email" id="email" class="form-input"
-                 placeholder="example@email.com" autocomplete="email" required>
+          <div style="position:relative;">
+            <input type="email" id="email" class="form-input"
+                   placeholder="example@email.com" autocomplete="email" required>
+            <span class="check-badge" id="emailCheckBadge"></span>
+          </div>
           <div class="form-error" id="emailError">올바른 이메일 주소를 입력해주세요.</div>
+          <div class="form-error" id="emailDupError">이미 사용 중인 이메일입니다.</div>
+          <div class="form-success" id="emailOkMsg" style="display:none;">✅ 사용 가능한 이메일입니다.</div>
         </div>
 
         <!-- 비밀번호 -->
@@ -460,10 +485,15 @@
           <label class="form-label" for="nickname">
             닉네임 <span class="required">*</span>
           </label>
-          <input type="text" id="nickname" class="form-input"
-                 placeholder="커뮤니티에서 사용할 닉네임" maxlength="20" required>
+          <div style="position:relative;">
+            <input type="text" id="nickname" class="form-input"
+                   placeholder="커뮤니티에서 사용할 닉네임" maxlength="20" required>
+            <span class="check-badge" id="nickCheckBadge"></span>
+          </div>
           <div class="form-hint">2~20자, 한글/영문/숫자 사용 가능</div>
           <div class="form-error" id="nicknameError">닉네임은 2~20자로 입력해주세요.</div>
+          <div class="form-error" id="nicknameDupError">이미 사용 중인 닉네임입니다.</div>
+          <div class="form-success" id="nicknameOkMsg" style="display:none;">✅ 사용 가능한 닉네임입니다.</div>
         </div>
 
         <hr class="form-divider">
@@ -616,6 +646,62 @@
       }
     });
 
+
+    // ── 실시간 중복 체크 (debounce) ──
+    let _emailDup = null;   // null=미확인, true=중복, false=사용가능
+    let _nickDup  = null;
+    let _emailTimer, _nickTimer;
+
+    function setCheckUI(inputId, badgeId, okMsgId, dupMsgId, state) {
+      // state: 'checking' | 'ok' | 'dup' | 'reset'
+      const input  = document.getElementById(inputId);
+      const badge  = document.getElementById(badgeId);
+      const okMsg  = document.getElementById(okMsgId);
+      const dupMsg = document.getElementById(dupMsgId);
+      input.classList.remove('dup-ok','dup-error');
+      badge.className = 'check-badge';
+      okMsg.style.display = 'none';
+      dupMsg.classList.remove('show');
+      if (state === 'checking') {
+        badge.className = 'check-badge checking'; badge.textContent = '확인 중...';
+      } else if (state === 'ok') {
+        badge.className = 'check-badge ok'; badge.textContent = '✔ 사용가능';
+        input.classList.add('dup-ok'); okMsg.style.display = 'block';
+      } else if (state === 'dup') {
+        badge.className = 'check-badge dup'; badge.textContent = '✖ 중복';
+        input.classList.add('dup-error'); dupMsg.classList.add('show');
+      }
+    }
+
+    const emailInput = document.getElementById('email');
+    emailInput.addEventListener('input', () => {
+      _emailDup = null;
+      clearTimeout(_emailTimer);
+      const val = emailInput.value.trim();
+      const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailReg.test(val)) { setCheckUI('email','emailCheckBadge','emailOkMsg','emailDupError','reset'); return; }
+      setCheckUI('email','emailCheckBadge','emailOkMsg','emailDupError','checking');
+      _emailTimer = setTimeout(async () => {
+        const dup = await checkEmailDuplicate(val);
+        _emailDup = dup;
+        setCheckUI('email','emailCheckBadge','emailOkMsg','emailDupError', dup ? 'dup' : 'ok');
+      }, 600);
+    });
+
+    const nickInput = document.getElementById('nickname');
+    nickInput.addEventListener('input', () => {
+      _nickDup = null;
+      clearTimeout(_nickTimer);
+      const val = nickInput.value.trim();
+      if (val.length < 2) { setCheckUI('nickname','nickCheckBadge','nicknameOkMsg','nicknameDupError','reset'); return; }
+      setCheckUI('nickname','nickCheckBadge','nicknameOkMsg','nicknameDupError','checking');
+      _nickTimer = setTimeout(async () => {
+        const dup = await checkNicknameDuplicate(val);
+        _nickDup = dup;
+        setCheckUI('nickname','nickCheckBadge','nicknameOkMsg','nicknameDupError', dup ? 'dup' : 'ok');
+      }, 600);
+    });
+
     // ── 폼 제출 ──
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -642,7 +728,19 @@
       const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailReg.test(email)) {
         showErr('emailError', 'email'); valid = false;
+      } else if (_emailDup === null) {
+        // 중복 확인 미완료 시 직접 체크
+        const btn2 = document.getElementById('submitBtn');
+        btn2.disabled = true;
+        btn2.innerHTML = '<div class="spinner"></div> 중복 확인 중...';
+        _emailDup = await checkEmailDuplicate(email);
+        btn2.disabled = false;
+        btn2.innerHTML = '<i class="fas fa-user-plus"></i> <span>이메일 인증 후 가입하기</span>';
+        if (_emailDup) { setCheckUI('email','emailCheckBadge','emailOkMsg','emailDupError','dup'); valid = false; }
+      } else if (_emailDup === true) {
+        setCheckUI('email','emailCheckBadge','emailOkMsg','emailDupError','dup'); valid = false;
       }
+
       if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
         showErr('passwordError', 'password'); valid = false;
       }
@@ -651,6 +749,12 @@
       }
       if (nickname.length < 2 || nickname.length > 20) {
         showErr('nicknameError', 'nickname'); valid = false;
+      } else if (_nickDup === null) {
+        // 중복 확인 미완료 시 직접 체크
+        _nickDup = await checkNicknameDuplicate(nickname);
+        if (_nickDup) { setCheckUI('nickname','nickCheckBadge','nicknameOkMsg','nicknameDupError','dup'); valid = false; }
+      } else if (_nickDup === true) {
+        setCheckUI('nickname','nickCheckBadge','nicknameOkMsg','nicknameDupError','dup'); valid = false;
       }
       if (!gender) {
         document.getElementById('genderError').classList.add('show'); valid = false;

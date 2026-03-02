@@ -208,6 +208,47 @@ async function uploadImageToSupabase(file) {
     return publicUrl;
 }
 
+/* ─────────────────────────────────────────
+   Canvas 이미지 압축 (업로드 전 자동 리사이즈)
+   maxW/maxH: 최대 가로/세로 픽셀, quality: JPEG 품질 0~1
+───────────────────────────────────────── */
+function compressImage(file, maxW = 1280, maxH = 1280, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('파일 읽기 실패'));
+        reader.onload = e => {
+            const img = new Image();
+            img.onerror = () => reject(new Error('이미지 로드 실패'));
+            img.onload = () => {
+                let w = img.width, h = img.height;
+                // 비율 유지하며 축소
+                if (w > maxW || h > maxH) {
+                    const ratio = Math.min(maxW / w, maxH / h);
+                    w = Math.round(w * ratio);
+                    h = Math.round(h * ratio);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                // GIF/PNG 투명 유지 위해 png도 허용, 나머지는 jpeg
+                const outType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                const outQuality = outType === 'image/png' ? 1 : quality;
+                canvas.toBlob(blob => {
+                    if (!blob) { reject(new Error('압축 실패')); return; }
+                    // 압축 결과가 원본보다 크면 원본 사용
+                    const result = blob.size < file.size ? blob : file;
+                    const compressed = new File([result], file.name, { type: outType });
+                    console.log(`[압축] ${(file.size/1024).toFixed(0)}KB → ${(compressed.size/1024).toFixed(0)}KB`);
+                    resolve(compressed);
+                }, outType, outQuality);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 /* Base64 DataURL fallback (Storage 미설정 환경용) */
 function fileToBase64DataUrl(file) {
     return new Promise((resolve, reject) => {
@@ -223,4 +264,22 @@ function fileToBase64DataUrl(file) {
     });
 }
 
-window.uploadImageToSupabase = uploadImageToSupabase;
+/* ─────────────────────────────────────────
+   다중 이미지 업로드 (최대 5장, 압축 후 업로드)
+   반환: URL 문자열 배열
+───────────────────────────────────────── */
+async function uploadImagesToSupabase(files, onProgress) {
+    const urls = [];
+    for (let i = 0; i < files.length; i++) {
+        if (onProgress) onProgress(i + 1, files.length);
+        // 압축 후 업로드
+        const compressed = await compressImage(files[i]);
+        const url = await uploadImageToSupabase(compressed);
+        urls.push(url);
+    }
+    return urls;
+}
+
+window.uploadImageToSupabase  = uploadImageToSupabase;
+window.uploadImagesToSupabase = uploadImagesToSupabase;
+window.compressImage          = compressImage;

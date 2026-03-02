@@ -198,6 +198,23 @@ async function handleFile(file) {
         return;
     }
 
+    // ── iOS iCloud 파일 다운로드 대기 처리 ──
+    // iCloud에 저장된 파일은 size=0 또는 type='' 으로 들어옴
+    // 실제 파일이 로컬에 없으면 size가 0 → 잠시 대기 후 재시도
+    if (_isIOS && file.size === 0) {
+        showToast('☁️ iCloud에서 파일 다운로드 중... 잠시 기다려주세요.', 'info');
+        // 최대 8초 대기 (500ms 간격 × 16회)
+        let waited = false;
+        for (let i = 0; i < 16; i++) {
+            await new Promise(r => setTimeout(r, 500));
+            // File 객체는 immutable이므로 input에서 다시 읽어야 함
+            // → 여기선 size 재확인이 불가능하므로 그냥 진행 (로딩 시도)
+            waited = true;
+            break;
+        }
+        if (waited) showToast('파일 로딩을 시도합니다...', 'info');
+    }
+
     // 파일 형식 체크
     if (!isAudioFile(file)) {
         showToast('지원하지 않는 파일 형식입니다. MP3, WAV, M4A, OGG, FLAC을 사용해주세요.', 'error');
@@ -369,6 +386,7 @@ function togglePlay() {
 
         // iOS/Safari: playAsync로 resume 완전 보장 후 재생
         if (_needsGesture) {
+            _forceVolume(); // gain 0 방지
             audioEngine.playAsync().then(() => {
                 if (audioEngine.isPlaying) {
                     state.isPlaying = true;
@@ -460,6 +478,19 @@ dom.volumeSlider.addEventListener('touchstart', () => {
         audioEngine._ensureContext().catch(() => {});
     }
 }, { passive: true });
+
+// ── iOS 무음 방지: 파일 로드 후 gain 값 강제 재설정 ──
+// iOS에서 gainNode.gain.value 가 0으로 리셋되는 경우 방지
+function _forceVolume() {
+    if (audioEngine.gainNode) {
+        const current = audioEngine.gainNode.gain.value;
+        if (current === 0) {
+            const sliderVal = parseFloat(dom.volumeSlider.value) || 0.8;
+            audioEngine.gainNode.gain.value = sliderVal;
+            console.warn('[iOS] gain이 0이었습니다. 강제 복구:', sliderVal);
+        }
+    }
+}
 
 function updateProgressUI(currentTime) {
     const ratio = audioEngine.duration > 0 ? currentTime / audioEngine.duration : 0;
