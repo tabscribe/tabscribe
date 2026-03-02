@@ -107,5 +107,118 @@ CREATE POLICY "ratings_delete_own"
   USING (auth.uid()::text = user_id);
 
 -- ============================================================
--- 완료! 위 SQL을 모두 실행한 뒤 회원가입·평가 테스트를 진행하세요.
+-- 7. 영상 게시물 테이블 (review / cover / fun / bandstage)
+--    공통 구조: 누구나 읽기, anon 포함 누구나 등록/삭제 가능
+-- ============================================================
+
+-- 7-1. 리뷰 영상
+CREATE TABLE IF NOT EXISTS public.review_videos (
+  id          TEXT        PRIMARY KEY,
+  title       TEXT        NOT NULL,
+  url         TEXT,
+  embed_url   TEXT,
+  description TEXT,
+  like_count  INTEGER     DEFAULT 0,
+  date_label  TEXT,
+  created_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000,
+  updated_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+ALTER TABLE public.review_videos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "review_videos_select_all"
+  ON public.review_videos FOR SELECT USING (true);
+
+CREATE POLICY "review_videos_insert_all"
+  ON public.review_videos FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "review_videos_update_all"
+  ON public.review_videos FOR UPDATE USING (true);
+
+CREATE POLICY "review_videos_delete_all"
+  ON public.review_videos FOR DELETE USING (true);
+
+-- 7-2. 카피 영상
+CREATE TABLE IF NOT EXISTS public.cover_videos (
+  id          TEXT        PRIMARY KEY,
+  title       TEXT        NOT NULL,
+  url         TEXT,
+  embed_url   TEXT,
+  description TEXT,
+  like_count  INTEGER     DEFAULT 0,
+  date_label  TEXT,
+  created_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000,
+  updated_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+ALTER TABLE public.cover_videos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "cover_videos_select_all"
+  ON public.cover_videos FOR SELECT USING (true);
+
+CREATE POLICY "cover_videos_insert_all"
+  ON public.cover_videos FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "cover_videos_update_all"
+  ON public.cover_videos FOR UPDATE USING (true);
+
+CREATE POLICY "cover_videos_delete_all"
+  ON public.cover_videos FOR DELETE USING (true);
+
+-- 7-3. 펀 영상
+CREATE TABLE IF NOT EXISTS public.fun_videos (
+  id          TEXT        PRIMARY KEY,
+  title       TEXT        NOT NULL,
+  url         TEXT,
+  embed_url   TEXT,
+  description TEXT,
+  like_count  INTEGER     DEFAULT 0,
+  date_label  TEXT,
+  created_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000,
+  updated_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+ALTER TABLE public.fun_videos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "fun_videos_select_all"
+  ON public.fun_videos FOR SELECT USING (true);
+
+CREATE POLICY "fun_videos_insert_all"
+  ON public.fun_videos FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "fun_videos_update_all"
+  ON public.fun_videos FOR UPDATE USING (true);
+
+CREATE POLICY "fun_videos_delete_all"
+  ON public.fun_videos FOR DELETE USING (true);
+
+-- 7-4. 밴드스테이지 영상
+CREATE TABLE IF NOT EXISTS public.bandstage_videos (
+  id          TEXT        PRIMARY KEY,
+  title       TEXT        NOT NULL,
+  url         TEXT,
+  embed_url   TEXT,
+  description TEXT,
+  like_count  INTEGER     DEFAULT 0,
+  date_label  TEXT,
+  created_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000,
+  updated_at  BIGINT      DEFAULT EXTRACT(EPOCH FROM NOW()) * 1000
+);
+
+ALTER TABLE public.bandstage_videos ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "bandstage_videos_select_all"
+  ON public.bandstage_videos FOR SELECT USING (true);
+
+CREATE POLICY "bandstage_videos_insert_all"
+  ON public.bandstage_videos FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "bandstage_videos_update_all"
+  ON public.bandstage_videos FOR UPDATE USING (true);
+
+CREATE POLICY "bandstage_videos_delete_all"
+  ON public.bandstage_videos FOR DELETE USING (true);
+
+-- ============================================================
+-- 완료! 위 SQL을 모두 실행한 뒤 회원가입·평가·영상 등록 테스트를 진행하세요.
 -- ============================================================
