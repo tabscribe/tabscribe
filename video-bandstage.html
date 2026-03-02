@@ -135,26 +135,38 @@
 /* ── 모달 플레이어 ── */
 .video-modal-overlay {
   display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.85); z-index: 9000;
+  background: rgba(0,0,0,.88); z-index: 9000;
   align-items: center; justify-content: center;
+  padding: 16px;
 }
 .video-modal-overlay.open { display: flex; }
 .video-modal {
-  background: #111; border-radius: 16px; overflow: hidden;
-  width: min(860px, 95vw); box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  background: #111; border-radius: 20px; overflow: hidden;
+  width: min(1400px, 96vw); max-height: 92vh;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+  display: flex; flex-direction: column;
 }
 .video-modal-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; background: #1a1a1a; border-bottom: 1px solid #333;
+  padding: 14px 20px; background: #1a1a1a; border-bottom: 1px solid #333;
+  flex-shrink: 0;
 }
-.video-modal-header h4 { color: #f9fafb; font-size: .92rem; margin: 0; flex: 1; padding-right: 12px; }
+.video-modal-header h4 { color: #f9fafb; font-size: 1rem; margin: 0; flex: 1; padding-right: 12px; line-height: 1.4; }
 .modal-close-btn {
-  background: none; border: none; color: #9ca3af; font-size: 1.4rem;
-  cursor: pointer; line-height: 1; padding: 4px;
+  background: none; border: none; color: #9ca3af; font-size: 1.6rem;
+  cursor: pointer; line-height: 1; padding: 4px; flex-shrink: 0;
 }
 .modal-close-btn:hover { color: #f87171; }
-.video-modal-player { position: relative; padding-top: 56.25%; background: #000; }
+.video-modal-player { position: relative; padding-top: 56.25%; background: #000; flex-shrink: 0; }
 .video-modal-player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+.video-modal-desc {
+  padding: 16px 20px; background: #1a1a1a; border-top: 1px solid #2a2a2a;
+  overflow-y: auto; max-height: 180px; flex-shrink: 0;
+}
+.video-modal-desc p {
+  color: #d1d5db; font-size: .88rem; line-height: 1.7; margin: 0;
+  white-space: pre-wrap; word-break: break-word;
+}
 
 /* ── 빈 상태 ── */
 .video-empty {
@@ -360,8 +372,10 @@
       <input type="text" id="inputTitle" placeholder="영상 제목 *" maxlength="80">
       <input type="text" id="inputUrl" placeholder="유튜브 URL * (예: https://youtu.be/xxxxx)">
     </div>
-    <div class="form-row">
-      <input type="text" id="inputDesc" placeholder="간단한 설명 (선택)">
+    <div class="form-row" style="margin-bottom:10px;">
+      <textarea id="inputDesc" placeholder="설명글 (선택) — 영상에 대한 설명을 자유롭게 작성해주세요" rows="4" style="flex:1;resize:vertical;min-height:90px;"></textarea>
+    </div>
+    <div class="form-row" style="justify-content:flex-end;">
       <button class="btn-add" onclick="addVideo()"><i class="fas fa-plus"></i> 등록</button>
     </div>
   </div>
@@ -395,6 +409,9 @@
       <iframe id="modalIframe" src="" allowfullscreen
         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+    <div id="modalDesc" class="video-modal-desc" style="display:none;">
+      <p id="modalDescText"></p>
     </div>
     <div id="modalError" style="display:none;padding:20px 16px;background:#1a1a1a;text-align:center;">
       <p style="color:#fca5a5;font-size:.85rem;margin:0 0 10px;">
@@ -501,8 +518,8 @@ function toThumbUrl(embedUrl) {
   const m = (embedUrl||'').match(/embed\/([A-Za-z0-9_-]{11})/);
   return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : null;
 }
-function handleCardClick(el) { openVideoModal(el.dataset.embed, el.dataset.title, el.dataset.url); }
-function openVideoModal(embedUrl, title, originalUrl) {
+function handleCardClick(el) { openVideoModal(el.dataset.embed, el.dataset.title, el.dataset.url, el.dataset.desc||''); }
+function openVideoModal(embedUrl, title, originalUrl, desc) {
   const iframe = document.getElementById('modalIframe');
   iframe.src = embedUrl + '?enablejsapi=1&rel=0&modestbranding=1';
   document.getElementById('modalTitle').textContent = title;
@@ -511,6 +528,10 @@ function openVideoModal(embedUrl, title, originalUrl) {
   document.getElementById('modalErrorLink').href = ytUrl;
   document.getElementById('modalError').style.display = 'none';
   iframe.parentElement.style.display = 'block';
+  const descWrap = document.getElementById('modalDesc');
+  const descText = document.getElementById('modalDescText');
+  if (desc && desc.trim()) { descText.textContent = desc; descWrap.style.display = 'block'; }
+  else { descWrap.style.display = 'none'; }
   document.getElementById('videoModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -533,12 +554,13 @@ function renderVideos() {
     const embedUrl = v.embed_url || v.embedUrl || '';
     const thumb = toThumbUrl(embedUrl);
     const safeTitle = (v.title||'').replace(/"/g,'&quot;');
+    const safeDesc  = (v.desc ||'').replace(/"/g,'&quot;').replace(/\n/g,'&#10;');
     const safeUrl = v.url || embedUrl.replace('embed/','watch?v=');
     const likeCount = getLikeCount(v.id);
     const liked = isLikedByMe(v.id);
     return `
     <div class="video-card">
-      <div class="video-thumb" data-embed="${embedUrl}" data-title="${safeTitle}" data-url="${safeUrl}" onclick="handleCardClick(this)">
+      <div class="video-thumb" data-embed="${embedUrl}" data-title="${safeTitle}" data-url="${safeUrl}" data-desc="${safeDesc}" onclick="handleCardClick(this)">
         ${thumb ? `<img src="${thumb}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" alt="${safeTitle}">` : ''}
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,${thumb?'.3':'.7'})">
           <div style="width:52px;height:52px;background:#dc2626;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(220,38,38,.5);">
@@ -554,7 +576,7 @@ function renderVideos() {
           <span class="video-date">${v.date_label || v.date || ''}</span>
         </div>
         <div class="video-actions">
-          <button class="btn-watch" data-embed="${embedUrl}" data-title="${safeTitle}" data-url="${safeUrl}" onclick="handleCardClick(this)">
+          <button class="btn-watch" data-embed="${embedUrl}" data-title="${safeTitle}" data-url="${safeUrl}" data-desc="${safeDesc}" onclick="handleCardClick(this)">
             <i class="fab fa-youtube"></i> 영상 보기
           </button>
           <button class="btn-like${liked?' liked':''}" onclick="toggleLike('${v.id}')" title="추천하기">
