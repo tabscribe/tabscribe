@@ -238,6 +238,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex: 1;
+            min-width: 0;
         }
         .category-title .icon-badge {
             width: 32px; height: 32px;
@@ -789,6 +791,58 @@
             border-color: #dc2626;
         }
 
+        /* 서브카테고리 탭 바 */
+        .subcategory-tab-bar {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+        }
+        .subcategory-tab-bar .sub-tab-btn {
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .subcategory-tab-bar .sub-tab-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .subcategory-tab-bar .sub-tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* 카드 삭제 버튼 (목록에서 직접 삭제) */
+        .btn-del-card {
+            margin-left: auto;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1.5px solid #fca5a5;
+            background: #fff1f2;
+            color: #dc2626;
+            font-size: 0.75rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .btn-del-card:hover {
+            background: #dc2626;
+            color: #fff;
+            border-color: #dc2626;
+        }
+
         /* 판매완료 버튼 영역 */
         .sold-out-section {
             margin-top: 16px;
@@ -1170,6 +1224,63 @@
             }
             .detail-title { font-size: 1.1rem; }
             .detail-body  { font-size: 0.9rem; }
+
+            /* 모바일 필터바 */
+            .tab-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .category-title {
+                font-size: 1.05rem;
+            }
+            .filter-group {
+                margin-left: 0;
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                width: 100%;
+            }
+            .filter-select {
+                flex: 1;
+                min-width: 0;
+                font-size: 0.82rem;
+                padding: 8px 10px;
+            }
+            .write-btn {
+                flex-shrink: 0;
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            /* 모바일 검색바 */
+            .search-bar input {
+                font-size: 0.88rem;
+            }
+
+            /* 모바일 카드 그리드 */
+            .gear-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+            }
+            .lesson-grid,
+            .recruit-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gear-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
+            }
+            .gear-card-title {
+                font-size: 0.8rem !important;
+            }
+            .gear-card-price {
+                font-size: 0.9rem !important;
+            }
         }
 
         /* 토스트 */
@@ -1689,7 +1800,7 @@
             <a href="analyze.html" class="mobile-menu-item"><i class="fas fa-waveform-path" style="color:#7c3aed"></i> 음원분석</a>
             <div style="border-top:1px solid #e5e7eb;margin:4px 0;"></div>
             <div style="padding:4px 12px 2px;font-size:.68rem;font-weight:800;color:#ea580c;letter-spacing:.04em;">💬 커뮤니티</div>
-            <a href="community.html" class="mobile-menu-item"><i class="fas fa-comment-dots" style="color:#f97316"></i> 자유게시판</a>
+            <a href="community.html?cat=free" class="mobile-menu-item"><i class="fas fa-comment-dots" style="color:#f97316"></i> 자유게시판</a>
             <a href="community.html?cat=gear" class="mobile-menu-item"><i class="fas fa-sliders-h" style="color:#f97316"></i> 장비리뷰/정보</a>
             <a href="community.html?cat=band" class="mobile-menu-item"><i class="fas fa-user-friends" style="color:#f97316"></i> 밴드구인구직</a>
             <a href="community.html?cat=lesson" class="mobile-menu-item"><i class="fas fa-chalkboard-teacher" style="color:#f97316"></i> 개인레슨</a>
@@ -1769,6 +1880,9 @@
                     </button>
                 </div>
             </div>
+
+            <!-- 서브카테고리 탭 바 (하위 카테고리 있을 때만 표시) -->
+            <div class="subcategory-tab-bar" id="subcategoryTabBar" style="display:none;"></div>
 
             <!-- 검색 바 -->
             <div class="search-bar">
@@ -2212,7 +2326,44 @@
             <span class="icon-badge" style="background:#fff7f0;">${info.icon}</span>
             ${label}
         `;
+        // 서브카테고리 탭 바 업데이트
+        renderSubcategoryTabs(cat, sub);
     }
+
+    function renderSubcategoryTabs(cat, activeSub) {
+        const tabBar = document.getElementById('subcategoryTabBar');
+        if (!tabBar) return;
+        const opts = SUBCATEGORY_OPTIONS[cat];
+        if (!opts || opts.length === 0) {
+            tabBar.style.display = 'none';
+            tabBar.innerHTML = '';
+            return;
+        }
+        // 전체 + 서브 옵션 탭 생성
+        const allActive = (!activeSub || activeSub === 'all') ? 'active' : '';
+        let html = `<button class="sub-tab-btn ${allActive}" onclick="selectSubTab('${cat}','all')">전체</button>`;
+        opts.forEach(o => {
+            const isActive = activeSub === o.value ? 'active' : '';
+            html += `<button class="sub-tab-btn ${isActive}" onclick="selectSubTab('${cat}','${o.value}')">${o.label}</button>`;
+        });
+        tabBar.innerHTML = html;
+        tabBar.style.display = 'flex';
+    }
+
+    function selectSubTab(cat, sub) {
+        state.category = cat;
+        state.subcategory = sub;
+        state.page = 1;
+        state.search = '';
+        document.getElementById('searchInput').value = '';
+        updateCategoryTitle(cat, sub);
+        // 사이드바 버튼 active 동기화
+        const sideBtn = document.querySelector(`.comm-sidebar button[data-cat="${cat}"][data-sub="${sub}"]`)
+            || document.querySelector(`.comm-sidebar button[data-cat="${cat}"][data-sub="all"]`);
+        if (sideBtn) setActiveMenuBtn(sideBtn);
+        loadPosts();
+    }
+    window.selectSubTab = selectSubTab;
 
     // ─── 데이터 로드 ───
     async function loadPosts() {
@@ -2372,22 +2523,23 @@
 
     function renderPostCard(p) {
         const tags = Array.isArray(p.tags) ? p.tags.slice(0, 3).map(t => `<span class="tag">#${t}</span>`).join('') : '';
-        const priceHtml = p.price ? `<span class="post-price">${fmtPrice(p.price)}</span>` : '';
-        const thumbHtml = p.image_url
+        const thumb = getThumbUrl(p);
+        const thumbHtml = thumb
             ? `<div class="post-card-thumb">
-                <img src="${escHtml(p.image_url)}" alt=""
+                <img src="${escHtml(thumb)}" alt=""
                     onerror="this.parentElement.style.display='none'">
                </div>` : '';
+        const isAuthor = currentUser && currentProfile && (p.author === currentProfile.nickname);
+        const delBtn = isAuthor ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
         return `
-        <div class="post-card${p.image_url ? ' post-card--has-img' : ''}" data-post-id="${p.id}">
+        <div class="post-card${thumb ? ' post-card--has-img' : ''}" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             <div class="post-card-top">
                 ${getCategoryBadge(p.category, p.subcategory)}
                 <div class="post-title-area">
                     <div class="post-title">${escHtml(p.title || '')}</div>
-                    <div class="post-preview">${escHtml((p.content || '').replace(/<[^>]+>/g, '').slice(0, 60))}...</div>
+                    <div class="post-preview">${escHtml((p.content || '').replace(/<[^>]+>/g, '').slice(0, 80))}...</div>
                 </div>
                 ${thumbHtml}
-                ${priceHtml}
             </div>
             ${tags ? `<div class="post-tags">${tags}</div>` : ''}
             <div class="post-meta">
@@ -2397,6 +2549,7 @@
                 <span><i class="fas fa-heart"></i> ${p.likes || 0}</span>
                 <span class="comment-cnt"><i class="fas fa-comment"></i> <span class="comment-cnt-val">0</span></span>
                 <span class="meta-date"><i class="fas fa-clock"></i> ${fmtDate(p.created_at)}</span>
+                ${delBtn}
             </div>
         </div>`;
     }
@@ -2428,13 +2581,16 @@
 
         const priceLabel = p.price ? fmtPrice(p.price) : '가격 협의';
 
+        const isAuthorGear = currentUser && currentProfile && (p.author === currentProfile.nickname);
+        const delBtnGear = isAuthorGear ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
         return `
-        <div class="gear-card${p.status === 'sold' ? ' gear-card--sold' : ''}" data-post-id="${p.id}">
+        <div class="gear-card${p.status === 'sold' ? ' gear-card--sold' : ''}" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${imgArea}
             <div class="gear-card-body">
                 <div class="gear-card-sub-row">
                     <span class="gear-card-sub-badge">${subLabel}</span>
                     <span class="gear-card-date">${fmtDate(p.created_at)}</span>
+                    ${delBtnGear}
                 </div>
                 <div class="gear-card-title">${escHtml(p.title || '')}</div>
                 <div class="gear-card-location">
@@ -2462,17 +2618,20 @@
             const t = getThumbUrl(p); const c = getImgCount(p);
             return t ? `<div class="lesson-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
         })();
+        const isAuthorLesson = currentUser && currentProfile && (p.author === currentProfile.nickname);
+        const delBtnLesson = isAuthorLesson ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
         return `
-        <div class="lesson-card" data-post-id="${p.id}">
+        <div class="lesson-card" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${thumbHtml}
             <div class="lesson-card-header">
                 <div class="lesson-avatar">${icon}</div>
-                <div>
+                <div style="flex:1;">
                     <div class="lesson-card-title">${escHtml(p.title || '')}</div>
                     <div class="lesson-card-author"><i class="fas fa-user"></i> ${escHtml(p.author || '익명')} · ${p.location ? escHtml(p.location) : ''}</div>
                 </div>
+                ${delBtnLesson}
             </div>
-            <div class="lesson-card-desc">${escHtml((p.content || '').replace(/<[^>]+>/g, ''))}</div>
+            <div class="lesson-card-desc">${escHtml((p.content || '').replace(/<[^>]+>/g, '').slice(0,100))}...</div>
             <div class="lesson-price-row">
                 <div class="lesson-price">${p.price ? fmtPrice(p.price) + '/회' : '협의'}</div>
                 <div style="display:flex;align-items:center;gap:8px;">
@@ -2495,17 +2654,20 @@
             const t = getThumbUrl(p); const c = getImgCount(p);
             return t ? `<div class="recruit-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
         })();
+        const isAuthorRecruit = currentUser && currentProfile && (p.author === currentProfile.nickname);
+        const delBtnRecruit = isAuthorRecruit ? `<button class="btn-del-card" onclick="event.stopPropagation();deletePost('${p.id}')" title="삭제"><i class="fas fa-trash-alt"></i></button>` : '';
         return `
-        <div class="recruit-card" data-post-id="${p.id}">
+        <div class="recruit-card" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${thumbHtml}
             <div class="recruit-header">
                 <div class="recruit-icon">${icon}</div>
-                <div>
+                <div style="flex:1;">
                     <div class="recruit-title">${escHtml(p.title || '')}</div>
                     <div class="recruit-author">${escHtml(p.author || '익명')} · <i class="fas fa-eye"></i> ${p.views || 0} · ${fmtDate(p.created_at)}</div>
                 </div>
+                ${delBtnRecruit}
             </div>
-            <div class="recruit-body">${escHtml((p.content || '').replace(/<[^>]+>/g, ''))}</div>
+            <div class="recruit-body">${escHtml((p.content || '').replace(/<[^>]+>/g, '').slice(0,100))}...</div>
             <div class="recruit-footer">${tags}${locTag}</div>
             <div style="padding-top:8px;">
                 <span class="comment-cnt"><i class="fas fa-comment"></i> <span class="comment-cnt-val">0</span> 댓글</span>
@@ -3024,6 +3186,21 @@
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;');
     }
+
+    // ─── 카드에서 직접 삭제 ───
+    async function deletePost(postId) {
+        if (!confirm('게시물을 삭제하면 복구할 수 없습니다.\n정말 삭제하시겠습니까?')) return;
+        try {
+            await SupabaseDB.delete('community_posts', postId);
+            state.posts = state.posts.filter(x => x.id !== postId);
+            showToast('🗑️ 게시물이 삭제되었습니다.');
+            loadPosts();
+            updateTotalCount();
+        } catch (err) {
+            showToast('❌ 삭제 실패: ' + (err.message || '다시 시도해주세요.'));
+        }
+    }
+    window.deletePost = deletePost;
 
     let _toastTimer;
     function showToast(msg) {
