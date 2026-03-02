@@ -71,6 +71,11 @@
                         <span class="logo-ko">코드덕쿠</span>
                     </div>
                 </a>
+                <!-- 포트폴리오 소개 버튼 — 로고 바로 옆 -->
+                <a href="portfolio.html" class="nav-portfolio-btn" id="navPortfolioBtn" title="코드덕쿠를 소개합니다">
+                    <i class="fas fa-address-card"></i>
+                    <span>코드덕쿠 소개</span>
+                </a>
                 <!-- Auth 버튼 오른쪽 상단 -->
                 <div class="header-login-box">
                     <div class="header-auth-btns" id="headerAuthArea">
@@ -150,6 +155,7 @@
             <a href="video-fun.html" class="mobile-menu-item"><i class="fas fa-laugh" style="color:#dc2626"></i> 재미있는영상</a>
             <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-drum" style="color:#dc2626"></i> 밴드라이브</a>
             <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
+                <a href="portfolio.html" class="mobile-menu-item" style="font-weight:800;color:#c2410c;background:linear-gradient(135deg,#fff7ed,#ffedd5);border-radius:8px;margin:2px 0;"><i class="fas fa-address-card" style="color:#ea580c"></i> 코드덕쿠 소개 (포트폴리오)</a>
                 <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
                 <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
             </div>
@@ -157,6 +163,8 @@
     </header>
 
     <main class="main">
+        <!-- iOS Safari용 hidden <audio> 태그 — ObjectURL 재생 전용 -->
+        <audio id="audioPlayer" playsinline webkit-playsinline preload="metadata" style="display:none;"></audio>
         <!-- Upload Section (JS hidden 토글 래퍼 — 광고는 intro-section으로 이동) -->
         <section class="upload-section" id="uploadSection" style="display:none;"></section>
 

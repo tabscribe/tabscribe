@@ -115,45 +115,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// iOS Safari AudioContext 완전 해결책
-// ──────────────────────────────────────────
-// iOS 정책: AudioContext는 반드시 직접적인 user gesture
-// (touchstart/touchend/click) 핸들러 내에서 생성·resume 해야 함.
-//
-// 문제의 흐름:
-//   [터치] → label 클릭 → 파일선택 dialog 열림
-//   → dialog 닫힘(파일선택) → change 이벤트 → handleFile()
-//   → audioContext.resume() 시도 → 실패 (gesture 스택 소멸)
-//
-// 해결책:
-//   1) 화면의 모든 첫 터치에서 AudioContext를 미리 생성·resume
-//   2) 재생 버튼 touchstart에서 resume 후 즉시 playAsync() 호출
-//   3) 파일 로드 완료 후 "탭해서 재생" 안내 배너 표시
+// iOS/Safari 감지
 // ==========================================
-
-// iOS/Safari 여부 한 번만 판별
 const _isIOS = /iP(hone|ad|od)/i.test(navigator.userAgent) ||
                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const _isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 const _needsGesture = _isIOS || _isSafari;
 
-// ── 전략 1: 화면 첫 터치에서 AudioContext 미리 생성 ──
-if (_needsGesture) {
-    const _unlockAudio = async () => {
-        try {
-            if (!audioEngine.audioContext) {
-                await audioEngine.init();
-            } else if (audioEngine.audioContext.state === 'suspended') {
-                await audioEngine.audioContext.resume();
-            }
-        } catch(e) {
-            console.warn('[iOS] AudioContext unlock 실패:', e);
-        }
-    };
-    // passive:false 로 등록 → iOS gesture 체인 유지
-    document.addEventListener('touchstart', _unlockAudio, { once: true, passive: true });
-    document.addEventListener('touchend',   _unlockAudio, { once: true, passive: true });
-}
+// <audio> 태그를 AudioEngine에 등록
+const _audioEl = document.getElementById('audioPlayer');
+if (_audioEl) audioEngine.setAudioElement(_audioEl);
 
 // ==========================================
 // 파일 업로드
@@ -224,11 +195,6 @@ async function handleFile(file) {
     try {
         showToast('파일 로딩 중...', 'info');
 
-        // AudioContext가 없으면 생성 (첫 터치에서 이미 생성됐을 가능성 높음)
-        if (!audioEngine.audioContext) {
-            await audioEngine.init();
-        }
-
         await audioEngine.loadFile(file);
         state.waveformData = audioEngine.getWaveformData(800);
         dom.uploadSection.classList.add('hidden');
@@ -236,16 +202,6 @@ async function handleFile(file) {
         dom.playerSection.classList.remove('hidden');
         dom.timeTotal.textContent = formatTime(audioEngine.duration);
         drawWaveform(0);
-
-        // iOS: 파일 로드 후 AudioContext 상태 확인
-        // dialog 열림/닫힘으로 gesture 체인이 끊겼을 수 있으므로
-        // "재생 버튼을 탭하세요" 안내 배너 표시
-        if (_needsGesture) {
-            const ctx = audioEngine.audioContext;
-            if (!ctx || ctx.state === 'suspended') {
-                _showIosPlayBanner();
-            }
-        }
 
         showToast('파일 로드 완료! ▶ 재생 버튼을 눌러주세요.', 'success');
     } catch (err) {
@@ -275,36 +231,23 @@ async function handleFile(file) {
 }
 
 // ── iOS 전용: 재생 버튼 탭 안내 배너 ──────────────────────────
-function _showIosPlayBanner() {
-    // 이미 있으면 중복 생성 방지
-    if (document.getElementById('iosPlayBanner')) return;
-
-    const banner = document.createElement('div');
-    banner.id = 'iosPlayBanner';
-    banner.style.cssText = `
-        position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-        background: #1e293b; color: #fff; border-radius: 14px;
-        padding: 13px 22px; font-size: 0.88rem; font-weight: 600;
-        display: flex; align-items: center; gap: 10px;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.35);
-        z-index: 9999; white-space: nowrap;
-        animation: fadeInUp 0.3s ease;
-    `;
-    banner.innerHTML = `<i class="fas fa-hand-pointer" style="color:#f97316;font-size:1.1rem;"></i> ▶ 재생 버튼을 탭해 주세요`;
-
-    // 재생 버튼 누르면 배너 자동 제거
-    const removeBanner = () => { banner.remove(); };
-    dom.btnPlay.addEventListener('touchstart', removeBanner, { once: true });
-    dom.btnPlay.addEventListener('click', removeBanner, { once: true });
-    // 5초 후 자동 사라짐
-    setTimeout(removeBanner, 5000);
-
-    document.body.appendChild(banner);
-}
-
 function resetAll() {
     if (state.animFrameId) { cancelAnimationFrame(state.animFrameId); state.animFrameId = null; }
     if (audioEngine.isPlaying) audioEngine.pause();
+
+    // audioEl src 초기화 + ObjectURL 해제
+    if (audioEngine.audioEl) {
+        audioEngine.audioEl.pause();
+        audioEngine.audioEl.removeAttribute('src');
+        audioEngine.audioEl.load();
+    }
+    if (audioEngine._objectUrl) {
+        URL.revokeObjectURL(audioEngine._objectUrl);
+        audioEngine._objectUrl = null;
+    }
+    audioEngine.audioBuffer = null;
+    audioEngine.duration    = 0;
+    audioEngine.isPlaying   = false;
 
     // state 객체를 교체하지 않고 프로퍼티만 초기화 (참조 유지 → 진행 중인 분석이 isAnalyzing 체크 가능)
     state.file              = null;
@@ -340,10 +283,8 @@ function resetAll() {
 // 플레이어 컨트롤
 // ==========================================
 dom.btnPlay.addEventListener('click', togglePlay);
-
-// iOS: touchstart에서 즉시 AudioContext resume + playAsync 호출
-// e.preventDefault()로 300ms click 지연 제거 → 이중 호출 방지
-dom.btnPlay.addEventListener('touchstart', (e) => {
+// iOS touchend — <audio>.play()는 gesture 안에서 호출하면 됨
+dom.btnPlay.addEventListener('touchend', (e) => {
     e.preventDefault();
     togglePlay();
 }, { passive: false });
@@ -359,19 +300,22 @@ document.addEventListener('keydown', (e) => {
     // range 슬라이더에 포커스 있을 때 스페이스는 페이지 스크롤이므로 막음
     if (e.code === 'Space' || e.key === ' ') {
         e.preventDefault();
-        if (audioEngine.audioBuffer) {
+        if (audioEngine.audioEl && audioEngine.audioEl.src) {
             togglePlay();
         }
     }
 });
 
 function togglePlay() {
-    // 연속 호출 방지 (touchstart + click 이중 발생 대비)
+    // 연속 호출 방지 (touchend + click 이중 발생 대비)
     const now = Date.now();
     if (togglePlay._lastCall && now - togglePlay._lastCall < 300) return;
     togglePlay._lastCall = now;
 
-    if (!audioEngine.audioBuffer) return;
+    // 재생 가능 여부: audioEl.src가 세팅될 것으로 판단
+    // (audioBuffer는 분석용이라 iOS에서 디코딩 실패 시 null일 수 있음)
+    const canPlay = audioEngine.audioEl && audioEngine.audioEl.src && audioEngine.audioEl.readyState >= 1;
+    if (!canPlay) return;
 
     if (audioEngine.isPlaying) {
         // ── 정지 ──
@@ -384,39 +328,12 @@ function togglePlay() {
         // ── 재생 ──
         if (state.animFrameId) { cancelAnimationFrame(state.animFrameId); state.animFrameId = null; }
 
-        // iOS/Safari: playAsync로 resume 완전 보장 후 재생
-        if (_needsGesture) {
-            _forceVolume(); // gain 0 방지
-            audioEngine.playAsync().then(() => {
-                if (audioEngine.isPlaying) {
-                    state.isPlaying = true;
-                    dom.playIcon.className = 'fas fa-pause';
-                    dom.btnPlay.classList.add('playing');
-                    startRenderLoop();
-                } else {
-                    // 재생 실패 → 사용자에게 안내
-                    showToast('재생 버튼을 다시 탭해 주세요.', 'info');
-                }
-            }).catch((err) => {
-                console.error('[togglePlay] playAsync 실패:', err);
-                showToast('재생에 실패했습니다. 다시 탭해 주세요.', 'error');
-            });
-        } else {
-            // 일반 브라우저: 기존 동기 방식
-            const ctx = audioEngine.audioContext;
-            const doPlay = () => {
-                audioEngine.play();
-                state.isPlaying = true;
-                dom.playIcon.className = 'fas fa-pause';
-                dom.btnPlay.classList.add('playing');
-                startRenderLoop();
-            };
-            if (ctx && ctx.state === 'suspended') {
-                ctx.resume().then(doPlay).catch(doPlay);
-            } else {
-                doPlay();
-            }
-        }
+        // iOS/Android/PC 모두 동일 — <audio>.play() 호출
+        audioEngine.play();
+        state.isPlaying = true;
+        dom.playIcon.className = 'fas fa-pause';
+        dom.btnPlay.classList.add('playing');
+        startRenderLoop();
     }
 }
 
@@ -440,7 +357,7 @@ dom.progressBarWrap.addEventListener('click', (e) => {
 });
 // iOS 터치 시크 지원
 dom.progressBarWrap.addEventListener('touchstart', (e) => {
-    if (!audioEngine.audioBuffer) return;
+    if (!audioEngine.duration) return;
     const touch = e.touches[0];
     const rect  = dom.progressBarWrap.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
@@ -451,7 +368,7 @@ dom.progressBarWrap.addEventListener('touchstart', (e) => {
 }, { passive: true });
 
 dom.waveformCanvas.addEventListener('click', (e) => {
-    if (!audioEngine.audioBuffer) return;
+    if (!audioEngine.duration) return;
     const rect  = dom.waveformCanvas.getBoundingClientRect();
     const ratio = (e.clientX - rect.left) / rect.width;
     const time  = ratio * audioEngine.duration;
@@ -460,7 +377,7 @@ dom.waveformCanvas.addEventListener('click', (e) => {
 });
 // iOS 터치 파형 시크 지원
 dom.waveformCanvas.addEventListener('touchstart', (e) => {
-    if (!audioEngine.audioBuffer) return;
+    if (!audioEngine.duration) return;
     const touch = e.touches[0];
     const rect  = dom.waveformCanvas.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
@@ -472,25 +389,6 @@ dom.waveformCanvas.addEventListener('touchstart', (e) => {
 dom.volumeSlider.addEventListener('input', (e) => {
     audioEngine.setVolume(parseFloat(e.target.value));
 });
-// iOS: 슬라이더 터치 시 AudioContext 깨우기
-dom.volumeSlider.addEventListener('touchstart', () => {
-    if (audioEngine.audioContext) {
-        audioEngine._ensureContext().catch(() => {});
-    }
-}, { passive: true });
-
-// ── iOS 무음 방지: 파일 로드 후 gain 값 강제 재설정 ──
-// iOS에서 gainNode.gain.value 가 0으로 리셋되는 경우 방지
-function _forceVolume() {
-    if (audioEngine.gainNode) {
-        const current = audioEngine.gainNode.gain.value;
-        if (current === 0) {
-            const sliderVal = parseFloat(dom.volumeSlider.value) || 0.8;
-            audioEngine.gainNode.gain.value = sliderVal;
-            console.warn('[iOS] gain이 0이었습니다. 강제 복구:', sliderVal);
-        }
-    }
-}
 
 function updateProgressUI(currentTime) {
     const ratio = audioEngine.duration > 0 ? currentTime / audioEngine.duration : 0;
@@ -598,7 +496,11 @@ function highlightCurrentChord(currentTime) {
 dom.btnAnalyze.addEventListener('click', startAnalysis);
 
 async function startAnalysis() {
-    if (!audioEngine.audioBuffer) return;
+    // audioBuffer가 없으면 분석 불가 — iOS에서 decodeAudioData 실패 시 안내
+    if (!audioEngine.audioBuffer) {
+        showToast('분석을 위한 파일 디코딩에 실패했습니다. MP3 또는 M4A 파일을 사용해주세요.', 'error');
+        return;
+    }
     if (state.isAnalyzing) return;  // 중복 실행 방지
     state.isAnalyzing = true;
     dom.analysisBtnWrap.classList.add('hidden');

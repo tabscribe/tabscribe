@@ -126,10 +126,9 @@
         const topRow = document.querySelector('.header-top-row');
         if (!topRow) return;
 
-        // 이미 삽입된 경우 중복 방지
+        // 문의 그룹 — 로그인 박스 왼쪽에 삽입
         if (document.getElementById('navInquiryGroup')) return;
 
-        // 로그인 박스와 햄버거 사이에 삽입
         const loginBox = topRow.querySelector('.header-login-box');
         if (!loginBox) return;
 

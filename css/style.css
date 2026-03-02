@@ -5068,12 +5068,6 @@ body {
 /* 독립적인 header-auth-btns는 좁은 화면에서 숨김 */
 @media (max-width: 640px) {
     .header-top-row > .header-auth-btns { display: none; }
-    .header-login-box { padding: 2px 7px 2px 6px; }
-    .header-login-box::before { display: none; }
-    .nav-btn--login, .nav-btn--logout, .header-profile-btn {
-        padding: 5px 9px;
-        font-size: 0.74rem;
-    }
 }
 .nav-btn--login {
     background: #fff7f0 !important;
@@ -5469,6 +5463,29 @@ body {
     .header-sub   { display: none; }
     .hamburger-btn { display: flex; }
 
+    /* 문의 그룹 숨김 — 모바일 메뉴 안으로 */
+    .nav-inquiry-group { display: none; }
+
+    /* 로그인 박스 — 배경/테두리/라벨 제거, 버튼만 심플하게 */
+    .header-login-box {
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        gap: 4px;
+    }
+    .header-login-box::before { display: none; }
+    .nav-btn--login, .nav-btn--logout, .header-profile-btn {
+        padding: 5px 9px;
+        font-size: 0.74rem;
+    }
+
+    /* 포트폴리오 버튼 — 텍스트+아이콘 모두 표시, 살짝 강조 */
+    .nav-portfolio-btn {
+        padding: 5px 12px;
+        font-size: 0.78rem;
+        box-shadow: 0 2px 6px rgba(234,88,12,.18);
+    }
+
     .header-inner {
         padding: 0 16px;
         align-items: center;
@@ -5753,7 +5770,39 @@ body {
 
 
 /* ══════════════════════════════════════════
-   문의하기 버튼 그룹 (헤더 중앙)
+   포트폴리오 소개 버튼 (로고 옆)
+   ══════════════════════════════════════════ */
+.nav-portfolio-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 1.5px solid #fdba74;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #c2410c;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.18s;
+    letter-spacing: .02em;
+    flex-shrink: 0;
+}
+.nav-portfolio-btn i {
+    font-size: 0.82rem;
+    color: #ea580c;
+}
+.nav-portfolio-btn:hover {
+    background: linear-gradient(135deg, #ffedd5, #fed7aa);
+    border-color: #fb923c;
+    color: #9a3412;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(234,88,12,.18);
+}
+
+/* ══════════════════════════════════════════
+   문의하기 버튼 그룹 (헤더 오른쪽)
    ══════════════════════════════════════════ */
 .nav-inquiry-group {
     display: inline-flex;
@@ -5764,6 +5813,7 @@ body {
     border: 1.5px solid #e879f9;
     border-radius: 20px;
     position: relative;
+    margin-right: 0;
 }
 .nav-inquiry-group::before {
     content: '📬 문의';
@@ -6046,7 +6096,7 @@ body {
 
 /* 모바일 반응형 */
 @media (max-width: 860px) {
-    .nav-inquiry-group { display: none; }
+    /* 860px 이하에서 inquiry 그룹 숨김은 640px 미디어쿼리에서 처리 */
 }
 @media (max-width: 500px) {
     .inquiry-popup { border-radius: 16px; }
