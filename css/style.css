@@ -46,7 +46,10 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+    scroll-behavior: smooth;
+    overflow-x: clip; /* iOS Safari sticky+overflow-x:hidden 스크롤 버그 방지 */
+}
 
 body {
     font-family: 'Inter', sans-serif;
@@ -54,7 +57,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 /* ==========================================
@@ -87,6 +90,8 @@ body {
     gap: 10px;
     padding-bottom: 4px;
     border-bottom: 1px solid #f1f5f9;
+    min-width: 0;
+    overflow: hidden; /* 가로 넘침 방지 */
 }
 
 /* 로그인 박스 (오른쪽 상단) */
@@ -2509,9 +2514,10 @@ body {
    이미지 배너 — 쿠슐랭 가이드 아래 페이지별 홍보
    ========================================== */
 .page-promo-banner {
-    display: block;
+    display: flex;
+    align-items: stretch;
     width: 100%;
-    height: 164px;
+    height: 160px;
     border-radius: 12px;
     overflow: hidden;
     position: relative;
@@ -2519,55 +2525,76 @@ body {
     text-decoration: none;
     box-shadow: 0 4px 20px rgba(0,0,0,.25);
     transition: transform .2s, box-shadow .2s;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 .page-promo-banner:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 36px rgba(0,0,0,.38);
 }
-.page-promo-banner img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-}
+/* 텍스트 영역 (왼쪽 65%) */
 .page-promo-banner-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, rgba(0,0,0,.65) 0%, rgba(0,0,0,.3) 55%, rgba(0,0,0,.08) 100%);
+    flex: 0 0 65%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0 24px;
-    gap: 3px;
+    padding: 0 20px 0 22px;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+}
+/* 이미지 영역 (오른쪽 35%) */
+.page-promo-banner img {
+    flex: 0 0 35%;
+    width: 35%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    display: block;
+    padding: 8px 10px 0 0;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,.4));
 }
 .page-promo-banner-label {
     font-size: .6rem;
     font-weight: 800;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: rgba(255,255,255,.6);
+    color: rgba(255,255,255,.55);
 }
 .page-promo-banner-title {
-    font-size: 1.05rem;
+    font-size: .98rem;
     font-weight: 900;
     color: #ffffff;
-    line-height: 1.25;
+    line-height: 1.3;
     word-break: keep-all;
-    text-shadow: 0 2px 6px rgba(0,0,0,.5);
+    text-shadow: 0 1px 4px rgba(0,0,0,.4);
 }
 .page-promo-banner-sub {
-    font-size: .74rem;
-    color: rgba(255,255,255,.82);
+    font-size: .71rem;
+    color: rgba(255,255,255,.78);
     word-break: keep-all;
     line-height: 1.4;
 }
-.page-promo-banner-cta { display: none; }
+.page-promo-banner-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    font-size: .65rem;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.32);
+    border-radius: 20px;
+    padding: 3px 10px;
+    width: fit-content;
+}
 @media (max-width: 640px) {
-    .page-promo-banner { height: 126px; }
-    .page-promo-banner-title { font-size: .88rem; }
+    .page-promo-banner { height: 118px; }
+    .page-promo-banner-overlay { flex: 0 0 62%; padding: 0 12px 0 14px; }
+    .page-promo-banner img { flex: 0 0 38%; width: 38%; padding: 6px 6px 0 0; }
+    .page-promo-banner-title { font-size: .84rem; }
     .page-promo-banner-sub { display: none; }
-    .page-promo-banner-overlay { padding: 0 14px; }
+    .page-promo-banner-cta { display: none; }
 }
 
 /* ==========================================
@@ -5488,7 +5515,7 @@ body {
     .hamburger-btn { display: flex; }
 
     /* 문의 그룹 숨김 — 모바일 메뉴 안으로 */
-    .nav-inquiry-group { display: none; }
+    .nav-inquiry-group { display: none !important; }
 
     /* 로그인 박스 — 배경/테두리/라벨 제거, 버튼만 심플하게 */
     .header-login-box {
@@ -5511,12 +5538,31 @@ body {
     }
 
     .header-inner {
-        padding: 0 16px;
-        align-items: center;
+        padding: 0 12px;
+        align-items: stretch;
+    }
+    .header-top-row {
+        gap: 6px;
+        flex-wrap: nowrap;
     }
     .logo {
-        font-size: 1.25rem;
+        font-size: 1.05rem;
+        flex-shrink: 0;
+        gap: 6px;
     }
+    .logo .fa-guitar,
+    .logo .logo-icon { font-size: 1.2rem; }
+    .logo-text { font-size: 1rem; }
+    .logo-ko { display: none; } /* 모바일 한글 서브텍스트 숨김 */
+    .logo-badge { font-size: .6rem; padding: 2px 7px; }
+
+    /* 포트폴리오 버튼 모바일 최소화 */
+    .nav-portfolio-btn span { display: none; }   /* 텍스트 숨김 */
+    .nav-portfolio-btn { padding: 5px 10px; min-width: 0; }
+
+    /* 로그인 박스 모바일 */
+    .header-login-box { padding: 0 !important; gap: 3px; flex-shrink: 0; }
+    .nav-btn--login, .nav-btn--logout { font-size: 0.74rem; padding: 5px 9px; }
 }
 
 /* ══════════════════════════════════════════

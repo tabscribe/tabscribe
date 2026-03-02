@@ -61,12 +61,12 @@
   --radius:    12px;
   --shadow:    0 2px 12px rgba(0,0,0,.07);
 }
-html{scroll-behavior:smooth;font-family:'Inter','Noto Sans KR',sans-serif;}
-body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
+html{scroll-behavior:smooth;font-family:'Inter','Noto Sans KR',sans-serif;overflow-x:clip;}
+body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;overflow-x:clip;}
 
 .header{background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:200;box-shadow:0 1px 6px rgba(0,0,0,.07);}
 .header-inner{max-width:1240px;margin:0 auto;padding:0 16px 0;display:flex;flex-direction:column;gap:3px;}
-.header-top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 4px;border-bottom:1px solid #f1f5f9;}
+.header-top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0 4px;border-bottom:1px solid #f1f5f9;overflow:hidden;min-width:0;}
 .header-login-box{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;background:linear-gradient(135deg,#fff7ed,#ffedd5);border:1.5px solid #fed7aa;border-radius:20px;}
 .header-login-box::before{content:'🔐 계정';font-size:.6rem;font-weight:800;color:#ea580c;background:#ffedd5;border:1px solid #fdba74;border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
@@ -281,15 +281,15 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .hof-promo-text{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .hof-promo-text strong{font-size:.76rem;font-weight:800;color:#f0f0ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hof-promo-text span{font-size:.65rem;color:#94a3b8;line-height:1.4;word-break:keep-all;}
-.page-promo-banner{display:block;width:100%;height:164px;border-radius:12px;overflow:hidden;position:relative;margin:10px 0 18px;text-decoration:none;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .2s,box-shadow .2s;}
+.page-promo-banner{display:flex;align-items:stretch;width:100%;height:160px;border-radius:12px;overflow:hidden;position:relative;margin:10px 0 18px;text-decoration:none;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .2s,box-shadow .2s;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);}
 .page-promo-banner:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.35);}
-.page-promo-banner img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
-.page-promo-banner-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.3) 55%,rgba(0,0,0,.08) 100%);display:flex;flex-direction:column;justify-content:center;padding:0 24px;gap:3px;}
-.page-promo-banner-label{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);}
-.page-promo-banner-title{font-size:1.05rem;font-weight:900;color:#fff;line-height:1.25;word-break:keep-all;text-shadow:0 2px 6px rgba(0,0,0,.5);}
-.page-promo-banner-sub{font-size:.74rem;color:rgba(255,255,255,.82);word-break:keep-all;line-height:1.4;}
-.page-promo-banner-cta{display:none;}
-@media(max-width:640px){.page-promo-banner{height:101px;}.page-promo-banner-title{font-size:.88rem;}.page-promo-banner-overlay{padding:0 14px;}}
+.page-promo-banner-overlay{flex:0 0 65%;display:flex;flex-direction:column;justify-content:center;padding:0 20px 0 22px;gap:4px;position:relative;z-index:1;}
+.page-promo-banner img{flex:0 0 35%;width:35%;height:100%;object-fit:contain;object-position:center bottom;display:block;padding:8px 10px 0 0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));}
+.page-promo-banner-label{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);}
+.page-promo-banner-title{font-size:.98rem;font-weight:900;color:#fff;line-height:1.3;word-break:keep-all;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+.page-promo-banner-sub{font-size:.71rem;color:rgba(255,255,255,.78);word-break:keep-all;line-height:1.4;}
+.page-promo-banner-cta{display:inline-flex;align-items:center;gap:4px;margin-top:2px;font-size:.65rem;font-weight:700;color:#fff;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);border-radius:20px;padding:3px 10px;width:fit-content;}
+@media(max-width:640px){.page-promo-banner{height:118px;}.page-promo-banner-overlay{flex:0 0 62%;padding:0 12px 0 14px;}.page-promo-banner img{flex:0 0 38%;width:38%;padding:6px 6px 0 0;}.page-promo-banner-title{font-size:.84rem;}.page-promo-banner-sub{display:none;}.page-promo-banner-cta{display:none;}}
 /* ── 홈 FAB 버튼 ── */
 .home-fab{position:fixed;bottom:26px;left:26px;width:48px;height:48px;background:#d45d00;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;box-shadow:0 4px 16px rgba(212,93,0,.38);z-index:800;transition:background .18s,transform .18s;}
 .home-fab:hover{background:#b84e00;transform:scale(1.1);}
@@ -337,7 +337,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
 .nav-inquiry-group::before{content:'📬 문의';font-size:.62rem;font-weight:800;color:#a21caf;background:#fae8ff;border:1px solid #e879f9;border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;}
 .nav-inquiry-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.76rem;font-weight:700;cursor:pointer;border:1.5px solid transparent;background:transparent;color:#6b21a8;font-family:inherit;transition:all .18s;white-space:nowrap;}
 .nav-inquiry-btn:hover{background:rgba(255,255,255,.85);border-color:#e879f9;color:#a21caf;}
-@media(max-width:860px){.nav-inquiry-group{display:none;}.header-login-box .header-auth-btns{display:flex !important;}}
+@media(max-width:860px){.nav-inquiry-group{display:none !important;}.header-login-box .header-auth-btns{display:flex !important;}.header-inner{padding:0 12px;}.header-top-row{gap:6px;}.logo-ko{display:none;}.logo-text{font-size:.9rem;}.logo-badge{font-size:.6rem;padding:2px 7px;}.nav-btn--login,.nav-btn--logout{font-size:.74rem;padding:5px 9px;}.header-login-box{background:none !important;border:none !important;padding:0 !important;}}
 /* ── 문의 팝업 ── */
 .inquiry-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:9000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);}
 .inquiry-overlay.open{display:flex;}
@@ -507,13 +507,13 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
   </div>
   <!-- 광고 배너 -->
   <a href="https://gopherwood.co.kr/product/detail.html?product_no=528" target="_blank" rel="noopener" class="page-promo-banner">
-    <img src="images/oil-real-single.jpg" alt="고퍼우드 헤리티지 우디 오일">
     <div class="page-promo-banner-overlay">
       <span class="page-promo-banner-label">✦ AD · GOPHERWOOD</span>
-      <span class="page-promo-banner-title">공연 전, 기타 컨디션을 최상으로 — 우디 오일</span>
+      <span class="page-promo-banner-title">공연 전, 기타 컨디션을 최상으로 — 헤리티지 우디 오일</span>
       <span class="page-promo-banner-sub">지판 보습 · 크랙 방지 · 빈티지 향 — 공연 전 필수 기타 케어</span>
       <span class="page-promo-banner-cta">제품 보러 가기 →</span>
     </div>
+    <img src="images/oil-real-single.jpg" alt="고퍼우드 헤리티지 우디 오일">
   </a>
   <div class="filter-bar">
     <div class="search-wrap">

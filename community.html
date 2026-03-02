@@ -1892,23 +1892,24 @@
             (function(){
               var cat = new URLSearchParams(location.search).get('cat') || 'all';
               var banners = {
-                all:    { href:'https://cooduck.co.kr/', img:'images/oil-banner-hero.jpg', label:'✦ AD · 쿠덕 (COODUCK)', title:'내 기타, 오래도록 — 쿠덕 우디 오일', sub:'비임상 검증 · 파라핀 오일 베이스 · 지판 보습 & 크랙 방지 · 국내 제조', cta:'제품 보러 가기 →' },
-                free:   { href:'https://cooduck.co.kr/', img:'images/oil-real-single.jpg', label:'✦ AD · 쿠덕 (COODUCK)', title:'연주만큼 관리도 중요해 — 쿠덕 우디 오일', sub:'지판 보습 & 크랙 방지 · 빈티지 우디 향 · 알코올 프리 · 국내 제조', cta:'쿠덕 바로가기 →' },
+                all:    { href:'https://cooduck.co.kr/', img:'images/oil-banner-hero.jpg', label:'✦ AD · 쿠덕 (COODUCK)', title:'내 기타, 오래도록 — 쿠덕 유지보수 오일', sub:'비임상 검증 · 파라핀 오일 베이스 · 지판 보습 & 크랙 방지 · 국내 제조', cta:'제품 보러 가기 →' },
+                free:   { href:'https://cooduck.co.kr/', img:'images/oil-real-single.jpg', label:'✦ AD · 쿠덕 (COODUCK)', title:'연주만큼 관리도 중요해 — 쿠덕 유지보수 오일', sub:'지판 보습 & 크랙 방지 · 파라핀 오일 베이스 · 알코올 프리 · 국내 제조', cta:'쿠덕 바로가기 →' },
                 gear:   { href:'https://gopherwood.co.kr/product/detail.html?product_no=528', img:'images/oil-real-single.jpg', label:'✦ AD · GOPHERWOOD', title:'장비 리뷰어도 인정한 기타 케어 — 헤리티지 우디 오일', sub:'프리미엄 컨디셔닝 · 클린 & 프로텍트 · 빈티지 향 — 국내 제조 100ml', cta:'제품 보러 가기 →' },
                 band:   { href:'https://gopherwood.co.kr/product/detail.html?product_no=528', img:'images/oil-real-multi.jpg', label:'✦ AD · GOPHERWOOD', title:'밴드 결성 전에, 기타 컨디션부터 — 우디 오일', sub:'지판 보습 & 크랙 방지 · 빈티지 우디 향 · 알코올 프리', cta:'지금 구매하기 →' },
-                lesson: { href:'https://cooduck.co.kr/', img:'images/oil-banner-hero.jpg', label:'✦ AD · 쿠덕 (COODUCK)', title:'레슨 시작했다면 기타 관리도 함께, 쿠덕 우디 오일', sub:'비임상 검증 · 초보자도 쉬운 지판 케어 · 파라핀 오일 베이스', cta:'제품 확인하기 →' },
+                lesson: { href:'https://cooduck.co.kr/', img:'images/oil-banner-hero.jpg', label:'✦ AD · 쿠덕 (COODUCK)', title:'레슨 시작했다면 기타 관리도 함께, 쿠덕 유지보수 오일', sub:'비임상 검증 · 초보자도 쉬운 지판 케어 · 파라핀 오일 베이스', cta:'제품 확인하기 →' },
                 market: { href:'https://gopherwood.co.kr/product/detail.html?product_no=528', img:'images/oil-real-single.jpg', label:'✦ AD · GOPHERWOOD', title:'중고 악기 샀다면, 관리는 헤리티지 우디 오일로', sub:'새 악기처럼 클린 & 프로텍트 · 파라핀 오일 베이스 · 국내 제조', cta:'제품 확인하기 →' }
               };
               var b = banners[cat] || banners['all'];
               document.getElementById('comm-ad-banner').innerHTML =
-                '<a href="'+b.href+'" target="_blank" rel="noopener" class="page-promo-banner" style="display:block;width:100%;height:164px;border-radius:12px;overflow:hidden;position:relative;margin:0 0 14px;text-decoration:none;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'none\'">'
-                +'<img src="'+b.img+'" alt="광고" style="width:100%;height:100%;object-fit:cover;display:block;">'
-                +'<div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.65) 0%,rgba(0,0,0,.3) 55%,rgba(0,0,0,.08) 100%);display:flex;flex-direction:column;justify-content:center;padding:0 24px;gap:3px;">'
-                +'<span style="font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);">'+b.label+'</span>'
-                +'<span style="font-size:1.05rem;font-weight:900;color:#fff;line-height:1.25;word-break:keep-all;text-shadow:0 2px 6px rgba(0,0,0,.5);">'+b.title+'</span>'
-                +'<span style="font-size:.74rem;color:rgba(255,255,255,.82);word-break:keep-all;line-height:1.4;">'+b.sub+'</span>'
-                +'<span style="display:inline-flex;align-items:center;margin-top:2px;font-size:.65rem;font-weight:700;color:#fff;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);border-radius:20px;padding:3px 10px;width:fit-content;">'+b.cta+'</span>'
-                +'</div></a>';
+                '<a href="'+b.href+'" target="_blank" rel="noopener" class="page-promo-banner">'
+                +'<div class="page-promo-banner-overlay">'
+                +'<span class="page-promo-banner-label">'+b.label+'</span>'
+                +'<span class="page-promo-banner-title">'+b.title+'</span>'
+                +'<span class="page-promo-banner-sub">'+b.sub+'</span>'
+                +'<span class="page-promo-banner-cta">'+b.cta+'</span>'
+                +'</div>'
+                +'<img src="'+b.img+'" alt="광고 배너 이미지">'
+                +'</a>';
             })();
             </script>
 
