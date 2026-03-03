@@ -242,6 +242,17 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
   .header-nav{display:none;}
   .hamburger-btn{display:flex;}
   .logo-badge{display:none;}
+  .header-top-row{gap:4px;flex-wrap:nowrap;overflow:hidden;}
+  .logo{flex-shrink:0;gap:5px;min-width:0;}
+  .logo-icon{font-size:1.15rem;}
+  .logo-text{font-size:.9rem;}
+  .logo-ko{display:none;}
+  .nav-portfolio-btn span{display:none;}
+  .nav-portfolio-btn{padding:5px 10px;min-width:0;}
+  .header-login-box{padding:0!important;gap:3px;flex-shrink:0;background:none!important;border:none!important;}
+  .header-login-box::before{display:none;}
+  .nav-btn--login,.nav-btn--logout{font-size:.72rem;padding:5px 8px;}
+  .header-profile-btn{font-size:.72rem;padding:5px 8px;}
 }
 @media(max-width:768px){
   .header-inner{padding:0 14px;}
@@ -283,13 +294,14 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
 .hof-promo-text span{font-size:.65rem;color:#94a3b8;line-height:1.4;word-break:keep-all;}
 .page-promo-banner{display:flex;align-items:stretch;width:100%;height:160px;border-radius:12px;overflow:hidden;position:relative;margin:10px 0 18px;text-decoration:none;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .2s,box-shadow .2s;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);}
 .page-promo-banner:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.35);}
-.page-promo-banner-overlay{flex:0 0 65%;display:flex;flex-direction:column;justify-content:center;padding:0 20px 0 22px;gap:4px;position:relative;z-index:1;}
-.page-promo-banner img{flex:0 0 35%;width:35%;height:100%;object-fit:contain;object-position:center bottom;display:block;padding:8px 10px 0 0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));}
+.page-promo-banner-overlay{flex:0 0 60%;display:flex;flex-direction:column;justify-content:center;padding:0 16px 0 22px;gap:4px;position:relative;z-index:1;}
+.page-promo-banner img{flex:0 0 40%;width:40%;height:100%;object-fit:contain;object-position:center center;display:block;padding:10px 12px 10px 0;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5));}
 .page-promo-banner-label{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);}
-.page-promo-banner-title{font-size:.98rem;font-weight:900;color:#fff;line-height:1.3;word-break:keep-all;text-shadow:0 1px 4px rgba(0,0,0,.4);}
-.page-promo-banner-sub{font-size:.71rem;color:rgba(255,255,255,.78);word-break:keep-all;line-height:1.4;}
+.page-promo-banner-title{font-size:.95rem;font-weight:900;color:#fff;line-height:1.3;word-break:keep-all;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+.page-promo-banner-sub{font-size:.69rem;color:rgba(255,255,255,.78);word-break:keep-all;line-height:1.4;}
 .page-promo-banner-cta{display:inline-flex;align-items:center;gap:4px;margin-top:2px;font-size:.65rem;font-weight:700;color:#fff;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.32);border-radius:20px;padding:3px 10px;width:fit-content;}
-@media(max-width:640px){.page-promo-banner{height:118px;}.page-promo-banner-overlay{flex:0 0 62%;padding:0 12px 0 14px;}.page-promo-banner img{flex:0 0 38%;width:38%;padding:6px 6px 0 0;}.page-promo-banner-title{font-size:.84rem;}.page-promo-banner-sub{display:none;}.page-promo-banner-cta{display:none;}}
+@media(max-width:640px){.page-promo-banner{height:110px;}.page-promo-banner-overlay{flex:0 0 58%;padding:0 10px 0 14px;}.page-promo-banner img{flex:0 0 42%;width:42%;padding:8px 8px 8px 0;}.page-promo-banner-title{font-size:.82rem;}.page-promo-banner-sub{display:none;}.page-promo-banner-cta{display:none;}}
+@media(max-width:400px){.page-promo-banner{height:96px;}.page-promo-banner-overlay{flex:0 0 55%;padding:0 8px 0 12px;}.page-promo-banner img{flex:0 0 45%;width:45%;padding:6px 6px 6px 0;}.page-promo-banner-title{font-size:.76rem;}}
 /* ── 홈 FAB 버튼 ── */
 .home-fab{position:fixed;bottom:26px;left:26px;width:48px;height:48px;background:#d45d00;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;text-decoration:none;box-shadow:0 4px 16px rgba(212,93,0,.38);z-index:800;transition:background .18s,transform .18s;}
 .home-fab:hover{background:#b84e00;transform:scale(1.1);}
