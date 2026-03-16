@@ -15,6 +15,7 @@
 <meta name="keywords" content="공연장, 라이브홀, 클럽, 소극장, 밴드 공연, 홍대 공연장, 인디 공연, 코드덕쿠, 코드덕후, 코덕, Codeducku, 음악커뮤니티, 쿠슐랭가이드">
 <link rel="canonical" href="https://codeducku.vercel.app/venue.html">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://codeducku.vercel.app/venue.html">
 <meta property="og:title" content="공연장 찾기 — 코드덕쿠">
 <meta property="og:description" content="밴드·인디 공연을 위한 공연장(클럽·라이브홀·소극장) 정보.">
 <meta property="og:image" content="https://www.genspark.ai/api/files/s/EsaPAYLv">
@@ -28,6 +29,22 @@
 <meta name="google-site-verification" content="y_LIOep_Kgw8SPVqt4XB5oCKlfscobw2V2fkQV2J6HM" />
 <!-- Naver Search Advisor 소유권 인증 -->
 <meta name="naver-site-verification" content="72f154aec62c295b28b8f27b077b8c961e862892" />
+<!-- JSON-LD 구조화 데이터 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "공연장 찾기 — 코드덕쿠",
+  "url": "https://codeducku.vercel.app/venue.html",
+  "description": "밴드·인디 공연을 위한 공연장(클럽·라이브홀·소극장) 정보. 홍대, 신촌, 이태원 등 서울 주요 공연장 목록.",
+  "inLanguage": "ko-KR",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "코드덕쿠",
+    "url": "https://codeducku.vercel.app/"
+  }
+}
+</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -438,7 +455,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
           <a href="video-review.html" class="nav-btn"><i class="fas fa-star"></i> 리뷰영상</a>
           <a href="video-cover.html" class="nav-btn"><i class="fas fa-music"></i> 카피영상</a>
           <a href="video-fun.html" class="nav-btn"><i class="fas fa-laugh"></i> 재미있는영상</a>
-          <a href="video-bandstage.html" class="nav-btn"><i class="fas fa-drum"></i> 밴드라이브</a>
+          <a href="video-bandstage.html" class="nav-btn"><i class="fas fa-wrench"></i> 기타관리팁</a>
         </div>
       </div>
     </nav>
@@ -466,7 +483,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
     <a href="video-review.html" class="mobile-menu-item"><i class="fas fa-star" style="color:#dc2626"></i> 리뷰영상</a>
     <a href="video-cover.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#dc2626"></i> 카피영상</a>
     <a href="video-fun.html" class="mobile-menu-item"><i class="fas fa-laugh" style="color:#dc2626"></i> 재미있는영상</a>
-    <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-drum" style="color:#dc2626"></i> 밴드라이브</a>
+    <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-wrench" style="color:#dc2626"></i> 기타관리팁</a>
     <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
         <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
         <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
@@ -505,7 +522,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
       </a>
       <a href="video-bandstage.html" class="hof-promo-item">
         <span class="hof-promo-icon">🎤</span>
-        <div class="hof-promo-text"><strong>밴드라이브 영상</strong><span>공연 영상을 공유하고 감상하세요</span></div>
+        <div class="hof-promo-text"><strong>기타관리팁 영상</strong><span>지판 케어·줄 교체·넥 조정 팁</span></div>
       </a>
       <a href="analyze.html" class="hof-promo-item hof-promo-item--analyze">
         <span class="hof-promo-icon">🎸</span>
@@ -1264,7 +1281,58 @@ setTimeout(function() {
     if (typeof refreshAllCardRatings === 'function') refreshAllCardRatings('venue', window._cdkuAggMap);
   }
 }, 1500);
+
+/* ── SEO: JSON-LD ItemList 동적 삽입 ── */
+(function injectSeoSchema() {
+  if (!window.VENUES) return;
+  const items = VENUES.map((r, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "item": {
+      "@type": "MusicVenue",
+      "name": r.name,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": r.address,
+        "addressLocality": r.dong,
+        "addressRegion": r.gu,
+        "addressCountry": "KR"
+      },
+      "description": r.desc || (r.gu + ' ' + r.dong + ' 소재 공연장')
+    }
+  }));
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "서울 공연장 목록 — 코드덕쿠 쿠슐랭 가이드",
+    "description": "밴드·인디 공연을 위한 서울 공연장(클럽·라이브홀·소극장) 목록.",
+    "url": "https://codeducku.vercel.app/venue.html",
+    "numberOfItems": items.length,
+    "itemListElement": items
+  };
+  const s = document.createElement('script');
+  s.type = 'application/ld+json';
+  s.textContent = JSON.stringify(schema);
+  document.head.appendChild(s);
+})();
 </script>
 <script src="js/tracker.js"></script>
+<script>
+(function buildStaticList() {
+  if (!window.VENUES) return;
+  const div = document.createElement('div');
+  div.id = 'seo-venue-list';
+  div.setAttribute('aria-hidden', 'true');
+  div.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;';
+  const ul = document.createElement('ul');
+  VENUES.forEach(r => {
+    const li = document.createElement('li');
+    li.textContent = r.name + ' — ' + r.address + ' (' + r.gu + ' ' + r.dong + ') ' + (r.desc || '');
+    ul.appendChild(li);
+  });
+  div.appendChild(ul);
+  document.body.appendChild(div);
+})();
+</script>
 </body>
 </html>

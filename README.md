@@ -60,16 +60,56 @@
 
 ### 4. 🔐 평가 버튼 로그인 상태 이슈 수정
 - **모바일 환경** 및 페이지 초기 로드 시 `window.currentUser`가 늦게 설정되는 타이밍 이슈 해결
-- 수정 내용:
-  1. `handleRateBtnClick`: 클릭 시점에 Supabase 세션 직접 재확인 (async)
-  2. `auth-header.js`: 초기 세션 설정 완료 후 `reloadRatingBadges()` 즉시 호출
-  3. 각 info 페이지: 1.5초 후 카드 평가 버튼 재렌더 (지연 대응 fallback)
-  4. `rating.js`: `reloadRatingBadges` 개선 — aggMap 캐시 활용해 즉시 재렌더
 
 ### 5. 🎥 영상 재생 오류 수정
 - 이전 `?autoplay=1` 파라미터 → `?enablejsapi=1&rel=0&modestbranding=1` 으로 변경
-- `allow="autoplay"` 제거 → `accelerometer; gyroscope; picture-in-picture` 표준 속성으로 교체
-- 임베드 제한 영상 감지 시 에러 오버레이 + YouTube 직접 링크 표시
+
+---
+
+## ✅ SEO 최적화 작업 (2026-03-16)
+
+### 6. 🔍 검색엔진 최적화 전면 강화
+
+#### sitemap.xml 업데이트
+- `analyze.html`, `portfolio.html` 등 **누락 페이지 2개 추가** (총 19개 URL)
+- 모든 `lastmod` 날짜를 `2026-03-16`으로 갱신
+- 커뮤니티 카테고리 우선순위를 `0.7 → 0.8`로 상향
+
+#### og:url 태그 전면 추가
+- 기존 HTML 파일 11개에 `og:url` 태그 누락 확인 → 전부 추가 완료
+- video-*.html 4개 파일에는 SEO 태그 자체가 없었음 → `title`, `description`, `canonical`, `og:*`, `twitter:*`, `google-site-verification`, `naver-site-verification` 모두 신규 추가
+
+#### JSON-LD 구조화 데이터 추가 (Google Rich Results)
+| 페이지 | Schema 타입 |
+|---|---|
+| `index.html` | `WebSite` + `SearchAction` + `Organization` |
+| `rehearsal.html` | `WebPage` (isPartOf WebSite) |
+| `repair.html` | `WebPage` |
+| `instrument.html` | `WebPage` |
+| `venue.html` | `WebPage` |
+| `academy.html` | `WebPage` |
+| `community.html` | `WebPage` |
+| `score.html` | `WebPage` |
+| `analyze.html` | `WebApplication` (MusicApplication) |
+
+#### SEO 현황 요약
+| 항목 | 상태 |
+|---|---|
+| robots.txt | ✅ 정상 (크롤링 허용, 인증 페이지 차단) |
+| sitemap.xml | ✅ 19개 URL, 최신 날짜 |
+| canonical 태그 | ✅ 전 페이지 완비 |
+| og:url 태그 | ✅ 전 페이지 완비 |
+| JSON-LD 구조화 데이터 | ✅ 9개 주요 페이지 |
+| Google Search Console 인증 | ✅ 메타태그 삽입 완료 |
+| Naver Search Advisor 인증 | ✅ 메타태그 삽입 완료 |
+
+### ⚠️ 직접 해야 할 추가 작업
+1. **Google Search Console** (https://search.google.com/search-console)
+   - 속성 추가: `https://codeducku.vercel.app/`
+   - 사이트맵 제출: `https://codeducku.vercel.app/sitemap.xml`
+2. **Naver Search Advisor** (https://searchadvisor.naver.com)
+   - 사이트 등록 후 사이트맵 제출: `https://codeducku.vercel.app/sitemap.xml`
+3. 배포 후 **1~2주 대기** (구글: 3일~2주, 네이버: 1~4주)
 
 ---
 

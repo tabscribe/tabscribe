@@ -15,6 +15,7 @@
 <meta name="keywords" content="리페어샵, 기타 수리, 베이스 수리, 서울 리페어샵, 넥 교정, 픽업 교체, 프렛 작업, 악기 수리, 코드덕쿠, 코드덕후, 코덕, Codeducku, 음악커뮤니티, 쿠슐랭가이드">
 <link rel="canonical" href="https://codeducku.vercel.app/repair.html">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://codeducku.vercel.app/repair.html">
 <meta property="og:title" content="기타·베이스 리페어샵 찾기 — 코드덕쿠">
 <meta property="og:description" content="서울 기타·베이스 리페어샵 정보를 구·동별로 검색하세요. 악기 수리 전문점 목록.">
 <meta property="og:image" content="https://www.genspark.ai/api/files/s/EsaPAYLv">
@@ -28,8 +29,22 @@
 <meta name="google-site-verification" content="y_LIOep_Kgw8SPVqt4XB5oCKlfscobw2V2fkQV2J6HM" />
 <!-- Naver Search Advisor 소유권 인증 -->
 <meta name="naver-site-verification" content="72f154aec62c295b28b8f27b077b8c961e862892" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- JSON-LD 구조화 데이터 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "기타·베이스 리페어샵 찾기 — 코드덕쿠",
+  "url": "https://codeducku.vercel.app/repair.html",
+  "description": "서울 기타·베이스 리페어샵 정보를 구·동별로 검색하세요. 넥 교정, 픽업 교체, 프렛 작업 등 악기 수리 전문점.",
+  "inLanguage": "ko-KR",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "코드덕쿠",
+    "url": "https://codeducku.vercel.app/"
+  }
+}
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -447,7 +462,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
           <a href="video-review.html" class="nav-btn"><i class="fas fa-star"></i> 리뷰영상</a>
           <a href="video-cover.html" class="nav-btn"><i class="fas fa-music"></i> 카피영상</a>
           <a href="video-fun.html" class="nav-btn"><i class="fas fa-laugh"></i> 재미있는영상</a>
-          <a href="video-bandstage.html" class="nav-btn"><i class="fas fa-drum"></i> 밴드라이브</a>
+          <a href="video-bandstage.html" class="nav-btn"><i class="fas fa-wrench"></i> 기타관리팁</a>
         </div>
       </div>
     </nav>
@@ -475,7 +490,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
     <a href="video-review.html" class="mobile-menu-item"><i class="fas fa-star" style="color:#dc2626"></i> 리뷰영상</a>
     <a href="video-cover.html" class="mobile-menu-item"><i class="fas fa-music" style="color:#dc2626"></i> 카피영상</a>
     <a href="video-fun.html" class="mobile-menu-item"><i class="fas fa-laugh" style="color:#dc2626"></i> 재미있는영상</a>
-    <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-drum" style="color:#dc2626"></i> 밴드라이브</a>
+    <a href="video-bandstage.html" class="mobile-menu-item"><i class="fas fa-wrench" style="color:#dc2626"></i> 기타관리팁</a>
     <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
         <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
         <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
@@ -1385,7 +1400,58 @@ setTimeout(function() {
     if (typeof refreshAllCardRatings === 'function') refreshAllCardRatings('repair', window._cdkuAggMap);
   }
 }, 1500);
+
+/* ── SEO: JSON-LD ItemList 동적 삽입 ── */
+(function injectSeoSchema() {
+  if (!window.SHOPS) return;
+  const items = SHOPS.map((r, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "item": {
+      "@type": "LocalBusiness",
+      "name": r.name,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": r.address,
+        "addressLocality": r.dong,
+        "addressRegion": r.gu,
+        "addressCountry": "KR"
+      },
+      "description": r.desc || (r.gu + ' ' + r.dong + ' 소재 기타·베이스 리페어샵')
+    }
+  }));
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "서울 기타·베이스 리페어샵 목록 — 코드덕쿠 쿠슐랭 가이드",
+    "description": "서울 기타·베이스 리페어샵 정보. 넥 교정, 픽업 교체, 프렛 작업 전문점 목록.",
+    "url": "https://codeducku.vercel.app/repair.html",
+    "numberOfItems": items.length,
+    "itemListElement": items
+  };
+  const s = document.createElement('script');
+  s.type = 'application/ld+json';
+  s.textContent = JSON.stringify(schema);
+  document.head.appendChild(s);
+})();
 </script>
 <script src="js/tracker.js"></script>
+<script>
+(function buildStaticList() {
+  if (!window.SHOPS) return;
+  const div = document.createElement('div');
+  div.id = 'seo-shop-list';
+  div.setAttribute('aria-hidden', 'true');
+  div.style.cssText = 'position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;';
+  const ul = document.createElement('ul');
+  SHOPS.forEach(r => {
+    const li = document.createElement('li');
+    li.textContent = r.name + ' — ' + r.address + ' (' + r.gu + ' ' + r.dong + ') ' + (r.desc || '');
+    ul.appendChild(li);
+  });
+  div.appendChild(ul);
+  document.body.appendChild(div);
+})();
+</script>
 </body>
 </html>
