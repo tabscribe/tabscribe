@@ -53,6 +53,309 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="js/inquiry.js"></script>
     <style>
+        /* ── 전역 리셋 & CSS 변수 ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --orange:       #e85d04;
+            --orange-lt:    #fff7f0;
+            --orange-bd:    #fdba74;
+            --blue:         #1a56db;
+            --blue-lt:      #eff6ff;
+            --blue-bd:      #bfdbfe;
+            --green:        #059669;
+            --green-lt:     #f0fdf4;
+            --green-bd:     #6ee7b7;
+            --text:         #111827;
+            --sub:          #374151;
+            --muted:        #6b7280;
+            --border:       #e5e7eb;
+            --border-light: #f1f5f9;
+            --bg:           #f9fafb;
+            --card:         #ffffff;
+            --radius:       12px;
+            --shadow:       0 2px 12px rgba(0,0,0,.07);
+            --line:         #e5e7eb;
+            --text-muted:   #6b7280;
+        }
+        html { scroll-behavior: smooth; font-family: 'Inter', 'Noto Sans KR', sans-serif; overflow-x: clip; }
+        body { background: var(--bg); color: var(--text); font-size: 0.92rem; line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ── 헤더 (공통) ── */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            padding: 6px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 8px rgba(30,36,51,0.07);
+        }
+        .header-inner {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .header-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #f1f5f9;
+            min-width: 0;
+            flex-wrap: wrap;
+        }
+        .logo {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--text);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .logo .fa-guitar, .logo-icon { font-size: 1.3rem; color: var(--orange); }
+        .logo-textbox { display: flex; flex-direction: column; gap: 0; line-height: 1.1; }
+        .logo-text { font-size: 1.05rem; font-weight: 900; letter-spacing: -0.03em; }
+        .logo-text .accent { color: var(--orange); }
+        .logo-ko { font-size: 0.65rem; font-weight: 700; color: var(--muted); letter-spacing: 0.02em; }
+        .logo-badge {
+            font-size: 0.56rem; font-weight: 800; color: #fff;
+            background: linear-gradient(135deg, #e85d04, #f48c06);
+            border-radius: 20px; padding: 2px 8px;
+            letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0;
+        }
+        .header-login-box {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 3px 10px 3px 8px;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border: 1.5px solid #fed7aa; border-radius: 20px;
+            flex-shrink: 0; flex-wrap: wrap;
+        }
+        .header-login-box::before {
+            content: '🔐 계정'; font-size: .6rem; font-weight: 800; color: #ea580c;
+            background: #ffedd5; border: 1px solid #fdba74; border-radius: 20px;
+            padding: 1px 7px; white-space: nowrap; flex-shrink: 0;
+        }
+        .header-auth-btns { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; }
+        .header-login-box .header-auth-btns { display: flex !important; }
+        .nav-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.82rem; font-weight: 600;
+            color: var(--sub);
+            background: #fff;
+            cursor: pointer; transition: all .18s;
+            text-decoration: none; white-space: nowrap;
+            font-family: inherit;
+        }
+        .nav-btn:hover { background: #f9fafb; border-color: #d1d5db; color: var(--text); }
+        .nav-btn.active { background: #fff; font-weight: 800; }
+        .nav-btn--login {
+            background: #fff7f0 !important; color: #e85d04 !important;
+            border: 1.5px solid #fdba74 !important; font-weight: 700;
+            padding: 7px 14px; border-radius: 20px; font-size: 0.82rem;
+            display: inline-flex; align-items: center; gap: 5px;
+            transition: background .18s; white-space: nowrap;
+        }
+        .nav-btn--login:hover { background: #ffe8d0 !important; }
+        .nav-btn--logout {
+            background: #f3f4f6 !important; color: #6b7280 !important;
+            border: 1.5px solid #e5e7eb !important; font-weight: 600;
+            padding: 7px 14px; border-radius: 20px; font-size: 0.82rem;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+            font-family: inherit; transition: background .18s; white-space: nowrap;
+        }
+        .nav-btn--logout:hover { background: #e5e7eb !important; color: #374151 !important; }
+        .nav-admin-btn {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%) !important;
+            color: #e85d04 !important; border: 1.5px solid #fdba74 !important;
+            font-weight: 700; padding: 7px 14px; border-radius: 20px; font-size: 0.8rem;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+            text-decoration: none; transition: all .18s; white-space: nowrap;
+        }
+        .nav-admin-btn:hover { background: linear-gradient(135deg, #fed7aa 0%, #fb923c 100%) !important; color: #fff !important; }
+        .header-profile-btn {
+            display: inline-flex !important; align-items: center; gap: 6px;
+            font-size: 0.82rem; font-weight: 700; color: #e85d04;
+            padding: 7px 12px; background: #fff7f0;
+            border-radius: 20px; border: 1.5px solid #fdba74;
+            text-decoration: none; transition: background .18s; white-space: nowrap;
+        }
+        .header-profile-btn:hover { background: #ffe8d0; }
+        .nav-portfolio-btn {
+            display: inline-flex !important; align-items: center; gap: 6px;
+            font-size: 0.8rem; font-weight: 700; color: #6d28d9;
+            padding: 6px 13px; background: linear-gradient(135deg,#f5f3ff,#ede9fe);
+            border-radius: 20px; border: 1.5px solid #c4b5fd;
+            text-decoration: none; transition: all .18s; white-space: nowrap; flex-shrink: 0;
+        }
+        .nav-portfolio-btn:hover { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
+        .hamburger-btn {
+            display: none; flex-direction: column; justify-content: center;
+            align-items: center; gap: 5px; width: 38px; height: 38px;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            background: #fff; cursor: pointer; padding: 0; flex-shrink: 0;
+        }
+        .hamburger-btn span {
+            display: block; width: 18px; height: 2px;
+            background: var(--sub); border-radius: 2px; transition: all .22s;
+        }
+        /* 하단 네비게이션 */
+        .header-nav { width: 100%; padding-bottom: 5px; }
+        .header-nav-row1, .header-nav-row2 {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            padding: 3px 0;
+        }
+        .header-nav-row1 { border-bottom: 1px solid #f8fafc; padding-bottom: 5px; margin-bottom: 3px; }
+        .nav-info-group, .nav-service-group, .nav-community-group, .nav-video-group {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 3px 8px 3px 6px; border-radius: 20px; position: relative;
+        }
+        .nav-info-group {
+            background: linear-gradient(135deg,#f0fdf4,#ecfdf5); border: 1.5px solid #6ee7b7;
+        }
+        .nav-info-group::before {
+            content: '📍 정보'; font-size: .62rem; font-weight: 800; color: #059669;
+            background: #d1fae5; border: 1px solid #6ee7b7; border-radius: 20px;
+            padding: 1px 7px; white-space: nowrap; letter-spacing: .02em; flex-shrink: 0;
+        }
+        .nav-service-group {
+            background: linear-gradient(135deg,#f5f3ff,#ede9fe); border: 1.5px solid #c4b5fd;
+        }
+        .nav-service-group::before {
+            content: '🎵 코덕서비스'; font-size: .62rem; font-weight: 800; color: #7c3aed;
+            background: #ede9fe; border: 1px solid #c4b5fd; border-radius: 20px;
+            padding: 1px 7px; white-space: nowrap; flex-shrink: 0;
+        }
+        .nav-community-group {
+            background: linear-gradient(135deg,#fff7f0,#ffedd5); border: 1.5px solid #fdba74;
+        }
+        .nav-community-group::before {
+            content: '💬 커뮤니티'; font-size: .62rem; font-weight: 800; color: #ea580c;
+            background: #ffedd5; border: 1px solid #fdba74; border-radius: 20px;
+            padding: 1px 7px; white-space: nowrap; flex-shrink: 0;
+        }
+        .nav-video-group {
+            background: linear-gradient(135deg,#fff1f2,#ffe4e6); border: 1.5px solid #fca5a5;
+        }
+        .nav-video-group::before {
+            content: '🎬 영상'; font-size: .62rem; font-weight: 800; color: #dc2626;
+            background: #ffe4e6; border: 1px solid #fca5a5; border-radius: 20px;
+            padding: 1px 7px; white-space: nowrap; flex-shrink: 0;
+        }
+        .nav-info-group .nav-btn, .nav-service-group .nav-btn,
+        .nav-community-group .nav-btn, .nav-video-group .nav-btn {
+            border-color: transparent; background: transparent; font-size: 0.76rem; padding: 4px 10px;
+        }
+        .nav-info-group .nav-btn:hover { background: rgba(255,255,255,.85); border-color: #6ee7b7; }
+        .nav-service-group .nav-btn:hover { background: rgba(255,255,255,.85); border-color: #c4b5fd; }
+        .nav-community-group .nav-btn:hover { background: rgba(255,255,255,.85); border-color: #fdba74; }
+        .nav-video-group .nav-btn:hover { background: rgba(255,255,255,.85); border-color: #fca5a5; }
+        .nav-info-group .nav-btn.active { background: rgba(255,255,255,.95); border-color: #34d399; }
+        .nav-community-group .nav-btn.active { background: rgba(255,255,255,.95); border-color: #f97316; color: #e85d04; font-weight: 800; }
+        .nav-video-group .nav-btn.active { background: rgba(255,255,255,.95); border-color: #f87171; color: #dc2626; font-weight: 800; }
+        /* 모바일 메뉴 */
+        .mobile-menu {
+            display: none; flex-direction: column; position: absolute;
+            top: 100%; left: 0; right: 0; z-index: 200;
+            background: #fff; border-top: 1px solid var(--border);
+            border-bottom: 2px solid var(--orange); padding: 8px 0 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.12);
+            max-height: 80vh; overflow-y: auto;
+        }
+        .mobile-menu.is-open { display: flex; }
+        .mobile-menu-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 20px; font-size: 0.9rem; font-weight: 600;
+            color: var(--sub); cursor: pointer;
+            background: none; border: none; width: 100%; text-align: left;
+            transition: background .15s; font-family: inherit;
+        }
+        .mobile-menu-item:hover { background: #fafafa; }
+        .mobile-menu-section-label {
+            padding: 6px 20px 2px; font-size: .68rem; font-weight: 800;
+            color: #94a3b8; letter-spacing: .05em; text-transform: uppercase;
+        }
+        /* 드롭다운 커뮤니티 */
+        .nav-dropdown { position: relative; display: inline-flex; align-items: center; }
+        .nav-dropdown-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 12px 5px 10px;
+            background: linear-gradient(135deg,#fff7f0,#fff0e6);
+            border: 1.5px solid #fdba74; border-radius: 20px;
+            font-size: 0.82rem; font-weight: 700; color: #ea580c;
+            cursor: pointer; white-space: nowrap; transition: all 0.18s;
+            font-family: inherit; position: relative;
+        }
+        .nav-dropdown-btn::before {
+            content: '💬 커뮤니티'; font-size: .62rem; font-weight: 800; color: #ea580c;
+            background: #ffedd5; border: 1px solid #fdba74; border-radius: 20px;
+            padding: 1px 7px; white-space: nowrap; margin-right: 2px;
+        }
+        .nav-dropdown-btn:hover { background: linear-gradient(135deg,#ffedd5,#ffe8d0); }
+        .nav-dropdown-chevron { font-size: .7rem; transition: transform .2s; }
+        .nav-dropdown-menu {
+            display: none; position: absolute; top: calc(100% + 8px); left: 0;
+            background: #fff; border: 1.5px solid #fdba74; border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 300;
+            padding: 8px 0; min-width: 180px;
+        }
+        .nav-dropdown.open .nav-dropdown-chevron { transform: rotate(180deg); }
+        .nav-dropdown.open .nav-dropdown-menu { display: block; }
+        .nav-dropdown-menu a {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px; font-size: 0.83rem; font-weight: 600;
+            color: var(--sub); transition: background .15s; white-space: nowrap;
+        }
+        .nav-dropdown-menu a:hover { background: #fff7f0; color: #e85d04; }
+        .nav-dropdown-menu a.active { color: #e85d04; font-weight: 800; background: #fff7f0; }
+        /* 토스트 */
+        .toast {
+            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: #1e293b; color: #fff; padding: 10px 22px; border-radius: 30px;
+            font-size: 0.88rem; font-weight: 600; z-index: 9999;
+            opacity: 0; transition: all .3s; pointer-events: none; white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* 홈 FAB */
+        .home-fab {
+            position: fixed; bottom: 26px; right: 26px;
+            width: 46px; height: 46px; background: var(--orange); color: #fff;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.15rem; text-decoration: none;
+            box-shadow: 0 4px 16px rgba(232,93,4,.38); transition: all .18s; z-index: 800;
+        }
+        .home-fab:hover { background: #c24e03; transform: scale(1.1); }
+        .home-fab-tooltip {
+            position: absolute; right: 54px; top: 50%; transform: translateY(-50%);
+            background: #1e293b; color: #fff; font-size: 0.74rem; font-weight: 700;
+            padding: 4px 11px; border-radius: 8px; white-space: nowrap;
+            opacity: 0; pointer-events: none; transition: opacity .18s;
+        }
+        .home-fab:hover .home-fab-tooltip { opacity: 1; }
+        /* 반응형 */
+        @media (max-width: 900px) {
+            .header-nav { display: none; }
+            .hamburger-btn { display: flex; }
+        }
+        @media (max-width: 640px) {
+            .header-login-box::before { display: none; }
+            .header-login-box { padding: 0 !important; gap: 3px; background: none !important; border: none !important; }
+            .nav-btn--login, .nav-btn--logout { font-size: 0.72rem; padding: 5px 8px; }
+            .header-profile-btn { font-size: 0.72rem; padding: 5px 8px; }
+            .header-top-row { gap: 4px; flex-wrap: wrap; }
+        }
+
         /* ── 커뮤니티 전용 스타일 ── */
         .comm-hero {
             background: linear-gradient(135deg, #fff7f0 0%, #fef3c7 50%, #ecfdf5 100%);
