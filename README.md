@@ -143,9 +143,17 @@
 - 두 파일에 `id="mobileAdminBtn"` 모바일 관리자 버튼이 없어 관리자 로그인 시 모바일 메뉴에 관리자 항목 미표시
 - 두 파일에 `mobileAdminBtn` 추가
 
+#### community.html — CSS 완전 누락 수정 (2026-03-21 추가)
+- **문제**: `community.html`이 `css/style.css`를 로드하지 않으며, 인라인 `<style>`에 `:root` CSS 변수(`--bg`, `--text`, `--border`, `--orange`, `--muted`, `--sub`, `--border-light`, `--text-muted` 등)와 헤더 공통 클래스가 전혀 없어 **헤더·본문 레이아웃이 텍스트 나열 상태로 완전 파괴**
+- **수정**: 인라인 `<style>` 상단에 `:root` 변수 전체 및 공통 헤더/레이아웃 CSS 추가
+- 누락됐던 `--text-muted` 변수도 추가
+
+#### 광고 배너(page-promo-banner) CSS 누락 수정 (2026-03-21 추가)
+- **문제**: `community.html`에 `.page-promo-banner` CSS가 없어 이미지가 **화면 전체를 덮는 크기**로 표시됨
+- **수정**: community.html 인라인 `<style>`에 `.page-promo-banner` 전체 CSS 추가 (height: 100px, object-fit: contain 등 포함)
+- 전체 확인: `rehearsal.html`, `repair.html`, `instrument.html`, `venue.html` — 인라인 CSS로 배너 스타일 정상 포함, `academy.html`, `video-*.html`, `index.html` — `css/style.css`를 통해 배너 스타일 정상 제공
+
 ---
-
-
 
 ### Supabase `ratings` 테이블
 | 컬럼 | 타입 | 설명 |
