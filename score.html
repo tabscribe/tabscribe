@@ -795,6 +795,13 @@
 @media(max-width: 520px) {
   .score-stats { gap: 10px; }
 }
+
+/* ── 로그인 후 헤더 버튼 스타일 ── */
+.header-profile-btn{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:20px;background:linear-gradient(135deg,#d45d00,#e07820);color:#fff;text-decoration:none;font-size:.8rem;font-weight:700;border:none;transition:all .18s;box-shadow:0 2px 8px rgba(212,93,0,.25);}
+.header-profile-btn:hover{background:linear-gradient(135deg,#b84e00,#c96a10);transform:translateY(-1px);}
+.header-profile-btn i{font-size:1rem;}
+.nav-btn--logout{background:none;border:1.5px solid #e2e8f0;color:#64748b;cursor:pointer;font-family:inherit;}
+.nav-btn--logout:hover{border-color:#ef4444;color:#ef4444;}
 </style>
 </head>
 <body>
@@ -816,6 +823,7 @@
         <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
         <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none"><i class="fas fa-user-circle"></i><span id="headerNickname"></span></a>
         <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+        <a href="admin.html" class="nav-btn nav-admin-btn" id="headerAdminBtn" style="display:none"><i class="fas fa-shield-halved"></i> 관리자</a>
       </div>
     </div>
     <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
@@ -880,10 +888,10 @@
     <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
         <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
         <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+        <a href="admin.html" class="mobile-menu-item" id="mobileAdminBtn" style="display:none;font-weight:700;color:#e85d04;"><i class="fas fa-shield-halved" style="color:#e85d04"></i> 관리자 페이지</a>
     </div>
   </div>
 </header>
-
 <!-- ── 히어로 ── -->
 <div class="score-hero">
   <div class="score-hero-inner">
@@ -1126,6 +1134,9 @@
   <span class="home-fab-tooltip">홈으로</span>
 </a>
 
+<!-- Auth -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/supabase.js"></script>
 <script>
 /* ============================================================
@@ -1537,8 +1548,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!-- Auth -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/auth.js"></script>
 <script src="js/auth-header.js"></script>
 <script>
 // 악보 업로드/다운로드 로그인 가드
@@ -1549,7 +1558,5 @@ document.addEventListener('click', async function(e) {
 }, true);
 </script>
 <script src="js/tracker.js"></script>
-</body>
-</html>
 </body>
 </html>

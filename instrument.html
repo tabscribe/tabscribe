@@ -450,6 +450,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
             <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
             <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none"><i class="fas fa-user-circle"></i><span id="headerNickname"></span></a>
             <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+            <a href="admin.html" class="nav-btn nav-admin-btn" id="headerAdminBtn" style="display:none"><i class="fas fa-shield-halved"></i> 관리자</a>
         </div>
       </div>
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
@@ -513,10 +514,10 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
     <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
         <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
         <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+        <a href="admin.html" class="mobile-menu-item" id="mobileAdminBtn" style="display:none;font-weight:700;color:#e85d04;"><i class="fas fa-shield-halved" style="color:#e85d04"></i> 관리자 페이지</a>
     </div>
   </div>
 </header>
-
 <section class="hero">
   <div class="hero-badge"><i class="fas fa-guitar"></i> 기타·베이스 악기샵 정보</div>
   <h1>🎸 <span>악기샵</span> 찾기</h1>
@@ -877,7 +878,13 @@ async function loadHallOfFame() {
     const hof = document.getElementById('hofContainer');
     if (hof) hof.innerHTML = buildHallOfFame('instrument', agg);
     refreshAllCardRatings('instrument', aggMap);
-  } catch(e) { console.warn('rating load failed', e); }
+  } catch(e) {
+    console.warn('rating load failed', e);
+    const hof = document.getElementById('hofContainer');
+    if (hof) hof.innerHTML = buildHallOfFame('instrument', []);
+    window._cdkuAggMap = {};
+    refreshAllCardRatings('instrument', {});
+  }
   finally { window._hofLoading = false; }
 }
 window.reloadRatingBadges = debounce(function() {

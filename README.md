@@ -111,9 +111,41 @@
    - 사이트 등록 후 사이트맵 제출: `https://codeducku.vercel.app/sitemap.xml`
 3. 배포 후 **1~2주 대기** (구글: 3일~2주, 네이버: 1~4주)
 
+## ✅ 버그 수정 작업 (2026-03-21)
+
+### 7. 🐛 전체 버그 수정 — 로그인/레이아웃/쿠슐랭 가이드
+
+#### community.html — `currentUser` 변수 충돌 수정 (핵심 버그)
+- **문제**: community.html 인라인 스크립트에 `let currentUser = null` 지역 변수 선언 → `auth-header.js`의 `window.currentUser`와 **완전히 별개**로 작동해, 로그인 후에도 커뮤니티에서 "로그인 필요" 오류 발생
+- **수정**: 지역 `currentUser` 변수 제거, 모든 참조를 `window.currentUser`로 통일
+- `doLogout()` → `authLogout()`으로 통일 (auth-header.js에 정의된 함수 사용)
+- 모바일 로그아웃 버튼 `onclick`도 `authLogout()`으로 변경
+- `mobileAdminBtn` 추가 (관리자 모바일 메뉴 버튼 누락 수정)
+
+#### CSS — 로그인 후 헤더 레이아웃 깨짐 수정
+- **문제**: `.header-top-row`에 `overflow: hidden` → 로그인 시 프로필 버튼 + 로그아웃 버튼 + 관리자 버튼으로 늘어날 때 버튼이 **잘려 보임**
+- **수정**: `overflow: hidden` 제거, `flex-wrap: wrap` 적용
+- `.header-auth-btns`에도 `flex-wrap: wrap` 추가
+- `.header-login-box`에 `flex-shrink: 0` 추가
+
+#### 쿠슐랭 가이드 (loadHallOfFame) — 오류 시 폴백 수정
+- **문제**: Supabase 네트워크 오류 시 `catch` 블록에서 아무 처리 없이 종료 → `hofContainer`가 "불러오는 중..." 상태에서 **영구 멈춤**
+- **수정**: 오류 발생 시에도 빈 배열로 `buildHallOfFame()` 호출 → "선정 중" 빈 슬롯 표시
+- 적용 파일: `rehearsal.html`, `repair.html`, `instrument.html`, `academy.html`, `venue.html`
+
+#### score.html — JS 로드 순서 수정 + 중복 `</body></html>` 제거
+- **문제 1**: `js/supabase.js`가 Supabase CDN보다 먼저 위치해 의존성 순서 불안정
+- **수정 1**: 로드 순서를 `supabase CDN → auth.js → supabase.js → auth-header.js`로 재정렬
+- **문제 2**: `</body></html>`이 파일 끝에 **2번** 반복
+- **수정 2**: 중복 태그 제거
+
+#### video-fun.html, video-bandstage.html — mobileAdminBtn 누락 수정
+- 두 파일에 `id="mobileAdminBtn"` 모바일 관리자 버튼이 없어 관리자 로그인 시 모바일 메뉴에 관리자 항목 미표시
+- 두 파일에 `mobileAdminBtn` 추가
+
 ---
 
-## 🗄️ 데이터 모델
+
 
 ### Supabase `ratings` 테이블
 | 컬럼 | 타입 | 설명 |

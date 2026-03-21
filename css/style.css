@@ -91,7 +91,8 @@ body {
     padding-bottom: 4px;
     border-bottom: 1px solid #f1f5f9;
     min-width: 0;
-    overflow: hidden; /* 가로 넘침 방지 */
+    /* overflow: hidden 제거 — 로그인 후 버튼 증가 시 클리핑 방지 */
+    flex-wrap: wrap;
 }
 
 /* 로그인 박스 (오른쪽 상단) */
@@ -103,6 +104,8 @@ body {
     background: linear-gradient(135deg, #fff7ed, #ffedd5);
     border: 1.5px solid #fed7aa;
     border-radius: 20px;
+    flex-shrink: 0; /* 로그인 버튼이 줄어들지 않도록 */
+    flex-wrap: wrap; /* 버튼이 많아지면 줄바꿈 */
 }
 .header-login-box::before {
     content: '🔐 계정';
@@ -5093,6 +5096,7 @@ body {
     align-items: center;
     gap: 6px;
     flex-shrink: 0;
+    flex-wrap: wrap; /* 로그인 시 버튼 수 증가 대비 */
 }
 /* header-login-box 안의 auth-btns는 항상 표시 (모바일 포함) */
 .header-login-box .header-auth-btns {
@@ -5549,8 +5553,8 @@ body {
     }
     .header-top-row {
         gap: 4px;
-        flex-wrap: nowrap;
-        overflow: hidden;
+        flex-wrap: wrap; /* 로그인 후 버튼 넘침 방지 */
+        overflow: visible; /* overflow:hidden 제거 - 버튼 클리핑 방지 */
     }
     .logo {
         font-size: 1.05rem;

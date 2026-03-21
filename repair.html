@@ -45,6 +45,8 @@
   }
 }
 </script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -430,6 +432,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
             <a href="login.html" class="nav-btn nav-btn--login" id="headerLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인</a>
             <a href="profile.html" class="header-profile-btn" id="headerProfileBtn" style="display:none"><i class="fas fa-user-circle"></i><span id="headerNickname"></span></a>
             <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+            <a href="admin.html" class="nav-btn nav-admin-btn" id="headerAdminBtn" style="display:none"><i class="fas fa-shield-halved"></i> 관리자</a>
         </div>
       </div>
       <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
@@ -494,6 +497,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;ove
     <div style="border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px">
         <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입</a>
         <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none;background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;" onclick="authLogout()"><i class="fas fa-sign-out-alt"></i> 로그아웃</button>
+        <a href="admin.html" class="mobile-menu-item" id="mobileAdminBtn" style="display:none;font-weight:700;color:#e85d04;"><i class="fas fa-shield-halved" style="color:#e85d04"></i> 관리자 페이지</a>
     </div>
   </div>
 </header>
@@ -1380,7 +1384,15 @@ async function loadHallOfFame() {
     const hof = document.getElementById('hofContainer');
     if (hof) hof.innerHTML = buildHallOfFame('repair', agg);
     refreshAllCardRatings('repair', aggMap);
-  } catch(e) { console.warn('rating load failed', e); }
+  } catch(e) {
+    console.warn('rating load failed', e);
+    /* 오류 시에도 빈 상태로 쿠슐랭 가이드 표시 */
+    const hof = document.getElementById('hofContainer');
+    if (hof) hof.innerHTML = buildHallOfFame('repair', []);
+    /* aggMap 초기화 */
+    window._cdkuAggMap = {};
+    refreshAllCardRatings('repair', {});
+  }
   finally { window._hofLoading = false; }
 }
 window.reloadRatingBadges = debounce(function() {

@@ -1782,9 +1782,10 @@
                             <i class="fas fa-user-circle"></i>
                             <span id="headerNickname">닉네임</span>
                         </a>
-                        <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="doLogout()">
+                        <button class="nav-btn nav-btn--logout" id="headerLogoutBtn" style="display:none" onclick="authLogout()">
                             <i class="fas fa-sign-out-alt"></i> 로그아웃
                         </button>
+                        <a href="admin.html" class="nav-btn nav-admin-btn" id="headerAdminBtn" style="display:none"><i class="fas fa-shield-halved"></i> 관리자</a>
                     </div>
                 </div>
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="메뉴 열기">
@@ -1852,12 +1853,12 @@
                 <a href="login.html" class="mobile-menu-item" id="mobileLoginBtn">
                     <i class="fas fa-sign-in-alt"></i> 로그인 / 회원가입
                 </a>
-                <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none; background:none; border:none; width:100%; text-align:left; cursor:pointer;" onclick="doLogout()">
+                <button class="mobile-menu-item" id="mobileLogoutBtn" style="display:none; background:none; border:none; width:100%; text-align:left; cursor:pointer;" onclick="authLogout()">
                     <i class="fas fa-sign-out-alt"></i> 로그아웃
                 </button>
+                <a href="admin.html" class="mobile-menu-item" id="mobileAdminBtn" style="display:none;"><i class="fas fa-shield-halved" style="color:#dc2626"></i> 관리자</a>
             </div>
         </div>
-    </header>
     </header>
 
     <!-- 커뮤니티 히어로 -->
@@ -2174,52 +2175,39 @@
     const API = 'community_posts'; // Supabase 테이블명
 
     // ── Auth 초기화 ──
-    let currentUser = null;
+    // window.currentUser는 auth-header.js가 관리 (전역)
+    // 로컬 변수 currentUser 대신 window.currentUser를 사용합니다
     let currentProfile = null;
     let isAdmin = false;  // 관리자 여부
     const ADMIN_EMAIL = 'jihwan8012@naver.com';
 
+    // auth-header.js의 렌더링과 충돌하지 않도록 initAuth는 프로필/isAdmin 설정만 담당
     async function initAuth() {
         const session = await getSession();
         if (session) {
-            currentUser = session.user;
-            currentProfile = await getProfile(currentUser.id);
-            // 관리자 확인
-            isAdmin = (currentUser.email === ADMIN_EMAIL) && (currentProfile?.is_admin === true);
-        }
-        updateAuthUI();
-    }
-
-    function updateAuthUI() {
-        const loginBtn   = document.getElementById('headerLoginBtn');
-        const profileBtn = document.getElementById('headerProfileBtn');
-        const logoutBtn  = document.getElementById('headerLogoutBtn');
-        const nickSpan   = document.getElementById('headerNickname');
-        const mobileLogin = document.getElementById('mobileLoginBtn');
-        const mobileLogout = document.getElementById('mobileLogoutBtn');
-
-        if (currentUser) {
-            const nick = currentProfile?.nickname || currentUser.email.split('@')[0];
-            if (loginBtn)   loginBtn.style.display   = 'none';
-            if (profileBtn) { profileBtn.style.display = 'inline-flex'; nickSpan.textContent = nick; }
-            if (logoutBtn)  logoutBtn.style.display  = 'inline-flex';
-            if (mobileLogin)  mobileLogin.style.display  = 'none';
-            if (mobileLogout) mobileLogout.style.display = 'block';
-        } else {
-            if (loginBtn)   loginBtn.style.display   = 'inline-flex';
-            if (profileBtn) profileBtn.style.display = 'none';
-            if (logoutBtn)  logoutBtn.style.display  = 'none';
-            if (mobileLogin)  mobileLogin.style.display  = 'block';
-            if (mobileLogout) mobileLogout.style.display = 'none';
+            // window.currentUser는 auth-header.js가 설정하므로 여기서는 보조 데이터만
+            currentProfile = await getProfile(session.user.id);
+            isAdmin = (session.user.email === ADMIN_EMAIL) && (currentProfile?.is_admin === true);
+            // 페이지 기능에서 currentUser가 필요한 경우 window.currentUser 사용
+            if (!window.currentUser) {
+                window.currentUser = {
+                    id: session.user.id,
+                    email: session.user.email,
+                    nickname: currentProfile?.nickname || session.user.email.split('@')[0],
+                };
+            }
         }
     }
 
+    // doLogout은 authLogout()으로 통일 (auth-header.js에 정의됨)
+    // 하위 호환성을 위해 래퍼만 유지
     async function doLogout() {
-        await signOut();
-        currentUser = null;
-        currentProfile = null;
-        updateAuthUI();
-        showToast('👋 로그아웃 되었습니다.');
+        if (typeof authLogout === 'function') {
+            await authLogout();
+        } else {
+            await signOut();
+            location.href = 'index.html';
+        }
     }
 
     const CATEGORY_INFO = {
@@ -2599,8 +2587,9 @@
                 <img src="${escHtml(thumb)}" alt=""
                     onerror="this.parentElement.style.display='none'">
                </div>` : '';
-        const isAuthor = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
-        const delBtn = isAuthor ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
+        const _cu = window.currentUser;
+        const isAuthor = (_cu && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtn = isAuthor ? `<button class="btn-del-card${isAdmin && !(_cu && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(_cu && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="post-card${thumb ? ' post-card--has-img' : ''}" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             <div class="post-card-top">
@@ -2651,8 +2640,9 @@
 
         const priceLabel = p.price ? fmtPrice(p.price) : '가격 협의';
 
-        const isAuthorGear = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
-        const delBtnGear = isAuthorGear ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
+        const _cuGear = window.currentUser;
+        const isAuthorGear = (_cuGear && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtnGear = isAuthorGear ? `<button class="btn-del-card${isAdmin && !(_cuGear && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(_cuGear && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="gear-card${p.status === 'sold' ? ' gear-card--sold' : ''}" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${imgArea}
@@ -2688,8 +2678,9 @@
             const t = getThumbUrl(p); const c = getImgCount(p);
             return t ? `<div class="lesson-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
         })();
-        const isAuthorLesson = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
-        const delBtnLesson = isAuthorLesson ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
+        const _cuLesson = window.currentUser;
+        const isAuthorLesson = (_cuLesson && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtnLesson = isAuthorLesson ? `<button class="btn-del-card${isAdmin && !(_cuLesson && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(_cuLesson && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="lesson-card" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${thumbHtml}
@@ -2724,8 +2715,9 @@
             const t = getThumbUrl(p); const c = getImgCount(p);
             return t ? `<div class="recruit-card-thumb" style="position:relative;"><img src="${escHtml(t)}" alt="" onerror="this.parentElement.style.display='none'">${c?`<span class="thumb-count">+${c-1}</span>`:''}</div>` : '';
         })();
-        const isAuthorRecruit = (currentUser && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
-        const delBtnRecruit = isAuthorRecruit ? `<button class="btn-del-card${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(currentUser && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
+        const _cuRecruit = window.currentUser;
+        const isAuthorRecruit = (_cuRecruit && currentProfile && (p.author === currentProfile.nickname)) || isAdmin;
+        const delBtnRecruit = isAuthorRecruit ? `<button class="btn-del-card${isAdmin && !(_cuRecruit && currentProfile && p.author === currentProfile.nickname) ? ' admin-del-btn' : ''}" onclick="event.stopPropagation();deletePost('${p.id}')" title="${isAdmin ? '관리자 삭제' : '삭제'}"><i class="fas fa-trash-alt"></i>${isAdmin && !(_cuRecruit && currentProfile && p.author === currentProfile.nickname) ? '<span class="admin-del-label">관리자</span>' : ''}</button>` : '';
         return `
         <div class="recruit-card" data-post-id="${p.id}" onclick="openDetail('${p.id}')" style="cursor:pointer;">
             ${thumbHtml}
@@ -2788,7 +2780,8 @@
             : (p.contact ? `<div class="detail-contact"><strong><i class="fas fa-phone-alt"></i> 연락처</strong><span class="detail-contact-value">${escHtml(p.contact)}</span></div>` : '');
 
         // 글쓴이 본인 확인 (닉네임 비교)
-        const isAuthor = currentUser && currentProfile && (currentProfile.nickname === p.author);
+        const _cuDetail = window.currentUser;
+        const isAuthor = _cuDetail && currentProfile && (currentProfile.nickname === p.author);
         const soldOutSectionHtml = (p.category === 'used_gear' && !isSold && isAuthor) ? `
             <div class="sold-out-section" id="soldOutSection">
                 <div class="sold-out-notice">
@@ -2994,8 +2987,8 @@
     }
 
     function openWriteModal() {
-        // 로그인 여부 확인
-        if (!currentUser) {
+        // 로그인 여부 확인 (window.currentUser 사용)
+        if (!window.currentUser) {
             showToast('✋ 글쓰기는 로그인 후 이용할 수 있어요!');
             setTimeout(() => { location.href = 'login.html?redirect=community.html'; }, 1200);
             return;
